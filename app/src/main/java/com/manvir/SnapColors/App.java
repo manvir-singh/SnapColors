@@ -24,16 +24,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-
 import org.apache.commons.io.FileUtils;
-
-import de.robv.android.xposed.*;
+import de.robv.android.xposed.IXposedHookInitPackageResources;
+import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 @SuppressWarnings("UnusedDeclaration")
-public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources{
+public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     static final String TAG = "SnapColors";
     static String MODULE_PATH;
     static String SnapChatPKG = "com.snapchat.android";
@@ -54,7 +58,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	
 	public void log(String text){
 		if(DEBUG){
-			XposedBridge.log(TAG+": "+text);
+			XposedBridge.log(TAG + ": " + text);
 		}
 	}
 
