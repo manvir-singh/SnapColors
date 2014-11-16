@@ -1,0 +1,143 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.manvir.SnapColors.MainActivity$PlaceholderFragment" >
+
+    <CheckBox
+        android:id="@+id/settextColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Set Text Color" />
+
+    <CheckBox
+        android:id="@+id/setBGColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/settextColor"
+        android:layout_below="@+id/settextColor"
+        android:text="Set Background Color" />
+
+    <CheckBox
+        android:id="@+id/setFont"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/setBGColor"
+        android:layout_below="@+id/setBGColor"
+        android:text="Set Font" />
+
+    <TextView
+        android:id="@+id/textColorPrev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/settextColor"
+        android:layout_alignBottom="@+id/settextColor"
+        android:layout_alignLeft="@+id/textBGPrev"
+        android:layout_alignParentRight="true"
+        android:text="   " />
+
+    <TextView
+        android:id="@+id/textBGPrev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/setBGColor"
+        android:layout_alignBottom="@+id/setBGColor"
+        android:layout_alignLeft="@+id/fontPrev"
+        android:layout_alignParentRight="true"
+        android:text="   " />
+
+    <TextView
+        android:id="@+id/fontPrev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/setFont"
+        android:layout_alignBottom="@+id/setFont"
+        android:layout_alignParentRight="true"
+        android:text="Preview" />
+
+    <CheckBox
+        android:id="@+id/autoRandomize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/setFont"
+        android:layout_below="@+id/fontPrev"
+        android:text="Auto randomize colors on startup" />
+
+    <Button
+        android:id="@+id/btnDonate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="Donate" />
+
+    <Button
+        android:id="@+id/btnTwitter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnDonate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="Twitter: @iphone4life4" />
+
+    <Button
+        android:id="@+id/btnXdaThread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnTwitter"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="Support/Discussion on XDA" />
+
+    <CheckBox
+        android:id="@+id/showFeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/autoRandomize"
+        android:text="Show feed on startup" />
+
+    <Button
+        android:id="@+id/importFont"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/showFeed"
+        android:text="Import Font" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notify me when a new update is available."
+        android:id="@+id/newVerBox"
+        android:layout_above="@+id/btnXdaThread"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:checked="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Running in dev mode!"
+        android:textColor="@android:color/holo_red_dark"
+        android:id="@+id/debugModeTextView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_horizontal" />
+
+</RelativeLayout>
