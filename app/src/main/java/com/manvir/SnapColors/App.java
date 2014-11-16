@@ -1,9 +1,5 @@
 package com.manvir.SnapColors;
-// Please do'nt decompile my code if you want help please ask on the thread thanks =).
-/*
- * Fixed crash when trying to change fonts.
- *
-*/
+// Please don't decompile my code if you want help please ask on the thread thanks =).
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
