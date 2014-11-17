@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -203,7 +204,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 //**Init -btnReset- button and add to view.
                 RelativeLayout.LayoutParams btnResetParmas = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
                 btnResetParmas.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                btnResetParmas.topMargin = 750;
+                btnResetParmas.topMargin = 550;
                 btnResetParmas.width = 100;
                 btnResetParmas.height = 100;
                 ImageButton btnReset = new ImageButton(SnapChatContext);
@@ -281,7 +282,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        // For showing the donation msg, and for getting snapchats main context
+        // For showing the donation dialog, and for getting snapchats main context
     	findAndHookMethod("com.snapchat.android.LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
 			@Override
     		protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
