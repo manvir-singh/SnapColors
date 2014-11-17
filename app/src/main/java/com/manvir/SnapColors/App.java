@@ -80,23 +80,22 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
         if (!resparam.packageName.equals(SnapChatPKG))
             return;
-
         modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
+
         resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-                final RelativeLayout layout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
-                final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
-                SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
-
-                final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn","id",SnapChatPKG)).getLayoutParams());
-
+                //Get Snapchats main layout.
+                RelativeLayout layout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
+                //Params for the "T" that shows tha main dialog when tapped.
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn","id",SnapChatPKG)).getLayoutParams());
                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-
                 params.topMargin = px(7);
                 params.rightMargin = px(110);
-
+                //The "T" that shows the options.
+                ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
+                SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
                 SnapColorsBtn.setImageDrawable(modRes.getDrawable(R.drawable.snapcolorsbtn));
 
                 //Get the display params for our layout.
@@ -113,16 +112,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 ly.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
                 ly.setVisibility(View.GONE);
 
-                //**Init -randomizeBtn- button and add to view.
-                RelativeLayout.LayoutParams randomizeBtnParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                randomizeBtnParams.leftMargin = 70; //plus 130 for every button
-                randomizeBtnParams.topMargin = 50;
-                randomizeBtnParams.width = 100;
-                randomizeBtnParams.height = 100;
-                ImageButton randomizeBtn = new ImageButton(SnapChatContext);
-                randomizeBtn.setBackgroundDrawable(modRes.getDrawable(R.drawable.roundcorner));
-                randomizeBtn.setImageDrawable(modRes.getDrawable(R.drawable.randomize_btn));
-                randomizeBtn.setOnClickListener(new View.OnClickListener() {
+                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 50, 70);
+                btnRandomize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Random random = new Random();
@@ -132,19 +123,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         editText.setTextColor(colorText);
                     }
                 });
-                ly.addView(randomizeBtn, randomizeBtnParams);
-                //**End
 
-                //**Init -textColorbtn- button and add to view.
-                RelativeLayout.LayoutParams textColorbtnParmas = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                textColorbtnParmas.leftMargin = 200;
-                textColorbtnParmas.topMargin = 50;
-                textColorbtnParmas.width = 100;
-                textColorbtnParmas.height = 100;
-                ImageButton textColorbtn = new ImageButton(SnapChatContext);
-                textColorbtn.setBackgroundDrawable(modRes.getDrawable(R.drawable.roundcorner));
-                textColorbtn.setImageDrawable(modRes.getDrawable(R.drawable.textcolor_btn));
-                textColorbtn.setOnClickListener(new View.OnClickListener(){
+                SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, ly, 50, 200);
+                btnTextColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
                         ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
@@ -162,20 +143,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         colorPickerDialog.show();
                     }
                 });
-                ly.addView(textColorbtn, textColorbtnParmas);
-                //**End
 
-                //**Init -bgColorbtn- button and add to view.
-                RelativeLayout.LayoutParams bgColorbtnParmas = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                bgColorbtnParmas.leftMargin = 330;
-                bgColorbtnParmas.topMargin = 50;
-                bgColorbtnParmas.width = 100;
-                bgColorbtnParmas.height = 100;
-                ImageButton bgColorbtn = new ImageButton(SnapChatContext);
-                bgColorbtn.setBackgroundDrawable(modRes.getDrawable(R.drawable.roundcorner));
-                bgColorbtn.setImageDrawable(modRes.getDrawable(R.drawable.bgcolor_btn));
-                bgColorbtn.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                bgColorbtn.setOnClickListener(new View.OnClickListener(){
+                SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, ly, 50, 330);
+                btnBgColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
                         ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
@@ -193,18 +163,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         colorPickerDialog.show();
                     }
                 });
-                ly.addView(bgColorbtn, bgColorbtnParmas);
-                //**End
 
-                //**Init -btnSize- button and add to view.
-                RelativeLayout.LayoutParams btnSizeParmas = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                btnSizeParmas.leftMargin = 460;
-                btnSizeParmas.topMargin = 50;
-                btnSizeParmas.width = 100;
-                btnSizeParmas.height = 100;
-                ImageButton btnSize = new ImageButton(SnapChatContext);
-                btnSize.setBackgroundDrawable(modRes.getDrawable(R.drawable.roundcorner));
-                btnSize.setImageDrawable(modRes.getDrawable(R.drawable.size_btn));
+                SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, ly, 50, 460);
                 btnSize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -231,8 +191,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         alert.show();
                     }
                 });
-                ly.addView(btnSize, btnSizeParmas);
-                //**End
 
                 SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, ly, 50, 590);
                 btnAlpha.setOnClickListener(new View.OnClickListener() {
@@ -279,7 +237,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         }
                     }
                 });
-
                 layout.addView(SnapColorsBtn, params);
             }
         });
