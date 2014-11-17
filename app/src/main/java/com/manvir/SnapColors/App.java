@@ -48,6 +48,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	static boolean DEBUG = true;
 	static Random random = new Random();
     EditText editText;
+    public static XModuleResources modRes;
 
     private void random(EditText textBox) {
         int colorBG = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -80,7 +81,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         if (!resparam.packageName.equals(SnapChatPKG))
             return;
 
-        final XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
+        modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
         resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
@@ -233,23 +234,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 ly.addView(btnSize, btnSizeParmas);
                 //**End
 
-                //**Init -btnAlpha- button and add to view.
-                RelativeLayout.LayoutParams btnAlphaParmas = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                btnAlphaParmas.leftMargin = 590;
-                btnAlphaParmas.topMargin = 50;
-                btnAlphaParmas.width = 100;
-                btnAlphaParmas.height = 100;
-                ImageButton btnAlpha = new ImageButton(SnapChatContext);
-                btnAlpha.setBackgroundDrawable(modRes.getDrawable(R.drawable.roundcorner));
-                btnAlpha.setImageDrawable(modRes.getDrawable(R.drawable.alpha_btn));
+                SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, ly, 50, 590);
                 btnAlpha.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         editText.setBackgroundColor(Color.TRANSPARENT);
                     }
                 });
-                ly.addView(btnAlpha, btnAlphaParmas);
-                //**End
 
                 //**Init -btnReset- button and add to view.
                 RelativeLayout.LayoutParams btnResetParmas = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
