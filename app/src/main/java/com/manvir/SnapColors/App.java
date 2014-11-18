@@ -51,6 +51,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     EditText editText;
     public static XModuleResources modRes;
 
+    //Sets the EditText background, and the text color to a random color.
     private void random(EditText textBox) {
         int colorBG = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
         int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -88,13 +89,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 //Get Snapchats main layout.
                 RelativeLayout layout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
-                //Params for the "T" that shows tha main dialog when tapped.
+                //LayoutParams for the "T" that shows the options when tapped.
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn","id",SnapChatPKG)).getLayoutParams());
                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
                 params.topMargin = px(7);
                 params.rightMargin = px(110);
-                //The "T" that shows the options.
+                //The "T" ImageButton object that shows the options when tapped.
                 ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
                 SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
                 SnapColorsBtn.setImageDrawable(modRes.getDrawable(R.drawable.snapcolorsbtn));
@@ -106,14 +107,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 param.width = size.x;
                 param.topMargin = px(70);
-                //end of get display params.
 
                 //Setup our layout here and add the views, buttons etc.
                 final RelativeLayout ly = new RelativeLayout(SnapChatContext);
                 ly.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
                 ly.setVisibility(View.GONE);
 
-                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 50, 70);
+                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 50, 70);//Add 130 to every button
                 btnRandomize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -201,15 +201,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
+                SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, ly, 50, 720);
+
                 //**Init -btnReset- button and add to view.
                 RelativeLayout.LayoutParams btnResetParmas = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                btnResetParmas.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                btnResetParmas.topMargin = 550;
+                btnResetParmas.leftMargin = 850;
+                btnResetParmas.topMargin = 50;
                 btnResetParmas.width = 100;
                 btnResetParmas.height = 100;
                 ImageButton btnReset = new ImageButton(SnapChatContext);
                 btnReset.setBackgroundDrawable(modRes.getDrawable(R.drawable.roundcorner));
-                btnReset.setImageDrawable(modRes.getDrawable(R.drawable.alpha_btn));
+                btnReset.setImageDrawable(modRes.getDrawable(R.drawable.reset_btn));
                 btnReset.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -219,14 +221,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
                 ly.addView(btnReset, btnResetParmas);
-                //**End
 
                 //Add our layout to SnapChat's main layout.
                 layout.addView(ly, param);
-                //End of setting up our views.
 
                 SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
-                    boolean SnapColorsBtnBool = true; //To see if the button is pressed agian
+                    boolean SnapColorsBtnBool = true; //To see if the button is pressed again.
                     @Override
                     public void onClick(View v) {
                         if (SnapColorsBtnBool) {
@@ -248,26 +248,18 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (!lpparam.packageName.equals(SnapChatPKG))
 	        return;
-        ///// Find the caption box
+        //Get some settings, also get the caption box's edit text object.
 		final Class<?> CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.SnapCaptionView.CaptionEditText", lpparam.classLoader);
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
-                prefs.reload();
-                editText = (EditText) param.thisObject;
-                //final GestureDetector gestureDetector = new GestureDetector(SnapChatContext, new GestureDec(SnapChatContext, editText, defTypeFace));
+                prefs.reload();// Reload our prefs
+                editText = (EditText) param.thisObject;// Get the Caption box's edit text object.
+                //Check to see if the app is being opened for the first time.
                 if (!notFirstRun) {
                     defTypeFace = editText.getTypeface();
                     notFirstRun = true;
                 }
-
-//                editText.setOnTouchListener(new View.OnTouchListener() {
-//                    @Override
-//                    public boolean onTouch(View arg0, MotionEvent arg1) {
-//                        return gestureDetector.onTouchEvent(arg1);
-//                    }
-//                });
-
                 // Get stuff from settings here
                 editText.setTextColor(prefs.getInt("TextColor", Color.WHITE));
                 editText.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
@@ -286,8 +278,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     	findAndHookMethod("com.snapchat.android.LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
 			@Override
     		protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-				prefs.reload();
-                //Getting SnapChat's main context.
+				prefs.reload();//Reload prefs
+                //Getting SnapChat's main context object.
 				SnapChatContext = (Activity) param.thisObject;
                 File SnapColorsVer = new File(SnapChatContext.getExternalFilesDir(null).getAbsolutePath()+"/snapcolors");
                 if(SnapColorsVer.createNewFile()){

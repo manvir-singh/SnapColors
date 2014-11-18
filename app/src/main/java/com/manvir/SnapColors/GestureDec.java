@@ -103,62 +103,62 @@ public class GestureDec extends  GestureDetector.SimpleOnGestureListener{
 //            }
 //        });
 
-        final Button randomize = new Button(SnapChatContext);
-        randomize.setText("Randomize");
-        randomize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                random(editText);
-            }
-        });
+//        final Button randomize = new Button(SnapChatContext);
+//        randomize.setText("Randomize");
+//        randomize.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                random(editText);
+//            }
+//        });
+//
+//        final Button textColorbtn = new Button(SnapChatContext);
+//        textColorbtn.setText("Text Color");
+//        textColorbtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
+//                    @Override
+//                    public void onColorSelected(int color) {
+//                        editText.setTextColor(color);
+//                    }
+//                });
+//                colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        editText.setTextColor(Color.WHITE);
+//                    }
+//                });
+//                colorPickerDialog.setTitle("Text Color");
+//                colorPickerDialog.show();
+//            }
+//        });
 
-        final Button textColorbtn = new Button(SnapChatContext);
-        textColorbtn.setText("Text Color");
-        textColorbtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
-                    @Override
-                    public void onColorSelected(int color) {
-                        editText.setTextColor(color);
-                    }
-                });
-                colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int which) {
-                        editText.setTextColor(Color.WHITE);
-                    }
-                });
-                colorPickerDialog.setTitle("Text Color");
-                colorPickerDialog.show();
-            }
-        });
+//        final Button bgColorbtn = new Button(SnapChatContext);
+//        bgColorbtn.setText("Background Color");
+//        bgColorbtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
+//                    @Override
+//                    public void onColorSelected(int color) {
+//                        editText.setBackgroundColor(color);
+//                    }
+//                });
+//                colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        editText.setBackgroundColor(-1728053248);
+//                    }
+//                });
+//                colorPickerDialog.setTitle("Background Color");
+//                colorPickerDialog.show();
+//            }
+//        });
 
-        final Button bgColorbtn = new Button(SnapChatContext);
-        bgColorbtn.setText("Background Color");
-        bgColorbtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
-                    @Override
-                    public void onColorSelected(int color) {
-                        editText.setBackgroundColor(color);
-                    }
-                });
-                colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int which) {
-                        editText.setBackgroundColor(-1728053248);
-                    }
-                });
-                colorPickerDialog.setTitle("Background Color");
-                colorPickerDialog.show();
-            }
-        });
-
-        linear.addView(textColorbtn);
-        linear.addView(bgColorbtn);
+        //linear.addView(textColorbtn);
+        //linear.addView(bgColorbtn);
         //linear.addView(btnSize);
         //linear.addView(btnAlpha);
-        linear.addView(randomize);
+        //linear.addView(randomize);
         //linear.addView(btnReset);
 
         alert.setView(linear);

@@ -9,6 +9,9 @@ import android.widget.RelativeLayout;
 public class SButton extends ImageButton{
     XModuleResources modRes = App.modRes;//Get our resources from our main class.
 
+    /**
+     * @param context The application context.
+    */
     public SButton(Context context, int btnImageId, RelativeLayout ly, int topMargin, int leftMargin) {
         super(context);
         //Setup our params for our ImageButton.
