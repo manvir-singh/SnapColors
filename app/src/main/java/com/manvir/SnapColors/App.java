@@ -343,6 +343,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 				prefs.reload();//Reload prefs
                 //Getting SnapChat's main context object.
 				SnapChatContext = (Activity) param.thisObject;
+                //File SnapColorsVer = new File(SnapChatContext.getExternalFilesDir(null).getAbsolutePath()+"/snapcolors");
                 File SnapColorsVer = new File(SnapChatContext.getExternalFilesDir(null).getAbsolutePath()+"/snapcolors");
                 if(SnapColorsVer.createNewFile()){
                     FileUtils.writeStringToFile(SnapColorsVer, SnapChatContext.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionName);
