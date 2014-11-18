@@ -103,9 +103,10 @@ public class MainActivity extends Activity {
 		public void onActivityResult(int requestCode, int resultCode, Intent data) {
 			if(resultCode != 0 && data != null){
 				try {
-					File ttfFile = new File(Uri.decode(data.getDataString()));
+					File ttfFile = new File(Uri.decode(data.getDataString()).split(":/")[1]);//Todo Fix the import font bug. Fixed it temporally though.
+
 					FileUtils.copyFile(ttfFile, new File(fontsDir+"/"+ttfFile.getName()));
-                    Toast.makeText(getActivity(), "Import successful.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Import successful.", Toast.LENGTH_LONG).show();
 				} catch (IOException e) {
 					e.printStackTrace();
                     Toast.makeText(getActivity(), "Import failed! Something went wrong =0", Toast.LENGTH_SHORT).show();
