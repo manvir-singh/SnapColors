@@ -9,6 +9,7 @@ import java.util.Random;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -32,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -336,20 +339,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        // For showing the donation dialog, and for getting snapchats main context
+        // For getting snapchats main context.
     	findAndHookMethod("com.snapchat.android.LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
 			@Override
     		protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
 				prefs.reload();//Reload prefs
                 //Getting SnapChat's main context object.
 				SnapChatContext = (Activity) param.thisObject;
-                //File SnapColorsVer = new File(SnapChatContext.getExternalFilesDir(null).getAbsolutePath()+"/snapcolors");
-                File SnapColorsVer = new File(SnapChatContext.getExternalFilesDir(null).getAbsolutePath()+"/snapcolors");
-                if(SnapColorsVer.createNewFile()){
-                    FileUtils.writeStringToFile(SnapColorsVer, SnapChatContext.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionName);
-                }else if(!FileUtils.readFileToString(SnapColorsVer).contentEquals(SnapChatContext.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionName)){
-                    FileUtils.writeStringToFile(SnapColorsVer, SnapChatContext.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionName);
-                }
     		}
     	});
     }
