@@ -2,8 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
     <item>
         <shape android:shape="rectangle" android:innerRadius="2px">
-            <size android:height="70dp" />
-            <stroke android:color="#FFFF00" android:width="10dp"/>
+            <stroke android:color="#FFFF00" android:width="5dp"/>
             <solid android:color="@android:color/white" />
             <corners
                 android:bottomRightRadius="7dp"
@@ -12,7 +11,7 @@
                 android:topRightRadius="7dp"/>
         </shape>
     </item>
-    <item android:right="100dp" android:top="-80dp">
+    <item android:bottom="194px" android:right="114dp">
         <bitmap android:src="@drawable/arrow" android:gravity="right"/>
     </item>
 </layer-list>
