@@ -102,10 +102,16 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 param.width = size.x;
                 param.topMargin = px(70);
-                param.bottomMargin = px(80);
+                param.height = 200;
 
                 //Setup our layout here and add the views, buttons etc.
                 final RelativeLayout ly = new RelativeLayout(SnapChatContext);
+                ly.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
                 ly.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
                 ly.setVisibility(View.GONE);
 
