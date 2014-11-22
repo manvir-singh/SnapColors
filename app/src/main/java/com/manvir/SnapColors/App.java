@@ -106,12 +106,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                 //Setup our layout here and add the views, buttons etc.
                 final RelativeLayout ly = new RelativeLayout(SnapChatContext);
-                ly.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
+                ly.setOnClickListener(null);//To prevent touches going though to the layout behind the options layout.
                 ly.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
                 ly.setVisibility(View.GONE);
 
