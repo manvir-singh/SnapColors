@@ -14,6 +14,7 @@ import android.content.res.XModuleResources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -29,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -83,7 +85,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         if (!resparam.packageName.equals(SnapChatPKG))
             return;
         modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
-
         resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {

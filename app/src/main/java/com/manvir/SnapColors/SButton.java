@@ -2,12 +2,12 @@ package com.manvir.SnapColors;
 
 import android.content.Context;
 import android.content.res.XModuleResources;
+import android.graphics.drawable.Drawable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class SButton extends ImageButton{
-    XModuleResources modRes = App.modRes;//Get our resources from our main class.
 
     /**
      * @param context The application context.
@@ -20,10 +20,9 @@ public class SButton extends ImageButton{
         btnParmas.topMargin = topMargin;
         btnParmas.width = 100;
         btnParmas.height = 100;
-        //Set the background drawable and the ImageButton drawable.
-        setBackgroundDrawable(modRes.getDrawable(R.drawable.roundcorner));
-        setImageDrawable(modRes.getDrawable(btnImageId));
-        //Set the scale so the image fits into the ImageButton no matter the size if the image.
+        setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));//Set the background drawable
+        setImageDrawable(App.modRes.getDrawable(btnImageId));// Set ImageButton drawable.
+        //Set the scale so the image fits into the ImageButton no matter the size of the image.
         setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         ly.addView(this, btnParmas);
     }
