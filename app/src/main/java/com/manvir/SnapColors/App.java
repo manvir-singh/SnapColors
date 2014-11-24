@@ -188,83 +188,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                 SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, ly, 720);
                 btnFonts.setOnClickListener(new View.OnClickListener() {
-                    Handler handler = new Handler(SnapChatContext.getMainLooper());
                     @Override
                     public void onClick(View v) {
-
-                        final ProgressDialog pro = ProgressDialog.show(SnapChatContext, "", "Loading Fonts");
-                        new Thread(){
-                            @Override
-                            public void run() {
-                                try {
-                                    Resources res = SnapChatContext.getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
-                                    new Util(SnapChatContext).copyAssets(res);
-
-                                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(SnapChatContext, android.R.layout.select_dialog_singlechoice);
-                                    final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
-                                    File file[] = new File(fontsDir).listFiles();
-                                    for (File aFile : file) {
-                                        arrayAdapter.add(aFile.getName().replace(".ttf", "").replace(".TTF", ""));
-                                    }
-                                    handler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            AlertDialog.Builder builderSingle = new AlertDialog.Builder(SnapChatContext);
-                                            builderSingle.setIcon(0);
-                                            builderSingle.setTitle("Select A Font:");
-                                            builderSingle.setNeutralButton("Default", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    editText.setTypeface(defTypeFace);
-                                                }
-                                            });
-                                            builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    String strName = arrayAdapter.getItem(which);
-                                                    Typeface face = Typeface.createFromFile(fontsDir+ "/" + strName+".ttf");
-                                                    editText.setTypeface(face);
-                                                }
-                                            });
-                                            builderSingle.show();
-                                            pro.dismiss();
-                                        }
-                                    });
-
-
-
-                                } catch (PackageManager.NameNotFoundException e) {
-                                    AlertDialog.Builder al = new AlertDialog.Builder(SnapChatContext);
-                                    final TextView message = new TextView(SnapChatContext);
-                                    final SpannableString s = new SpannableString("You need to randomize_btn fonts they are not included. Just randomize_btn and install the apk.(Note no icon will be added) Fonts apk can be downloaded from this link: http://forum.xda-developers.com/devdb/project/?id=3684#downloads");
-                                    Linkify.addLinks(s, Linkify.WEB_URLS);
-                                    message.setText(s);
-                                    message.setMovementMethod(LinkMovementMethod.getInstance());
-                                    al.setTitle("SnapColors");
-                                    al.setView(message);
-                                    al.setNegativeButton("Close", null);
-                                    al.setNeutralButton("Why", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            String whyText = "The reason why fonts are not included with the tweak are simple.\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
-                                            AlertDialog alertDialog = new AlertDialog.Builder(SnapChatContext).create();
-                                            alertDialog.setTitle("SnapColors");
-                                            alertDialog.setMessage(whyText);
-                                            alertDialog.show();
-                                        }
-                                    });
-                                    al.show();
-                                    pro.dismiss();
-                                }
-                            }
-                        }.start();
-
+                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), editText, defTypeFace);
                     }
                 });
 
