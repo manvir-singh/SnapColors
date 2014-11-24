@@ -11,7 +11,7 @@
                 android:topRightRadius="7dp"/>
         </shape>
     </item>
-    <item android:bottom="194px" android:right="114dp">
-        <bitmap android:src="@drawable/arrow" android:gravity="right"/>
+    <item android:top="-25px" android:right="114dp">
+        <bitmap android:src="@drawable/arrow" android:gravity="right|top"/>
     </item>
 </layer-list>

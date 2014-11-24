@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.text.Layout;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,6 +20,8 @@ import de.robv.android.xposed.XposedBridge;
 
 public class Util {
     Context SnapChatContext;
+    public static int SHOW = 1;
+    public static int HIDE = 1;
     public Util(Context con){
         this.SnapChatContext = con;
     }

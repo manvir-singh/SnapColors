@@ -3,9 +3,11 @@ package com.manvir.SnapColors;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import java.io.File;
 import java.util.Random;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -16,6 +18,8 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
@@ -56,7 +60,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	static boolean notFirstRun = false;
 	static boolean DEBUG = true;
 	static Random random = new Random();
-    EditText editText;
+    public static EditText editText;
+    public static Point size;
     public static XModuleResources modRes;
 
     //Sets the EditText background, and the text color to a random color.
@@ -73,6 +78,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         float DP = SnapChatContext.getResources().getDisplayMetrics().density;
         return Math.round(dips * DP);
     }
+
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -97,18 +103,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 params.topMargin = px(7);
                 params.rightMargin = px(110);
                 //The "T" ImageButton object that shows the options when tapped.
-                ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
+                final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
                 SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
                 SnapColorsBtn.setImageDrawable(modRes.getDrawable(R.drawable.snapcolorsbtn));
 
                 //Get the display params for our layout.
                 Display display = SnapChatContext.getWindowManager().getDefaultDisplay();
-                Point size = new Point();
+                size = new Point();
                 display.getSize(size);
-                RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                final RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 param.width = size.x;
                 param.topMargin = px(70);
-                param.height = 200;
 
                 //Setup our layout here and add the views, buttons etc.
                 final RelativeLayout ly = new RelativeLayout(SnapChatContext);
@@ -116,7 +121,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 ly.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
                 ly.setVisibility(View.GONE);
 
-                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 50, 70);//Add 130 to every button
+                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 70);//Add 130 to every button
                 btnRandomize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -128,47 +133,24 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, ly, 50, 200);
+                SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, ly, 200);
                 btnTextColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
-                            @Override
-                            public void onColorSelected(int color) {
-                                editText.setTextColor(color);
-                            }
-                        });
-                        colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int which) {
-                                editText.setTextColor(Color.WHITE);
-                            }
-                        });
-                        colorPickerDialog.setTitle("Text Color");
-                        colorPickerDialog.show();
+                        ColorPicker colorPicker = new ColorPicker(SnapChatContext);
+                        ly.addView(colorPicker);
                     }
                 });
 
-                SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, ly, 50, 330);
+                SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, ly, 330);
                 btnBgColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
-                            @Override
-                            public void onColorSelected(int color) {
-                                editText.setBackgroundColor(color);
-                            }
-                        });
-                        colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int which) {
-                                editText.setBackgroundColor(-1728053248);
-                            }
-                        });
-                        colorPickerDialog.setTitle("Background Color");
-                        colorPickerDialog.show();
+
                     }
                 });
 
-                SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, ly, 50, 460);
+                SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, ly, 460);
                 btnSize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -196,7 +178,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, ly, 50, 590);
+                SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, ly, 590);
                 btnAlpha.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -204,72 +186,89 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, ly, 50, 720);
+                SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, ly, 720);
                 btnFonts.setOnClickListener(new View.OnClickListener() {
+                    Handler handler = new Handler(SnapChatContext.getMainLooper());
                     @Override
                     public void onClick(View v) {
-                        try {
-                            Resources res = SnapChatContext.getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
-                            new Util(SnapChatContext).copyAssets(res);
 
-                            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(SnapChatContext, android.R.layout.select_dialog_singlechoice);
-                            final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
-                            File file[] = new File(fontsDir).listFiles();
-                            for (File aFile : file) {
-                                arrayAdapter.add(aFile.getName().replace(".ttf", "").replace(".TTF", ""));
+                        final ProgressDialog pro = ProgressDialog.show(SnapChatContext, "", "Loading Fonts");
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                try {
+                                    Resources res = SnapChatContext.getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
+                                    new Util(SnapChatContext).copyAssets(res);
+
+                                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(SnapChatContext, android.R.layout.select_dialog_singlechoice);
+                                    final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
+                                    File file[] = new File(fontsDir).listFiles();
+                                    for (File aFile : file) {
+                                        arrayAdapter.add(aFile.getName().replace(".ttf", "").replace(".TTF", ""));
+                                    }
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            AlertDialog.Builder builderSingle = new AlertDialog.Builder(SnapChatContext);
+                                            builderSingle.setIcon(0);
+                                            builderSingle.setTitle("Select A Font:");
+                                            builderSingle.setNeutralButton("Default", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    editText.setTypeface(defTypeFace);
+                                                }
+                                            });
+                                            builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    String strName = arrayAdapter.getItem(which);
+                                                    Typeface face = Typeface.createFromFile(fontsDir+ "/" + strName+".ttf");
+                                                    editText.setTypeface(face);
+                                                }
+                                            });
+                                            builderSingle.show();
+                                            pro.dismiss();
+                                        }
+                                    });
+
+
+
+                                } catch (PackageManager.NameNotFoundException e) {
+                                    AlertDialog.Builder al = new AlertDialog.Builder(SnapChatContext);
+                                    final TextView message = new TextView(SnapChatContext);
+                                    final SpannableString s = new SpannableString("You need to randomize_btn fonts they are not included. Just randomize_btn and install the apk.(Note no icon will be added) Fonts apk can be downloaded from this link: http://forum.xda-developers.com/devdb/project/?id=3684#downloads");
+                                    Linkify.addLinks(s, Linkify.WEB_URLS);
+                                    message.setText(s);
+                                    message.setMovementMethod(LinkMovementMethod.getInstance());
+                                    al.setTitle("SnapColors");
+                                    al.setView(message);
+                                    al.setNegativeButton("Close", null);
+                                    al.setNeutralButton("Why", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            String whyText = "The reason why fonts are not included with the tweak are simple.\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
+                                            AlertDialog alertDialog = new AlertDialog.Builder(SnapChatContext).create();
+                                            alertDialog.setTitle("SnapColors");
+                                            alertDialog.setMessage(whyText);
+                                            alertDialog.show();
+                                        }
+                                    });
+                                    al.show();
+                                    pro.dismiss();
+                                }
                             }
+                        }.start();
 
-                            AlertDialog.Builder builderSingle = new AlertDialog.Builder(SnapChatContext);
-                            builderSingle.setIcon(0);
-                            builderSingle.setTitle("Select A Font:");
-                            builderSingle.setNeutralButton("Default", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    editText.setTypeface(defTypeFace);
-                                }
-                            });
-                            builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-
-                            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String strName = arrayAdapter.getItem(which);
-                                    Typeface face = Typeface.createFromFile(fontsDir+ "/" + strName+".ttf");
-                                    editText.setTypeface(face);
-                                }
-                            });
-                            builderSingle.show();
-                        } catch (PackageManager.NameNotFoundException e) {
-                            AlertDialog.Builder al = new AlertDialog.Builder(SnapChatContext);
-                            final TextView message = new TextView(SnapChatContext);
-                            final SpannableString s = new SpannableString("You need to randomize_btn fonts they are not included. Just randomize_btn and install the apk.(Note no icon will be added) Fonts apk can be downloaded from this link: http://forum.xda-developers.com/devdb/project/?id=3684#downloads");
-                            Linkify.addLinks(s, Linkify.WEB_URLS);
-                            message.setText(s);
-                            message.setMovementMethod(LinkMovementMethod.getInstance());
-                            al.setTitle("SnapColors");
-                            al.setView(message);
-                            al.setNegativeButton("Close", null);
-                            al.setNeutralButton("Why", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String whyText = "The reason why fonts are not included with the tweak are simple.\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
-                                    AlertDialog alertDialog = new AlertDialog.Builder(SnapChatContext).create();
-                                    alertDialog.setTitle("SnapColors");
-                                    alertDialog.setMessage(whyText);
-                                    alertDialog.show();
-                                }
-                            });
-                            al.show();
-                        }
                     }
                 });
 
-                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 50, 850);
+                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 850);
                 btnReset.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

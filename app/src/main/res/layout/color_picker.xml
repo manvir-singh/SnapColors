@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingBottom="10dp"
+    android:id="@+id/colorPicker"
+    android:clickable="true">
+
+    <ImageButton android:id="@+id/colorRed"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:background="@android:color/holo_red_dark"/>
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/colorRed"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/done"
+        android:layout_height="33dp"
+        android:layout_width="wrap_content"
+        android:background="@drawable/roundcorner" android:text="Done"/>
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/colorRed"
+        android:layout_alignParentRight="true"
+        android:layout_alignRight="@id/done"
+        android:id="@+id/cancel"
+        android:layout_height="33dp"
+        android:layout_width="wrap_content"
+        android:background="@drawable/roundcorner" android:text="Cancel"/>
+
+</RelativeLayout>

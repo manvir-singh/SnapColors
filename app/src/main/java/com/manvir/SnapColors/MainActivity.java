@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.io.FileUtils;
-import com.manvir.SnapColors.ColorPickerDialog.OnColorSelectedListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -324,68 +323,68 @@ public class MainActivity extends Activity {
 			setBGColor.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked){
-						ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, new OnColorSelectedListener() {
-							@Override
-	            	        public void onColorSelected(int color) {
-								prefs.edit().putInt("BGColor", color).apply();
-								textBGPrev.setBackgroundColor(color);
-	            	        }
-	            	    });
-                        colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                prefs.edit().putInt("BGColor", -1728053248).apply();
-                                textBGPrev.setBackgroundColor(0);
-                                setBGColor.setChecked(false);
-                            }
-                        });
-                        colorPickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                prefs.edit().putInt("BGColor", -1728053248).apply();
-                                textBGPrev.setBackgroundColor(0);
-                                setBGColor.setChecked(false);
-                            }
-                        });
-	            		colorPickerDialog.setTitle("Background Color");
-	            	    colorPickerDialog.show();
-					}else {
-						prefs.edit().putInt("BGColor", -1728053248).apply();
-						textBGPrev.setBackgroundColor(0);
-					}
+//					if(isChecked){
+//						ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, new OnColorSelectedListener() {
+//							@Override
+//	            	        public void onColorSelected(int color) {
+//								prefs.edit().putInt("BGColor", color).apply();
+//								textBGPrev.setBackgroundColor(color);
+//	            	        }
+//	            	    });
+//                        colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", new OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                prefs.edit().putInt("BGColor", -1728053248).apply();
+//                                textBGPrev.setBackgroundColor(0);
+//                                setBGColor.setChecked(false);
+//                            }
+//                        });
+//                        colorPickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                prefs.edit().putInt("BGColor", -1728053248).apply();
+//                                textBGPrev.setBackgroundColor(0);
+//                                setBGColor.setChecked(false);
+//                            }
+//                        });
+//	            		colorPickerDialog.setTitle("Background Color");
+//	            	    colorPickerDialog.show();
+//					}else {
+//						prefs.edit().putInt("BGColor", -1728053248).apply();
+//						textBGPrev.setBackgroundColor(0);
+//					}
 				}
 			});
 			settextColor.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked){
-						ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, new OnColorSelectedListener() {
-	            	        @Override
-	            	        public void onColorSelected(int color) {
-	            	        	prefs.edit().putInt("TextColor", color).apply();
-	            	        	textColorPrev.setBackgroundColor(prefs.getInt("TextColor", Color.WHITE));
-	            	        }
-	            	    });
-	            		colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new OnClickListener(){
-	            			public void onClick(DialogInterface dialog, int which) {
-	            				prefs.edit().putInt("TextColor", Color.WHITE).apply();
-                                settextColor.setChecked(false);
-	            			}
-	            		});
-	            		colorPickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                prefs.edit().putInt("TextColor", Color.WHITE).apply();
-                                settextColor.setChecked(false);
-                            }
-                        });
-	            		colorPickerDialog.setTitle("Text Color");
-	            	    colorPickerDialog.show();
-					}else{
-						prefs.edit().putInt("TextColor", Color.WHITE).apply();
-						textColorPrev.setBackgroundColor(0);
-					}
+//					if(isChecked){
+//						ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, new OnColorSelectedListener() {
+//	            	        @Override
+//	            	        public void onColorSelected(int color) {
+//	            	        	prefs.edit().putInt("TextColor", color).apply();
+//	            	        	textColorPrev.setBackgroundColor(prefs.getInt("TextColor", Color.WHITE));
+//	            	        }
+//	            	    });
+//	            		colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new OnClickListener(){
+//	            			public void onClick(DialogInterface dialog, int which) {
+//	            				prefs.edit().putInt("TextColor", Color.WHITE).apply();
+//                                settextColor.setChecked(false);
+//	            			}
+//	            		});
+//	            		colorPickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                prefs.edit().putInt("TextColor", Color.WHITE).apply();
+//                                settextColor.setChecked(false);
+//                            }
+//                        });
+//	            		colorPickerDialog.setTitle("Text Color");
+//	            	    colorPickerDialog.show();
+//					}else{
+//						prefs.edit().putInt("TextColor", Color.WHITE).apply();
+//						textColorPrev.setBackgroundColor(0);
+//					}
 				}
 			});
 			btnDonate.setOnClickListener(new View.OnClickListener() {
