@@ -56,8 +56,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     }
 
     //For converting px's to dpi
-    private int px(float dips)
-    {
+    private int px(float dips){
         float DP = SnapChatContext.getResources().getDisplayMetrics().density;
         return Math.round(dips * DP);
     }
