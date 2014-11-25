@@ -129,12 +129,10 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                                 editText.setBackgroundColor(-1728053248);
                                 colorPicker.remove();
                             }
-
                             @Override
                             public void OnSelected(int Color) {
                                 editText.setTextColor(Color);
                             }
-
                             @Override
                             public void OnDone() {
                                 colorPicker.remove();
