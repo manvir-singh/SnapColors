@@ -11,15 +11,14 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 
 public class ColorPicker extends RelativeLayout{
+    OnColorSelectedListener colorSelectedListener;
     public ColorPicker(Context context) {
         super(context);
         setBackgroundDrawable(App.modRes.getDrawable(R.drawable.bgviewdraw));
@@ -32,7 +31,7 @@ public class ColorPicker extends RelativeLayout{
         colorRed.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.editText.setTextColor(Color.RED);
+                colorSelectedListener.OnSelected(Color.RED);
             }
         });
 
@@ -42,7 +41,7 @@ public class ColorPicker extends RelativeLayout{
         btnDone.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((RelativeLayout) ColorPicker.this.getParent()).removeView(ColorPicker.this);
+                colorSelectedListener.OnDone();
             }
         });
 
@@ -52,10 +51,7 @@ public class ColorPicker extends RelativeLayout{
         btnCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.editText.setTextColor(Color.WHITE);
-                App.editText.setTextSize(21);
-                App.editText.setBackgroundColor(-1728053248);
-                ((RelativeLayout) ColorPicker.this.getParent()).removeView(ColorPicker.this);
+                colorSelectedListener.onCancel();
             }
         });
     }
@@ -83,5 +79,13 @@ public class ColorPicker extends RelativeLayout{
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return new BitmapDrawable(output);
+    }
+
+    public void OnSelected(OnColorSelectedListener li){
+        this.colorSelectedListener = li;
+    }
+
+    public void remove(){
+        ((RelativeLayout) ColorPicker.this.getParent()).removeView(ColorPicker.this);
     }
 }

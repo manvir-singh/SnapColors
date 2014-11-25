@@ -1,43 +1,26 @@
 package com.manvir.SnapColors;
 // Please don't decompile my code if you want help please ask on the thread thanks =).
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import java.io.File;
+
 import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ForegroundColorSpan;
-import android.text.util.Linkify;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.TextView;
+
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -60,7 +43,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	static boolean notFirstRun = false;
 	static boolean DEBUG = true;
 	static Random random = new Random();
-    public static EditText editText;
+    private EditText editText;
     public static Point size;
     public static XModuleResources modRes;
 
@@ -137,7 +120,26 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnTextColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        ColorPicker colorPicker = new ColorPicker(SnapChatContext);
+                        final ColorPicker colorPicker = new ColorPicker(SnapChatContext);
+                        colorPicker.OnSelected(new OnColorSelectedListener() {
+                            @Override
+                            public void onCancel() {
+                                editText.setTextColor(Color.WHITE);
+                                editText.setTextSize(21);
+                                editText.setBackgroundColor(-1728053248);
+                                colorPicker.remove();
+                            }
+
+                            @Override
+                            public void OnSelected(int Color) {
+                                editText.setTextColor(Color);
+                            }
+
+                            @Override
+                            public void OnDone() {
+                                colorPicker.remove();
+                            }
+                        });
                         ly.addView(colorPicker);
                     }
                 });

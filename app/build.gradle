@@ -4,7 +4,7 @@ android {
     signingConfigs {
     }
     compileSdkVersion 21
-    buildToolsVersion "21.1.0"
+    buildToolsVersion '21.1.1'
     defaultConfig {
         applicationId "com.manvir.SnapColors"
         minSdkVersion 15
@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/commons-io-2.4.jar')
     compile 'com.android.support:support-v4:21.0.0'
     provided files('XposedBridgeApi-54.jar')
