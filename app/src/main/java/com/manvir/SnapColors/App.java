@@ -60,8 +60,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         float DP = SnapChatContext.getResources().getDisplayMetrics().density;
         return Math.round(dips * DP);
     }
-
-
+	
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
