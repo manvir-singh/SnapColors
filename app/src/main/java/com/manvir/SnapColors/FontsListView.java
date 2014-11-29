@@ -44,7 +44,6 @@ public class FontsListView extends RelativeLayout {
             Typeface face = Typeface.createFromFile(fontsDir + "/" + fontName + ".ttf");
             TextView v = new TextView(context);
             v.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-            v.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.fonts_list_item));
             v.setTypeface(face);
             v.setTextSize(20);
             v.setText(fontName);
