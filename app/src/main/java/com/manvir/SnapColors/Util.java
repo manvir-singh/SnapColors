@@ -1,31 +1,23 @@
 package com.manvir.SnapColors;
 
 import android.app.AlertDialog;
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
-import android.text.Layout;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -33,17 +25,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-
-import de.robv.android.xposed.XposedBridge;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Util {
     public Context con;
-    public static int SHOW = 1;
-    public static int HIDE = 1;
+    public static ArrayAdapter<String> arrayAdapter;
+    private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
     public Util(Context con){
         this.con = con;
     }
@@ -83,47 +72,17 @@ public class Util {
         }
     }
 
-    public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final EditText editText, final Typeface defTypeFace){
+    public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final EditText editText, final Typeface defTypeFace, final RelativeLayout ly){
         new Thread(){
             @Override
             public void run() {
                 try {
                     Resources res = con.getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
                     new Util(con).copyAssets(res);
-
-                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(con, android.R.layout.select_dialog_singlechoice);
-                    final String fontsDir = con.getExternalFilesDir(null).getAbsolutePath();
-                    File file[] = new File(fontsDir).listFiles();
-                    for (File aFile : file) {
-                        arrayAdapter.add(aFile.getName().replace(".ttf", "").replace(".TTF", ""));
-                    }
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            AlertDialog.Builder builderSingle = new AlertDialog.Builder(con);
-                            builderSingle.setIcon(0);
-                            builderSingle.setTitle("Select A Font:");
-                            builderSingle.setNeutralButton("Default", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    editText.setTypeface(defTypeFace);
-                                }
-                            });
-                            builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String strName = arrayAdapter.getItem(which);
-                                    Typeface face = Typeface.createFromFile(fontsDir+ "/" + strName+".ttf");
-                                    editText.setTypeface(face);
-                                }
-                            });
-                            builderSingle.show();
+                            ly.addView(new FontsListView(con, defTypeFace));
                             pro.dismiss();
                         }
                     });
@@ -132,13 +91,8 @@ public class Util {
                         @Override
                         public void run() {
                             final AlertDialog.Builder al = new AlertDialog.Builder(con);
-                            final TextView message = new TextView(con);
-                            final SpannableString s = new SpannableString("You need to download fonts, they are not included. To download just tap \"Download & Install\"(Note no icon will be added)");
-                            Linkify.addLinks(s, Linkify.WEB_URLS);
-                            message.setText(s);
-                            message.setMovementMethod(LinkMovementMethod.getInstance());
                             al.setTitle("SnapColors");
-                            al.setView(message);
+                            al.setMessage("You need to download fonts, they are not included. To download just tap \"Download & Install\". (Note no icon will be added)");
                             al.setNegativeButton("Download & Install", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -148,7 +102,7 @@ public class Util {
                             al.setNeutralButton("Why", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    String whyText = "The reason why fonts are not included with the tweak are simple.\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
+                                    String whyText = "The reason why fonts are not included with the tweak are:\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
                                     final AlertDialog alertDialog = new AlertDialog.Builder(con).create();
                                     alertDialog.setTitle("SnapColors");
                                     alertDialog.setMessage(whyText);
@@ -180,7 +134,7 @@ public class Util {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pro = ProgressDialog.show(con, "", "Downloading Fonts Apk");
+            pro = ProgressDialog.show(con, "", "Downloading");
         }
 
         @Override
@@ -215,7 +169,6 @@ public class Util {
                 output.flush();
                 output.close();
                 input.close();
-
                 Intent install = new Intent(Intent.ACTION_VIEW);
                 install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 install.setDataAndType(Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"SnapColorsFonts.apk")),
@@ -226,6 +179,18 @@ public class Util {
                 e.printStackTrace();
             }
             return null;
+        }
+    }
+
+    public static int generateViewId() {
+        for (;;) {
+            final int result = sNextGeneratedId.get();
+            // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+            int newValue = result + 1;
+            if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
+            if (sNextGeneratedId.compareAndSet(result, newValue)) {
+                return result;
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	static boolean notFirstRun = false;
 	static boolean DEBUG = true;
 	static Random random = new Random();
-    private EditText editText;
+    public static EditText editText;
     public static Point size;
     public static XModuleResources modRes;
 
@@ -188,7 +188,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnFonts.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), editText, defTypeFace);
+                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), editText, defTypeFace, ly);
                     }
                 });
 
@@ -196,6 +196,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnReset.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        editText.setTypeface(defTypeFace);
                         editText.setTextColor(Color.WHITE);
                         editText.setTextSize(21);
                         editText.setBackgroundColor(-1728053248);
