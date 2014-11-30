@@ -1,6 +1,7 @@
 package com.manvir.SnapColors;
 // Please don't decompile my code if you want help please ask on the thread thanks =).
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.findField;
 
 import java.util.Random;
 
@@ -14,8 +15,10 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -152,6 +155,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnSize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         AlertDialog.Builder alert = new AlertDialog.Builder(SnapChatContext);
                         SeekBar seek = new SeekBar(SnapChatContext);
                         seek.setMax(300);
