@@ -266,6 +266,7 @@ public class MainActivity extends Activity {
 								public void onClick(DialogInterface dialog, int which) {
 									prefs.edit().putBoolean("setFont", false).apply();
 									setFont.setChecked(false);
+                                    System.gc();
 								}
 							});
 
@@ -277,6 +278,7 @@ public class MainActivity extends Activity {
 					            	prefs.edit().putString("Font", strName).apply();
 					            	prefs.edit().putBoolean("setFont", true).apply();
 					            	fontPrev.setTypeface(face);
+                                    System.gc();
 					            }
 				            });
 				            builderSingle.show();
