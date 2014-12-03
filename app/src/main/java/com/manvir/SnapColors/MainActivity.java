@@ -266,7 +266,7 @@ public class MainActivity extends Activity {
 								public void onClick(DialogInterface dialog, int which) {
 									prefs.edit().putBoolean("setFont", false).apply();
 									setFont.setChecked(false);
-                                    System.gc();
+                                    System.gc(); //We need to run the GC, if we don't thetypefaces stay in memory.
 								}
 							});
 
@@ -278,7 +278,7 @@ public class MainActivity extends Activity {
 					            	prefs.edit().putString("Font", strName).apply();
 					            	prefs.edit().putBoolean("setFont", true).apply();
 					            	fontPrev.setTypeface(face);
-                                    System.gc();
+                                    System.gc(); //We need to run the GC, if we don't thetypefaces stay in memory.
 					            }
 				            });
 				            builderSingle.show();
