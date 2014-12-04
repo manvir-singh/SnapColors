@@ -34,6 +34,7 @@ public class FontsListView extends RelativeLayout {
             public void onClick(View v) {
                 ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
                 App.editText.setTypeface(typefaceDef);
+                System.gc();
             }
         });
 
@@ -54,6 +55,7 @@ public class FontsListView extends RelativeLayout {
                     Typeface face = Typeface.createFromFile(fontsDir+ "/" + fontName+".ttf");
                     App.editText.setTypeface(face);
                     ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
+                    System.gc();
                 }
             });
             ((LinearLayout)findViewById(R.id.fontsmainLayout)).addView(v);
