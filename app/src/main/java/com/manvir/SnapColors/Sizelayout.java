@@ -24,7 +24,6 @@ public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeL
         seekBarSize.setOnSeekBarChangeListener(this);
         seekBarSize.setMax(300);// So people don't go crazy with the size.
         seekBarSize.setProgress(textSize);
-        Toast.makeText(context, String.valueOf(editText.getTextSize()), Toast.LENGTH_LONG).show();
 
         Button btnDone = (Button)findViewById(R.id.done);
         btnDone.getLayoutParams().width = (App.size.x/2)-40;
