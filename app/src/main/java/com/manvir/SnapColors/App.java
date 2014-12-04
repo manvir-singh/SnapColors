@@ -59,7 +59,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     }
 
     //For converting px's to dpi
-    private int px(float dips){
+    public static int px(float dips){
         float DP = SnapChatContext.getResources().getDisplayMetrics().density;
         return Math.round(dips * DP);
     }
@@ -155,28 +155,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnSize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        AlertDialog.Builder alert = new AlertDialog.Builder(SnapChatContext);
-                        SeekBar seek = new SeekBar(SnapChatContext);
-                        seek.setMax(300);
-                        seek.setProgress((int) editText.getTextSize());
-                        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                            @Override
-                            public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
-                                editText.setTextSize(arg1);
-                            }
-
-                            @Override
-                            public void onStartTrackingTouch(SeekBar arg0) {
-                            }
-
-                            @Override
-                            public void onStopTrackingTouch(SeekBar arg0) {
-                            }
-                        });
-                        alert.setPositiveButton("Done", null);
-                        alert.setView(seek);
-                        alert.show();
+                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, editText, (int)editText.getTextSize());
+                        ly.addView(sizelayout);
                     }
                 });
 
