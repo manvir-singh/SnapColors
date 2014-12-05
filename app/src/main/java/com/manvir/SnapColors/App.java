@@ -106,6 +106,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 ly.setVisibility(View.GONE);
 
                 SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 70);//Add 130 to every button
+                btnRandomize.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        editText.setTextColor(Color.WHITE);
+                        editText.setBackgroundColor(-1728053248);
+                        return true;
+                    }
+                });
                 btnRandomize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
