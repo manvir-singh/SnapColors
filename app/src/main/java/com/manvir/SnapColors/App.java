@@ -126,8 +126,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                             @Override
                             public void onCancel() {
                                 editText.setTextColor(Color.WHITE);
-                                editText.setTextSize(21);
-                                editText.setBackgroundColor(-1728053248);
                                 colorPicker.remove();
                             }
                             @Override
