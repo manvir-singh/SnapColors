@@ -2,6 +2,7 @@ package com.manvir.SnapColors;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +14,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.Hashtable;
 
 public class FontsListView extends RelativeLayout {
-    public FontsListView(Context context, final Typeface typefaceDef) {
+    public FontsListView(final Context context, final Typeface typefaceDef) {
         super(context);
         setBackgroundDrawable(App.modRes.getDrawable(R.drawable.bgviewdraw));
 
@@ -42,18 +44,17 @@ public class FontsListView extends RelativeLayout {
         File file[] = new File(fontsDir).listFiles();
         for (File aFile : file) {
             String fontName = aFile.getName().replace(".ttf", "").replace(".TTF", "");
-            Typeface face = Typeface.createFromFile(fontsDir + "/" + fontName + ".ttf");
             TextView v = new TextView(context);
             v.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-            v.setTypeface(face);
+            v.setTypeface(Typefaces.get(context, fontsDir+ "/" + fontName+".ttf"));
             v.setTextSize(20);
             v.setText(fontName);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String fontName = ((TextView)v).getText().toString();
-                    Typeface face = Typeface.createFromFile(fontsDir+ "/" + fontName+".ttf");
-                    App.editText.setTypeface(face);
+                    App.editText.setTypeface(Typefaces.get(context, fontsDir+ "/" + fontName+".ttf"));
+
                     ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
                     System.gc();
                 }

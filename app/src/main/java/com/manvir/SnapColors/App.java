@@ -1,5 +1,6 @@
 package com.manvir.SnapColors;
 // Please don't decompile my code if you want help please ask on the thread thanks =).
+import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findField;
 
@@ -8,6 +9,7 @@ import java.util.Random;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewParent;
@@ -23,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
