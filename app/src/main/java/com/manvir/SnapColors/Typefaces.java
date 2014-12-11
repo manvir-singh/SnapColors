@@ -6,6 +6,10 @@ import android.util.Log;
 
 import java.util.Hashtable;
 
+//The method "Typeface.createFromFile" has a memory leak and this class is a workaround.
+//https://code.google.com/p/android/issues/detail?id=9904
+//http://stackoverflow.com/questions/12766930/native-typeface-cannot-be-made-only-for-some-people
+
 public class Typefaces {
     private static final String TAG = "Typefaces";
 
