@@ -269,12 +269,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        // For getting snapchats main context.
+        // Hook snapchats "onCreate" method.
     	findAndHookMethod("com.snapchat.android.LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
 			@Override
     		protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
 				prefs.reload();//Reload prefs
-                //Getting SnapChat's main context object.
+                //Getting SnapChat's main activity object.
 				SnapChatContext = (Activity) param.thisObject;
     		}
     	});
