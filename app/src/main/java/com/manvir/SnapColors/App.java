@@ -16,7 +16,9 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
@@ -31,6 +33,7 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -56,6 +59,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public static EditText editText;
     public static Point size;
     public static XModuleResources modRes;
+    Class<?> CaptionEditText;
 
     //For converting px's to dpi
     public static int px(float dips){
@@ -233,7 +237,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         *SnapChat stable, so we check to see if the class was found, if not then we are most likely using the beta version
         *of SnapChat.
         */
-        Class<?> CaptionEditText;
         try {
             CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.SnapCaptionView.CaptionEditText", lpparam.classLoader);
         }catch (XposedHelpers.ClassNotFoundError e){
@@ -276,13 +279,29 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     		}
     	});
 
-        XposedBridge.hookAllConstructors(findClass("com.snapchat.android.ui.VanillaCaptionView.VanillaCaptionEditText", lpparam.classLoader), new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                EditText d = (EditText) param.thisObject;
-                d.setSingleLine(false);
-                d.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-            }
-        });
+        //For adding multiline support.
+        try {
+            XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.snapchat.android.ui.VanillaCaptionView.VanillaCaptionEditText", lpparam.classLoader), new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    //For stable versions
+                    XposedHelpers.callMethod(editText, "removeTextChangedListener",
+                            (TextWatcher)XposedHelpers.findField(CaptionEditText, "g").get(param.thisObject));//For removing the character limit set on the caption.
+                    EditText cap = (EditText) param.thisObject;
+                    new Util().doMultiLine(cap);
+                }
+            });
+        }catch (XposedHelpers.ClassNotFoundError e){
+            //For beta versions
+            findAndHookMethod("com.snapchat.android.ui.caption.VanillaCaptionView", lpparam.classLoader, "a", Context.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    XposedHelpers.callMethod(editText, "removeTextChangedListener",
+                            (TextWatcher)XposedHelpers.findField(CaptionEditText, "l").get(param.getResult()));//For removing the character limit set on the caption.
+                    EditText cap = (EditText) param.getResult();
+                    new Util().doMultiLine(cap);
+                }
+            });
+        }
     }
 }

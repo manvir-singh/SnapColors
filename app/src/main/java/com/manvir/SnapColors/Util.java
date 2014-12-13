@@ -14,7 +14,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.InputFilter;
+import android.text.method.TextKeyListener;
 import android.util.Log;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
@@ -35,6 +38,11 @@ public class Util {
         this.con = con;
     }
     public Util(){}
+
+    public void doMultiLine(EditText editText){
+        editText.setSingleLine(false);
+        editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+    }
 
     //Sets the EditText background, and the text color to a random color.
     public void random(EditText textsBox) {
