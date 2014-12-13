@@ -157,7 +157,23 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnBgColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-
+                        final ColorPicker colorPicker = new ColorPicker(SnapChatContext);
+                        colorPicker.OnSelected(new OnColorSelectedListener() {
+                            @Override
+                            public void onCancel() {
+                                editText.setBackgroundColor(-1728053248);
+                                colorPicker.remove();
+                            }
+                            @Override
+                            public void OnSelected(int Color) {
+                                editText.setBackgroundColor(Color);
+                            }
+                            @Override
+                            public void OnDone() {
+                                colorPicker.remove();
+                            }
+                        });
+                        ly.addView(colorPicker);
                     }
                 });
 
@@ -224,7 +240,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 		if (!lpparam.packageName.equals(SnapChatPKG))
 	        return;
         //Get some settings, also get the caption box's edit text object.
-		final Class<?> CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.SnapCaptionView.CaptionEditText", lpparam.classLoader);
+        Class<?> CaptionEditText;
+        try {
+            CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.SnapCaptionView.CaptionEditText", lpparam.classLoader);
+        }catch (XposedHelpers.ClassNotFoundError e){
+            CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.caption.CaptionEditText", lpparam.classLoader);
+        }
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
