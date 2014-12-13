@@ -271,6 +271,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             //For beta versions
             CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.caption.CaptionEditText", lpparam.classLoader);
         }
+
         //Get some settings, also get the caption box's edit object.
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
