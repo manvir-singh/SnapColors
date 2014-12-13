@@ -239,13 +239,19 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (!lpparam.packageName.equals(SnapChatPKG))
 	        return;
-        //Get some settings, also get the caption box's edit text object.
+
+        /*
+        *The location of the "CaptionEditText" class in the beta version of SnapChat is different then in
+        *SnapChat stable, so we check to see if the class was found, if not then we are most likely using the beta version
+        *of SnapChat.
+        */
         Class<?> CaptionEditText;
         try {
             CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.SnapCaptionView.CaptionEditText", lpparam.classLoader);
         }catch (XposedHelpers.ClassNotFoundError e){
             CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.caption.CaptionEditText", lpparam.classLoader);
         }
+        //Get some settings, also get the caption box's edit object.
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
