@@ -2,7 +2,6 @@ package com.manvir.SnapColors;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
@@ -27,12 +25,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Util {
     public Context con;
-    public static ArrayAdapter<String> arrayAdapter;
-    private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
+
     public Util(Context con){
         this.con = con;
     }

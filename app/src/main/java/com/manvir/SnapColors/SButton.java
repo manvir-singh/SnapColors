@@ -1,8 +1,6 @@
 package com.manvir.SnapColors;
 
 import android.content.Context;
-import android.content.res.XModuleResources;
-import android.graphics.drawable.Drawable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;

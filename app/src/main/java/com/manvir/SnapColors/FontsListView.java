@@ -2,7 +2,6 @@ package com.manvir.SnapColors;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.util.Hashtable;
 
 public class FontsListView extends RelativeLayout {
     public FontsListView(final Context context, final Typeface typefaceDef) {
