@@ -16,10 +16,12 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -222,7 +224,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
 
 	@Override
-	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
+	public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
 		if (!lpparam.packageName.equals(SnapChatPKG))
 	        return;
 
@@ -273,5 +275,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 				SnapChatContext = (Activity) param.thisObject;
     		}
     	});
+
+        XposedBridge.hookAllConstructors(findClass("com.snapchat.android.ui.VanillaCaptionView.VanillaCaptionEditText", lpparam.classLoader), new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                EditText d = (EditText) param.thisObject;
+                d.setSingleLine(false);
+                d.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+            }
+        });
     }
 }
