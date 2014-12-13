@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,12 +26,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Random;
 
 public class Util {
     public Context con;
 
     public Util(Context con){
         this.con = con;
+    }
+    public Util(){}
+
+    //Sets the EditText background, and the text color to a random color.
+    public void random(EditText textsBox) {
+        Random random = new Random();
+        int colorBG = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        textsBox.setBackgroundColor(colorBG);
+        textsBox.setTextColor(colorText);
     }
 
     public void copyAssets(Resources res){

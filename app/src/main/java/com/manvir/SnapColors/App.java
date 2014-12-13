@@ -41,18 +41,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	static Typeface defTypeFace;
 	static boolean notFirstRun = false;
 	static boolean DEBUG = true;
-	static Random random = new Random();
     public static EditText editText;
     public static Point size;
     public static XModuleResources modRes;
-
-    //Sets the EditText background, and the text color to a random color.
-    private void random(EditText textBox) {
-        int colorBG = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        textBox.setBackgroundColor(colorBG);
-        textBox.setTextColor(colorText);
-    }
 
     //For converting px's to dpi
     public static int px(float dips){
@@ -284,7 +275,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 editText.setTextColor(prefs.getInt("TextColor", Color.WHITE));
                 editText.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
                 if (prefs.getBoolean("autoRandomize", false)) {
-                    random(editText);
+                    new Util().random(editText);
                 }
                 if (prefs.getBoolean("setFont", false)) {
                     final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
