@@ -2,14 +2,13 @@ package com.manvir.SnapColors;
 // Please don't decompile my code if you want help please ask on the thread thanks =).
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import static de.robv.android.xposed.XposedHelpers.findField;
 
 import java.util.Random;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
@@ -17,16 +16,11 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.ViewPager;
-import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewParent;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -133,23 +127,36 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnTextColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        final ColorPicker colorPicker = new ColorPicker(SnapChatContext);
-                        colorPicker.OnSelected(new OnColorSelectedListener() {
+                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
                             @Override
-                            public void onCancel() {
-                                editText.setTextColor(Color.WHITE);
-                                colorPicker.remove();
-                            }
-                            @Override
-                            public void OnSelected(int Color) {
-                                editText.setTextColor(Color);
-                            }
-                            @Override
-                            public void OnDone() {
-                                colorPicker.remove();
+                            public void onColorSelected(int color) {
+                                editText.setTextColor(color);
                             }
                         });
-                        ly.addView(colorPicker);
+                        colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int which) {
+                                editText.setTextColor(Color.WHITE);
+                            }
+                        });
+                        colorPickerDialog.setTitle("Text Color");
+                        colorPickerDialog.show();
+//                        final ColorPickerWIP colorPicker = new ColorPickerWIP(SnapChatContext);
+//                        colorPicker.OnSelected(new OnColorSelectedListener() {
+//                            @Override
+//                            public void onCancel() {
+//                                editText.setTextColor(Color.WHITE);
+//                                colorPicker.remove();
+//                            }
+//                            @Override
+//                            public void OnSelected(int Color) {
+//                                editText.setTextColor(Color);
+//                            }
+//                            @Override
+//                            public void OnDone() {
+//                                colorPicker.remove();
+//                            }
+//                        });
+//                        ly.addView(colorPicker);
                     }
                 });
 
@@ -157,23 +164,36 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnBgColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        final ColorPicker colorPicker = new ColorPicker(SnapChatContext);
-                        colorPicker.OnSelected(new OnColorSelectedListener() {
+                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
                             @Override
-                            public void onCancel() {
-                                editText.setBackgroundColor(-1728053248);
-                                colorPicker.remove();
-                            }
-                            @Override
-                            public void OnSelected(int Color) {
-                                editText.setBackgroundColor(Color);
-                            }
-                            @Override
-                            public void OnDone() {
-                                colorPicker.remove();
+                            public void onColorSelected(int color) {
+                                editText.setBackgroundColor(color);
                             }
                         });
-                        ly.addView(colorPicker);
+                        colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int which) {
+                                editText.setBackgroundColor(-1728053248);
+                            }
+                        });
+                        colorPickerDialog.setTitle("Background Color");
+                        colorPickerDialog.show();
+//                        final ColorPickerWIP colorPicker = new ColorPickerWIP(SnapChatContext);
+//                        colorPicker.OnSelected(new OnColorSelectedListener() {
+//                            @Override
+//                            public void onCancel() {
+//                                editText.setBackgroundColor(-1728053248);
+//                                colorPicker.remove();
+//                            }
+//                            @Override
+//                            public void OnSelected(int Color) {
+//                                editText.setBackgroundColor(Color);
+//                            }
+//                            @Override
+//                            public void OnDone() {
+//                                colorPicker.remove();
+//                            }
+//                        });
+//                        ly.addView(colorPicker);
                     }
                 });
 
