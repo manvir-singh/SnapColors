@@ -139,23 +139,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         });
                         colorPickerDialog.setTitle("Text Color");
                         colorPickerDialog.show();
-//                        final ColorPickerWIP colorPicker = new ColorPickerWIP(SnapChatContext);
-//                        colorPicker.OnSelected(new OnColorSelectedListener() {
-//                            @Override
-//                            public void onCancel() {
-//                                editText.setTextColor(Color.WHITE);
-//                                colorPicker.remove();
-//                            }
-//                            @Override
-//                            public void OnSelected(int Color) {
-//                                editText.setTextColor(Color);
-//                            }
-//                            @Override
-//                            public void OnDone() {
-//                                colorPicker.remove();
-//                            }
-//                        });
-//                        ly.addView(colorPicker);
                     }
                 });
 
@@ -176,23 +159,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         });
                         colorPickerDialog.setTitle("Background Color");
                         colorPickerDialog.show();
-//                        final ColorPickerWIP colorPicker = new ColorPickerWIP(SnapChatContext);
-//                        colorPicker.OnSelected(new OnColorSelectedListener() {
-//                            @Override
-//                            public void onCancel() {
-//                                editText.setBackgroundColor(-1728053248);
-//                                colorPicker.remove();
-//                            }
-//                            @Override
-//                            public void OnSelected(int Color) {
-//                                editText.setBackgroundColor(Color);
-//                            }
-//                            @Override
-//                            public void OnDone() {
-//                                colorPicker.remove();
-//                            }
-//                        });
-//                        ly.addView(colorPicker);
+//
                     }
                 });
 

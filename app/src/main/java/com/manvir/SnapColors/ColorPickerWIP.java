@@ -88,4 +88,22 @@ public class ColorPickerWIP extends RelativeLayout{
     public void remove(){
         ((RelativeLayout) ColorPickerWIP.this.getParent()).removeView(ColorPickerWIP.this);
     }
+
+//    final ColorPickerWIP colorPicker = new ColorPickerWIP(SnapChatContext);
+//                        colorPicker.OnSelected(new OnColorSelectedListener() {
+//                            @Override
+//                            public void onCancel() {
+//                                editText.setBackgroundColor(-1728053248);
+//                                colorPicker.remove();
+//                            }
+//                            @Override
+//                            public void OnSelected(int Color) {
+//                                editText.setBackgroundColor(Color);
+//                            }
+//                            @Override
+//                            public void OnDone() {
+//                                colorPicker.remove();
+//                            }
+//                        });
+//                        ly.addView(colorPicker);
 }
