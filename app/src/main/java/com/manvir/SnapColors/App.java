@@ -17,9 +17,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.Html;
 import android.text.InputType;
+import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -238,6 +239,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         *of SnapChat.
         */
         try {
+            //For stable versions
             CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.SnapCaptionView.CaptionEditText", lpparam.classLoader);
         }catch (XposedHelpers.ClassNotFoundError e){
             //For beta versions
