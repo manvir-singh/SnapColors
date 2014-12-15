@@ -49,12 +49,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public static Point size;
     public static XModuleResources modRes;
     Class<?> CaptionEditText;
-
-    //For converting px's to dpi
-    public static int px(float dips){
-        float DP = SnapChatContext.getResources().getDisplayMetrics().density;
-        return Math.round(dips * DP);
-    }
 	
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -76,8 +70,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn","id",SnapChatPKG)).getLayoutParams());
                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.topMargin = px(7);
-                params.rightMargin = px(110);
+                params.topMargin = new Util(SnapChatContext).px(7);
+                params.rightMargin = new Util(SnapChatContext).px(110);
                 //The "T" ImageButton object that shows the options when tapped.
                 final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
                 SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
@@ -88,7 +82,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 size = new Point();
                 display.getSize(size);
                 final RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                param.topMargin = px(70);
+                param.topMargin = new Util(SnapChatContext).px(70);
 
                 //Setup our layout here and add the views, buttons etc.
                 final HorizontalScrollView f = new HorizontalScrollView(SnapChatContext);

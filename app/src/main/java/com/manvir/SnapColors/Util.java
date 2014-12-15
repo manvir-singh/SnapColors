@@ -46,6 +46,12 @@ public class Util {
         editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
     }
 
+    //For converting px's to dpi
+    public int px(float dips){
+        float DP = con.getResources().getDisplayMetrics().density;
+        return Math.round(dips * DP);
+    }
+
     //Sets the EditText background, and the text color to a random color.
     public void random(EditText textsBox) {
         Random random = new Random();
