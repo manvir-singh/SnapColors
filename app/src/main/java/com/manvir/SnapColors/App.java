@@ -152,7 +152,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         });
                         colorPickerDialog.setTitle("Background Color");
                         colorPickerDialog.show();
-//
                     }
                 });
 
