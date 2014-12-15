@@ -29,8 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.manvir.SnapColors.FontsList" android:enabled="true" android:exported="true"/>
-		<activity
+        <activity
             android:name="com.manvir.SnapColors.DonateActivity"
             android:label="@string/title_activity_donate"
             android:enabled="true"
