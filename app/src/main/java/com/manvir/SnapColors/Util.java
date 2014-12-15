@@ -14,23 +14,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
-import android.text.InputFilter;
-import android.text.TextUtils;
-import android.text.method.TextKeyListener;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,7 +32,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Util {
     public Context con;
@@ -237,7 +229,7 @@ public class Util {
         FileInputStream fin = new FileInputStream(fl);
         BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
         StringBuilder sb = new StringBuilder();
-        String line = null;
+        String line;
         while ((line = reader.readLine()) != null) {
             sb.append(line);
         }

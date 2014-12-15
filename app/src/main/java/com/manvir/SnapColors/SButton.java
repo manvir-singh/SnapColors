@@ -4,7 +4,6 @@ import android.content.Context;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 
 public class SButton extends ImageButton{
 
@@ -16,8 +15,6 @@ public class SButton extends ImageButton{
         //Setup our params for our ImageButton.
         RelativeLayout.LayoutParams btnParmas = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         btnParmas.leftMargin = leftMargin;
-        btnParmas.topMargin = 50;
-        btnParmas.bottomMargin = 50;
         btnParmas.width = 100;
         btnParmas.height = 100;
         setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));//Set the background drawable.

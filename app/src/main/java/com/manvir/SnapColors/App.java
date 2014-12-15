@@ -1,6 +1,5 @@
 package com.manvir.SnapColors;
 
-import java.io.File;
 import java.util.Random;
 
 import android.app.Activity;
@@ -8,7 +7,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
@@ -23,7 +21,6 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -97,7 +94,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 final HorizontalScrollView f = new HorizontalScrollView(SnapChatContext);
                 final RelativeLayout ly = new RelativeLayout(SnapChatContext);
                 ly.setOnClickListener(null);//To prevent touches going though to the layout behind the options layout.
-                ly.setPadding(70, 0, 70, 0);
+                ly.setPadding(70, 50, 70, 50);
                 f.setVisibility(View.GONE);
                 f.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
                 f.addView(ly, new RelativeLayout.LayoutParams(size.x, RelativeLayout.LayoutParams.MATCH_PARENT));
