@@ -41,7 +41,7 @@ public class Util {
     }
     public Util(){}
 
-    public void doMultiLine(EditText editText){
+    public static void doMultiLine(EditText editText){
         editText.setSingleLine(false);
         editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
     }
