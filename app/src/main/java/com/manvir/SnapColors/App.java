@@ -1,5 +1,6 @@
 package com.manvir.SnapColors;
 
+import java.io.File;
 import java.util.Random;
 
 import android.app.Activity;
@@ -7,6 +8,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
@@ -270,6 +272,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 				prefs.reload();//Reload prefs
                 //Getting SnapChat's main activity object.
 				SnapChatContext = (Activity) param.thisObject;
+
+                Util.doDonationMsg(SnapChatContext);
     		}
     	});
 

@@ -14,20 +14,28 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.method.TextKeyListener;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Random;
@@ -198,5 +206,43 @@ public class Util {
             }
             return null;
         }
+    }
+
+    public static void doDonationMsg(Context con){
+        try {
+            int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
+            File versionFile = new File(con.getCacheDir().getAbsolutePath()+"/version");
+
+            if(!versionFile.exists())
+                versionFile.createNewFile();
+
+            if(getStringFromFile(versionFile.getAbsolutePath()).equals("")){
+                new DonationDialog(con).show();
+                PrintWriter writer = new PrintWriter(versionFile);
+                writer.write(String.valueOf(SnapColorsVersionCode));
+                writer.close();
+            }else if(Integer.parseInt(getStringFromFile(versionFile.getAbsolutePath())) != SnapColorsVersionCode){
+                new DonationDialog(con).show();
+                PrintWriter writer = new PrintWriter(versionFile);
+                writer.write(String.valueOf(SnapColorsVersionCode));
+                writer.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String getStringFromFile (String filePath) throws Exception {
+        File fl = new File(filePath);
+        FileInputStream fin = new FileInputStream(fl);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        reader.close();
+        fin.close();
+        return sb.toString();
     }
 }

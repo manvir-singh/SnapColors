@@ -32,7 +32,9 @@
         <activity android:name="com.manvir.SnapColors.FontsList" android:enabled="true" android:exported="true"/>
 		<activity
             android:name="com.manvir.SnapColors.DonateActivity"
-            android:label="@string/title_activity_donate" >
+            android:label="@string/title_activity_donate"
+            android:enabled="true"
+            android:exported="true">
         </activity>
 		<receiver android:name=".onBooted">
             <intent-filter>
