@@ -97,6 +97,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 ly.setPadding(70, 50, 70, 50);
                 f.setVisibility(View.GONE);
                 f.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
+                f.setOverScrollMode(View.OVER_SCROLL_NEVER);
                 f.addView(ly, new RelativeLayout.LayoutParams(size.x, RelativeLayout.LayoutParams.MATCH_PARENT));
 
                 SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 0);//Add 130 to every button
