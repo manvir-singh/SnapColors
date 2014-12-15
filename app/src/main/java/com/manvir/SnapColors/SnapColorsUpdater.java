@@ -40,7 +40,7 @@ public class SnapColorsUpdater extends Service{
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		try {
 			if(new updateAv().execute().get()){
-                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://repo.xposed.info/module/com.manvir.snapcolors"));
+                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://repo.xposed.info/module/com.manvir.SnapColors"));
                 PendingIntent pendingIntent = PendingIntent.getActivity(
                         getApplication(),
                         0,
@@ -53,7 +53,7 @@ public class SnapColorsUpdater extends Service{
 				        .setContentTitle("SnapColors Update Available")
 				        .setContentText("A new version of SnapColors is available, please update.")
 				        .setOnlyAlertOnce(true)
-				        .setTicker("SnapColors Update Available")
+				        .setTicker("SnapColors Update Available!")
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText("A new version of SnapColors is available, please update."));
 				mNotificationManager.notify(0, mBuilder.build());
