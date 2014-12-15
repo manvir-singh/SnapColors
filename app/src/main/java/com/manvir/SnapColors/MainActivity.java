@@ -45,7 +45,7 @@ import android.content.Intent;
 
 public class MainActivity extends Activity {
     static final String TAG = "SnapColors";
-	static boolean DEBUG = true;
+	static boolean DEBUG = false;
 	static SharedPreferences prefs;
 	static String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.snapchat.android/files";
 

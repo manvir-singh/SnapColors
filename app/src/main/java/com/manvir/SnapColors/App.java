@@ -1,7 +1,5 @@
 package com.manvir.SnapColors;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import android.app.Activity;
@@ -16,25 +14,19 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.Html;
-import android.text.InputType;
-import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -42,10 +34,7 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
-import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import static de.robv.android.xposed.XposedHelpers.findClass;
-import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 
 @SuppressWarnings("UnusedDeclaration")
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
@@ -56,7 +45,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	static Activity SnapChatContext;
 	static Typeface defTypeFace;
 	static boolean notFirstRun = false;
-	static boolean DEBUG = true;
+	static boolean DEBUG = false;
     public static EditText editText;
     public static Point size;
     public static XModuleResources modRes;
@@ -99,17 +88,19 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 Display display = SnapChatContext.getWindowManager().getDefaultDisplay();
                 size = new Point();
                 display.getSize(size);
-                final RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                param.width = size.x;
+                final RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 param.topMargin = px(70);
 
                 //Setup our layout here and add the views, buttons etc.
+                final HorizontalScrollView f = new HorizontalScrollView(SnapChatContext);
                 final RelativeLayout ly = new RelativeLayout(SnapChatContext);
                 ly.setOnClickListener(null);//To prevent touches going though to the layout behind the options layout.
-                ly.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
-                ly.setVisibility(View.GONE);
+                ly.setPadding(70, 0, 70, 0);
+                f.setVisibility(View.GONE);
+                f.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
+                f.addView(ly, new RelativeLayout.LayoutParams(size.x, RelativeLayout.LayoutParams.MATCH_PARENT));
 
-                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 70);//Add 130 to every button
+                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, ly, 0);//Add 130 to every button
                 btnRandomize.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
@@ -118,6 +109,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         return true;
                     }
                 });
+
                 btnRandomize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -129,7 +121,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, ly, 200);
+                SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, ly, 130);
                 btnTextColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
@@ -149,7 +141,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, ly, 330);
+                SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, ly, 260);
                 btnBgColor.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
@@ -170,7 +162,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, ly, 460);
+                SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, ly, 390);
                 btnSize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -179,7 +171,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, ly, 590);
+                SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, ly, 520);
                 btnAlpha.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -187,7 +179,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, ly, 720);
+                SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, ly, 650);
                 btnFonts.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -195,7 +187,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 850);
+                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 780);
                 btnReset.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -207,17 +199,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 });
 
                 //Add our layout to SnapChat's main layout.
-                layout.addView(ly, param);
+                layout.addView(f, param);
 
                 SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
                     boolean SnapColorsBtnBool = true; //To see if the button is pressed again.
                     @Override
                     public void onClick(View v) {
                         if (SnapColorsBtnBool) {
-                            ly.setVisibility(View.VISIBLE);
+                            f.setVisibility(View.VISIBLE);
                             SnapColorsBtnBool = false;
                         } else {
-                            ly.setVisibility(View.GONE);
+                            f.setVisibility(View.GONE);
                             SnapColorsBtnBool = true;
                         }
                     }
