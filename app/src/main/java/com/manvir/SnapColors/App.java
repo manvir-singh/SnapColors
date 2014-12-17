@@ -183,7 +183,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnFonts.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), editText, defTypeFace, SnapChatLayout, f);
+                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), defTypeFace, SnapChatLayout, f);
                     }
                 });
 
