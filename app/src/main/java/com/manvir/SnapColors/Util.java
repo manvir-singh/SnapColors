@@ -98,7 +98,7 @@ public class Util {
         }
     }
 
-    public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final EditText editText, final Typeface defTypeFace, final RelativeLayout SnapChatLayout, final HorizontalScrollView f){
+    public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final Typeface defTypeFace, final RelativeLayout SnapChatLayout, final HorizontalScrollView f){
         new Thread(){
             @Override
             public void run() {
