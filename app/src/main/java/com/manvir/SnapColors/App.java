@@ -54,7 +54,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public static XModuleResources modRes;
     Class<?> CaptionEditText;
     static RelativeLayout ly;
-    RelativeLayout.LayoutParams param;
+    public static RelativeLayout.LayoutParams param;
 	
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -71,7 +71,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 //Get Snapchats main layout.
-                final RelativeLayout layout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
+                final RelativeLayout SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
                 //LayoutParams for the "T" that shows the options when tapped.
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn","id",SnapChatPKG)).getLayoutParams());
                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
@@ -167,7 +167,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     @Override
                     public void onClick(View v) {
                         Sizelayout sizelayout = new Sizelayout(SnapChatContext, editText, (int)editText.getTextSize(), f);
-                        layout.addView(sizelayout, param);
+                        SnapChatLayout.addView(sizelayout, param);
                     }
                 });
 
@@ -183,7 +183,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnFonts.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), editText, defTypeFace, ly);
+                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), editText, defTypeFace, SnapChatLayout, f);
                     }
                 });
 
@@ -199,7 +199,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 });
 
                 //Add our layout to SnapChat's main layout.
-                layout.addView(f, param);
+                SnapChatLayout.addView(f, param);
 
                 SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
                     boolean SnapColorsBtnBool = true; //To see if the button is pressed again.
@@ -214,7 +214,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         }
                     }
                 });
-                layout.addView(SnapColorsBtn, params);
+                SnapChatLayout.addView(SnapColorsBtn, params);
             }
         });
     }

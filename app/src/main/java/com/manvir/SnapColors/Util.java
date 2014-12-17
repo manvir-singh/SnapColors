@@ -15,8 +15,10 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.RelativeLayout;
 
 import java.io.BufferedInputStream;
@@ -96,7 +98,7 @@ public class Util {
         }
     }
 
-    public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final EditText editText, final Typeface defTypeFace, final RelativeLayout ly){
+    public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final EditText editText, final Typeface defTypeFace, final RelativeLayout SnapChatLayout, final HorizontalScrollView f){
         new Thread(){
             @Override
             public void run() {
@@ -106,7 +108,7 @@ public class Util {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            ly.addView(new FontsListView(con, defTypeFace));
+                            SnapChatLayout.addView(new FontsListView(con, defTypeFace, f), App.param);
                             pro.dismiss();
                         }
                     });

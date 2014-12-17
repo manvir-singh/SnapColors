@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -15,10 +16,11 @@ import android.widget.TextView;
 import java.io.File;
 
 public class FontsListView extends RelativeLayout {
-    public FontsListView(final Context context, final Typeface typefaceDef) {
+    public FontsListView(final Context context, final Typeface typefaceDef, final HorizontalScrollView f) {
         super(context);
+        setClickable(true);
+        f.setVisibility(View.GONE);
         setBackgroundDrawable(App.modRes.getDrawable(R.drawable.bgviewdraw));
-
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.addView(inflater.inflate(App.modRes.getLayout(R.layout.fonts_list_view), null));
 
@@ -34,6 +36,7 @@ public class FontsListView extends RelativeLayout {
             public void onClick(View v) {
                 ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
                 App.editText.setTypeface(typefaceDef);
+                f.setVisibility(View.VISIBLE);
                 System.gc();
             }
         });
@@ -52,8 +55,8 @@ public class FontsListView extends RelativeLayout {
                 public void onClick(View v) {
                     String fontName = ((TextView)v).getText().toString();
                     App.editText.setTypeface(Typefaces.get(context, fontsDir+ "/" + fontName+".ttf"));
-
                     ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
+                    f.setVisibility(View.VISIBLE);
                     System.gc();
                 }
             });
