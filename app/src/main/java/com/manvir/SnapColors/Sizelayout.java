@@ -6,17 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeListener{
     EditText editText;
-    public Sizelayout(Context context, final EditText editText, int textSize) {
+    public Sizelayout(Context context, final EditText editText, int textSize, final HorizontalScrollView f) {
         super(context);
         this.editText = editText;
-        setBackgroundDrawable(App.modRes.getDrawable(R.drawable.bgviewdraw));
+        f.setVisibility(View.GONE);
         setClickable(true);
+        setBackgroundDrawable(App.modRes.getDrawable(R.drawable.bgviewdraw));
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.addView(inflater.inflate(App.modRes.getLayout(R.layout.size_layout), null));
         SeekBar seekBarSize = (SeekBar)findViewById(R.id.seekBarSize);
@@ -31,6 +33,7 @@ public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeL
             @Override
             public void onClick(View v) {
                 ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
+                f.setVisibility(View.VISIBLE);
             }
         });
 
@@ -42,6 +45,7 @@ public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeL
             public void onClick(View v) {
                 editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, 57.0f);
                 ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
+                f.setVisibility(View.VISIBLE);
             }
         });
     }

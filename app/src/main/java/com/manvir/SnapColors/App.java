@@ -16,11 +16,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextWatcher;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -49,6 +53,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public static Point size;
     public static XModuleResources modRes;
     Class<?> CaptionEditText;
+    static RelativeLayout ly;
+    RelativeLayout.LayoutParams param;
 	
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -65,7 +71,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 //Get Snapchats main layout.
-                RelativeLayout layout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
+                final RelativeLayout layout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
                 //LayoutParams for the "T" that shows the options when tapped.
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn","id",SnapChatPKG)).getLayoutParams());
                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
@@ -81,12 +87,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 Display display = SnapChatContext.getWindowManager().getDefaultDisplay();
                 size = new Point();
                 display.getSize(size);
-                final RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 param.topMargin = new Util(SnapChatContext).px(70);
 
                 //Setup our layout here and add the views, buttons etc.
                 final HorizontalScrollView f = new HorizontalScrollView(SnapChatContext);
-                final RelativeLayout ly = new RelativeLayout(SnapChatContext);
+                ly = new RelativeLayout(SnapChatContext);
                 ly.setOnClickListener(null);//To prevent touches going though to the layout behind the options layout.
                 ly.setPadding(70, 50, 70, 50);
                 f.setVisibility(View.GONE);
@@ -157,10 +163,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                 SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, ly, 390);
                 btnSize.setOnClickListener(new View.OnClickListener() {
+                    boolean wasClickedAlready = false;
                     @Override
                     public void onClick(View v) {
-                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, editText, (int)editText.getTextSize());
-                        ly.addView(sizelayout);
+                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, editText, (int)editText.getTextSize(), f);
+                        layout.addView(sizelayout, param);
                     }
                 });
 
@@ -291,6 +298,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     Util.doMultiLine(cap);
                 }
             });
+        }
+    }
+
+    public static void removePadding(boolean u){
+        if(u){
+            ly.setPadding(0, 0, 0, 0);
+        }else {
+            ly.setPadding(70, 50, 70, 50);
         }
     }
 }
