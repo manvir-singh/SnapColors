@@ -11,7 +11,7 @@ public class DonationDialog extends AlertDialog {
     public DonationDialog(final Context context) {
         super(context);
         setTitle("SnapColors");
-        setMessage("Please consider donating to show your appreciation for the hard work ive put into developing this module. Your donation is much appreciated, like mega ∞ appreciated. :)");
+        setMessage("Please consider donating to show your appreciation for the hard work ive put into developing this module. Your donation is much appreciated, like mega ∞ appreciated. Currently im trying to get a samsung device for testing purposes, your donations are the only way im going to be able to achieve this. So please, I ask very kindly, donate. Thanks :)");
         setButton(Dialog.BUTTON_NEGATIVE, "Get outta my face!", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {}
