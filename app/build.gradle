@@ -24,7 +24,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/commons-io-2.4.jar')
     compile 'com.android.support:support-v4:21.0.0'
     provided files('XposedBridgeApi-54.jar')
 }
