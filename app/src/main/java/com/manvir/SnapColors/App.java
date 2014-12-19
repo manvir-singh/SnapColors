@@ -16,15 +16,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextWatcher;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -221,7 +217,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
 
 	@Override
-	public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
+	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (!lpparam.packageName.equals(SnapChatPKG))
 	        return;
 
