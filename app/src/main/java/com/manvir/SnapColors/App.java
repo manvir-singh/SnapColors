@@ -273,10 +273,10 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
         //For adding multiline support.
         try {
+            //For stable versions
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.snapchat.android.ui.VanillaCaptionView.VanillaCaptionEditText", lpparam.classLoader), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    //For stable versions
                     XposedHelpers.callMethod(editText, "removeTextChangedListener",
                             (TextWatcher)XposedHelpers.findField(CaptionEditText, "g").get(param.thisObject));//For removing the character limit set on the caption.
                     EditText cap = (EditText) param.thisObject;
