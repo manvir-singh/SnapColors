@@ -245,4 +245,12 @@ public class Util {
         fin.close();
         return sb.toString();
     }
+
+    public static void DeleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                DeleteRecursive(child);
+
+        fileOrDirectory.delete();
+    }
 }

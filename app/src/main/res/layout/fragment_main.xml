@@ -133,11 +133,22 @@
         android:text="Running in dev mode!"
         android:textColor="@android:color/holo_red_dark"
         android:id="@+id/debugModeTextView"
-        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/clearAllImportedFonts"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/clearAllImportedFonts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear All Imported Fonts"
+        android:layout_below="@+id/importFont"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:gravity="center_horizontal" />
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

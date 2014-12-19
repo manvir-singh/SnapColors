@@ -136,6 +136,7 @@ public class MainActivity extends Activity {
 			final CheckBox setFont = (CheckBox)rootView.findViewById(R.id.setFont);
 			final TextView fontPrev = (TextView)rootView.findViewById(R.id.fontPrev);
 			final Button importFont = (Button)rootView.findViewById(R.id.importFont);
+			final Button clearAllImportedFonts = (Button)rootView.findViewById(R.id.clearAllImportedFonts);
 			final Button btnDonate = (Button)rootView.findViewById(R.id.btnDonate);
 			final Button btnTwitter = (Button)rootView.findViewById(R.id.btnTwitter);
 			final Button btnXdaThread = (Button)rootView.findViewById(R.id.btnXdaThread);
@@ -170,6 +171,13 @@ public class MainActivity extends Activity {
 			}
 			
 			// Listeners
+            clearAllImportedFonts.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Util.DeleteRecursive(new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.snapchat.android/files"));
+                    Toast.makeText(getActivity(), "Successful", Toast.LENGTH_LONG).show();
+                }
+            });
 			showFeed.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
