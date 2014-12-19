@@ -166,7 +166,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     boolean wasClickedAlready = false;
                     @Override
                     public void onClick(View v) {
-                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, editText, (int)editText.getTextSize(), f);
+                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, editText, (int)editText.getTextSize(), f, SnapColorsBtn);
                         SnapChatLayout.addView(sizelayout, param);
                     }
                 });
@@ -183,7 +183,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnFonts.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), defTypeFace, SnapChatLayout, f);
+                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), defTypeFace, SnapChatLayout, f, SnapColorsBtn);
                     }
                 });
 
@@ -298,14 +298,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     Util.doMultiLine(cap);
                 }
             });
-        }
-    }
-
-    public static void removePadding(boolean u){
-        if(u){
-            ly.setPadding(0, 0, 0, 0);
-        }else {
-            ly.setPadding(70, 50, 70, 50);
         }
     }
 }

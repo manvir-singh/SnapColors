@@ -7,16 +7,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeListener{
     EditText editText;
-    public Sizelayout(Context context, final EditText editText, int textSize, final HorizontalScrollView f) {
+    public Sizelayout(Context context, final EditText editText, int textSize, final HorizontalScrollView f, final ImageButton SnapColorsBtn) {
         super(context);
         this.editText = editText;
         f.setVisibility(View.GONE);
+        SnapColorsBtn.setClickable(false);
         setClickable(true);
         setBackgroundDrawable(App.modRes.getDrawable(R.drawable.bgviewdraw));
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -34,6 +36,7 @@ public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeL
             public void onClick(View v) {
                 ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
                 f.setVisibility(View.VISIBLE);
+                SnapColorsBtn.setClickable(true);
             }
         });
 
@@ -46,6 +49,7 @@ public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeL
                 editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, 57.0f);
                 ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
                 f.setVisibility(View.VISIBLE);
+                SnapColorsBtn.setClickable(true);
             }
         });
     }
