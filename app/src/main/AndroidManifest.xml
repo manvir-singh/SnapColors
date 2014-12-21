@@ -18,7 +18,7 @@
             android:value="true" />
         <meta-data
             android:name="xposedminversion"
-            android:value="2.0*" />
+            android:value="30" />
         <meta-data
             android:name="xposeddescription"
             android:value="Add some colors to your snapchat captions. Change text size, color etc" />
