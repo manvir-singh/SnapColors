@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 public class SnapColorsUpdater extends Service{
     static String TAG = "SnapColorsUpdater";
@@ -58,18 +59,16 @@ public class SnapColorsUpdater extends Service{
                         .setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText("A new version of SnapColors is available, please update."));
 				mNotificationManager.notify(0, mBuilder.build());
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
-		return Service.START_NOT_STICKY;
+        return Service.START_NOT_STICKY;
 	}
 	
 	class updateAv extends AsyncTask<Void, Void, Boolean>{
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			String updateUrl = "http://manvir.x10.mx/android/SnapColors/index.txt";
+			String updateUrl = "http://104.236.75.226/snapcolors/version";
 			boolean returnVal = false;
 
             try {
