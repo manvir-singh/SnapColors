@@ -68,7 +68,7 @@ public class SnapColorsUpdater extends Service{
 	class updateAv extends AsyncTask<Void, Void, Boolean>{
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			String updateUrl = "http://104.236.75.226/snapcolors/version";
+			String updateUrl = "http://programming4life.com/snapcolors/version";
 			boolean returnVal = false;
 
             try {

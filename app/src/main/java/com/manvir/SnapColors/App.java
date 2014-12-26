@@ -1,5 +1,6 @@
 package com.manvir.SnapColors;
 
+import java.io.File;
 import java.util.Random;
 
 import android.app.Activity;
@@ -105,12 +106,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         return true;
                     }
                 });
-
                 btnRandomize.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Random random = new Random();
-                        int colorBG = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+                        int colorBG = Color.argb(random.nextInt(256), random.nextInt(256), random.nextInt(256), random.nextInt(256));
                         int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
                         editText.setBackgroundColor(colorBG);
                         editText.setTextColor(colorText);
