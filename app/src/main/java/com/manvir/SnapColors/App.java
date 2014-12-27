@@ -14,6 +14,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -271,6 +272,19 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
                     Typeface face = Typeface.createFromFile(fontsDir + "/" + prefs.getString("Font", "0"));
                     editTextAbstract.setTypeface(face);
+                }
+                if(prefs.getBoolean("shouldRainbow", true)){
+                    editTextAbstract.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        Random random = new Random();
+                        @Override
+                        public void onFocusChange(View v, boolean hasFocus) {
+                            for(int i=0; i< editTextAbstract.getText().length(); i++){
+                                SpannableString ss = new SpannableString(editTextAbstract.getText());
+                                ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                editTextAbstract.setText(ss);
+                            }
+                        }
+                    });
                 }
             }
         });
