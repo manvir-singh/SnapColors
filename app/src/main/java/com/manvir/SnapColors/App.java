@@ -176,7 +176,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     public void onClick(View v) {
                         AlphaLayout alphalayout = new AlphaLayout(SnapChatContext, editTextAbstract, f, SnapColorsBtn);
                         SnapChatLayout.addView(alphalayout, param);
-//                        editTextAbstract.setBackgroundColor(Color.TRANSPARENT);
                     }
                 });
 
