@@ -96,23 +96,16 @@
         android:layout_alignParentRight="true"
         android:text="Support/Discussion on XDA" />
 
-    <CheckBox
-        android:id="@+id/showFeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/autoRandomize"
-        android:text="Show feed on startup" />
-
     <Button
         android:id="@+id/importFont"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Import Font"
+        android:layout_below="@+id/autoRainbow"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/showFeed"
-        android:text="Import Font" />
+        android:layout_alignParentEnd="true" />
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -126,29 +119,25 @@
         android:layout_alignParentEnd="true"
         android:checked="false" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Running in dev mode!"
-        android:textColor="@android:color/holo_red_dark"
-        android:id="@+id/debugModeTextView"
-        android:gravity="center_horizontal"
-        android:layout_below="@+id/clearAllImportedFonts"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
     <Button
         android:id="@+id/clearAllImportedFonts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Clear All Imported Fonts"
         android:layout_below="@+id/importFont"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Auto rainbow text on startup. The rainbow color is applied after you tap out side of the caption."
+        android:id="@+id/autoRainbow"
+        android:layout_below="@+id/autoRandomize"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:checked="false" />
 
 </RelativeLayout>

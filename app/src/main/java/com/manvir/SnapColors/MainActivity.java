@@ -115,20 +115,12 @@ public class MainActivity extends Activity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-            //This is the debug msg's show it if the debug bool is true
-            TextView debugModeTextView = (TextView)rootView.findViewById(R.id.debugModeTextView);
-            if(DEBUG){
-                debugModeTextView.setVisibility(View.VISIBLE);
-            }else{
-                debugModeTextView.setVisibility(View.GONE);
-            }
-
 			//Get our SharedPreferences.
 			prefs = getActivity().getSharedPreferences("settings", Context.MODE_WORLD_READABLE);
 			
 			// Making the buttons and what not.
 			final CheckBox autoRandomize = (CheckBox)rootView.findViewById(R.id.autoRandomize);
-            final CheckBox showFeed = (CheckBox)rootView.findViewById(R.id.showFeed);
+			final CheckBox autoRainbow = (CheckBox)rootView.findViewById(R.id.autoRainbow);
 			final CheckBox settextColor = (CheckBox)rootView.findViewById(R.id.settextColor);
 			final TextView textColorPrev = (TextView)rootView.findViewById(R.id.textColorPrev);
 			final CheckBox setBGColor = (CheckBox)rootView.findViewById(R.id.setBGColor);
@@ -141,9 +133,6 @@ public class MainActivity extends Activity {
 			final Button btnTwitter = (Button)rootView.findViewById(R.id.btnTwitter);
 			final Button btnXdaThread = (Button)rootView.findViewById(R.id.btnXdaThread);
             final CheckBox newVerBox = (CheckBox)rootView.findViewById(R.id.newVerBox);
-			
-			//Work on fixing this
-            showFeed.setVisibility(View.GONE);
 			
 			//Set the states of the views.
             if(prefs.getBoolean("checkForVer", true)){
@@ -166,11 +155,21 @@ public class MainActivity extends Activity {
 			if(prefs.getBoolean("autoRandomize", false)){
 				autoRandomize.setChecked(true);
 			}
-			if(prefs.getBoolean("showFeedOnStart", false)){
-				showFeed.setChecked(true);
+            if(prefs.getBoolean("shouldRainbow", false)){
+                autoRainbow.setChecked(true);
 			}
 			
 			// Listeners
+            autoRainbow.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+                        prefs.edit().putBoolean("shouldRainbow", true).apply();
+                    }else {
+                        prefs.edit().putBoolean("shouldRainbow", false).apply();
+                    }
+                }
+            });
             clearAllImportedFonts.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -178,16 +177,6 @@ public class MainActivity extends Activity {
                     Toast.makeText(getActivity(), "Successful", Toast.LENGTH_LONG).show();
                 }
             });
-			showFeed.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked){
-						prefs.edit().putBoolean("showFeedOnStart", true).apply();
-					}else{
-						prefs.edit().putBoolean("showFeedOnStart", false).apply();
-					}
-				}
-			});
 			btnXdaThread.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

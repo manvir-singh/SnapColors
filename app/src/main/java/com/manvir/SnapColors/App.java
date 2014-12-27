@@ -273,15 +273,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     Typeface face = Typeface.createFromFile(fontsDir + "/" + prefs.getString("Font", "0"));
                     editTextAbstract.setTypeface(face);
                 }
-                if(prefs.getBoolean("shouldRainbow", true)){
+                if(prefs.getBoolean("shouldRainbow", false)){
                     editTextAbstract.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                         Random random = new Random();
                         @Override
                         public void onFocusChange(View v, boolean hasFocus) {
-                            for(int i=0; i< editTextAbstract.getText().length(); i++){
-                                SpannableString ss = new SpannableString(editTextAbstract.getText());
-                                ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                editTextAbstract.setText(ss);
+                            if(!hasFocus){
+                                for(int i=0; i< editTextAbstract.getText().length(); i++){
+                                    SpannableString ss = new SpannableString(editTextAbstract.getText());
+                                    ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    editTextAbstract.setText(ss);
+                                }
                             }
                         }
                     });
@@ -323,11 +325,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     final EditText cap = (EditText) param.getResult();
                     editText = cap;
                     Util.doMultiLine(cap);
-//                    Shader textShader=new LinearGradient(0, 0, 0, 30,
-//                            new int[]{Color.GREEN,Color.BLUE},
-//                            new float[]{0, 1}, Shader.TileMode.CLAMP);
-//
-//                    cap.getPaint().setShader(textShader);
                 }
             });
         }
