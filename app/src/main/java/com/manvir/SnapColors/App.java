@@ -14,7 +14,6 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -175,7 +174,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnAlpha.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        editTextAbstract.setBackgroundColor(Color.TRANSPARENT);
+                        AlphaLayout alphalayout = new AlphaLayout(SnapChatContext, editTextAbstract, f, SnapColorsBtn);
+                        SnapChatLayout.addView(alphalayout, param);
+//                        editTextAbstract.setBackgroundColor(Color.TRANSPARENT);
                     }
                 });
 
@@ -208,6 +209,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         editTextAbstract.setTextColor(Color.WHITE);
                         editTextAbstract.setTextSize(21);
                         editTextAbstract.setBackgroundColor(-1728053248);
+
+                        ForegroundColorSpan[] mSpans = editTextAbstract.getText().getSpans(0, editTextAbstract.length(), ForegroundColorSpan.class);
+                        for(Object span: mSpans){
+                            editTextAbstract.getText().removeSpan(span);
+                        }
                     }
                 });
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingBottom="10dp"
+    android:clickable="true">
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBarSize"/>
+
+    <Button
+        android:layout_marginTop="40dp"
+        android:layout_below="@id/seekBarSize"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/done"
+        android:layout_height="33dp"
+        android:layout_width="wrap_content"
+        android:background="@drawable/roundcorner" android:text="Done"/>
+
+    <Button
+        android:layout_marginTop="40dp"
+        android:layout_below="@id/seekBarSize"
+        android:layout_alignParentRight="true"
+        android:layout_alignRight="@id/done"
+        android:id="@+id/cancel"
+        android:layout_height="33dp"
+        android:layout_width="wrap_content"
+        android:background="@drawable/roundcorner" android:text="Cancel"/>
+</RelativeLayout>
