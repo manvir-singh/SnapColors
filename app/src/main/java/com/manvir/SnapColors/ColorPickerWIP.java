@@ -93,12 +93,12 @@ public class ColorPickerWIP extends RelativeLayout{
 //                        colorPicker.OnSelected(new OnColorSelectedListener() {
 //                            @Override
 //                            public void onCancel() {
-//                                editText.setBackgroundColor(-1728053248);
+//                                editTextAbstract.setBackgroundColor(-1728053248);
 //                                colorPicker.remove();
 //                            }
 //                            @Override
 //                            public void OnSelected(int Color) {
-//                                editText.setBackgroundColor(Color);
+//                                editTextAbstract.setBackgroundColor(Color);
 //                            }
 //                            @Override
 //                            public void OnDone() {

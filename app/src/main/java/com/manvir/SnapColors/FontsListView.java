@@ -37,7 +37,7 @@ public class FontsListView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
-                App.editText.setTypeface(typefaceDef);
+                App.editTextAbstract.setTypeface(typefaceDef);
                 f.setVisibility(View.VISIBLE);
                 SnapColorsBtn.setClickable(true);
                 System.gc();
@@ -57,7 +57,7 @@ public class FontsListView extends RelativeLayout {
                 @Override
                 public void onClick(View v) {
                     String fontName = ((TextView)v).getText().toString();
-                    App.editText.setTypeface(Typefaces.get(context, fontsDir+ "/" + fontName+".ttf"));
+                    App.editTextAbstract.setTypeface(Typefaces.get(context, fontsDir+ "/" + fontName+".ttf"));
                     ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
                     f.setVisibility(View.VISIBLE);
                     SnapColorsBtn.setClickable(true);

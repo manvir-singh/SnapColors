@@ -1,6 +1,5 @@
 package com.manvir.SnapColors;
 
-import java.io.File;
 import java.util.Random;
 
 import android.app.Activity;
@@ -15,7 +14,10 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.view.Display;
 import android.view.View;
 import android.widget.EditText;
@@ -46,12 +48,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 	static Typeface defTypeFace;
 	static boolean notFirstRun = false;
 	static boolean DEBUG = false;
-    public static EditText editText;
+    public static EditText editTextAbstract;
     public static Point size;
     public static XModuleResources modRes;
     Class<?> CaptionEditText;
     static RelativeLayout ly;
     public static RelativeLayout.LayoutParams param;
+    EditText editText;
 	
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -101,8 +104,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnRandomize.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        editText.setTextColor(Color.WHITE);
-                        editText.setBackgroundColor(-1728053248);
+                        editTextAbstract.setTextColor(Color.WHITE);
+                        editTextAbstract.setBackgroundColor(-1728053248);
                         return true;
                     }
                 });
@@ -112,8 +115,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         Random random = new Random();
                         int colorBG = Color.argb(random.nextInt(256), random.nextInt(256), random.nextInt(256), random.nextInt(256));
                         int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-                        editText.setBackgroundColor(colorBG);
-                        editText.setTextColor(colorText);
+                        editTextAbstract.setBackgroundColor(colorBG);
+                        editTextAbstract.setTextColor(colorText);
                     }
                 });
 
@@ -124,12 +127,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
                             @Override
                             public void onColorSelected(int color) {
-                                editText.setTextColor(color);
+                                editTextAbstract.setTextColor(color);
                             }
                         });
                         colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialog, int which) {
-                                editText.setTextColor(Color.WHITE);
+                                editTextAbstract.setTextColor(Color.WHITE);
                             }
                         });
                         colorPickerDialog.setTitle("Text Color");
@@ -144,12 +147,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
                             @Override
                             public void onColorSelected(int color) {
-                                editText.setBackgroundColor(color);
+                                editTextAbstract.setBackgroundColor(color);
                             }
                         });
                         colorPickerDialog.setButton( Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialog, int which) {
-                                editText.setBackgroundColor(-1728053248);
+                                editTextAbstract.setBackgroundColor(-1728053248);
                             }
                         });
                         colorPickerDialog.setTitle("Background Color");
@@ -162,7 +165,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     boolean wasClickedAlready = false;
                     @Override
                     public void onClick(View v) {
-                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, editText, (int)editText.getTextSize(), f, SnapColorsBtn);
+                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, editTextAbstract, (int) editTextAbstract.getTextSize(), f, SnapColorsBtn);
                         SnapChatLayout.addView(sizelayout, param);
                     }
                 });
@@ -171,7 +174,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 btnAlpha.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        editText.setBackgroundColor(Color.TRANSPARENT);
+                        editTextAbstract.setBackgroundColor(Color.TRANSPARENT);
                     }
                 });
 
@@ -183,14 +186,27 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 780);
+                SButton btnMultiColor = new SButton(SnapChatContext, R.drawable.multicolor_btn, ly, 780);
+                btnMultiColor.setOnClickListener(new View.OnClickListener() {
+                    Random random = new Random();
+                    @Override
+                    public void onClick(View v) {
+                        for(int i=0; i< editTextAbstract.getText().length(); i++){
+                            SpannableString ss = new SpannableString(editTextAbstract.getText());
+                            ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            editTextAbstract.setText(ss);
+                        }
+                    }
+                });
+
+                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 910);
                 btnReset.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        editText.setTypeface(defTypeFace);
-                        editText.setTextColor(Color.WHITE);
-                        editText.setTextSize(21);
-                        editText.setBackgroundColor(-1728053248);
+                        editTextAbstract.setTypeface(defTypeFace);
+                        editTextAbstract.setTextColor(Color.WHITE);
+                        editTextAbstract.setTextSize(21);
+                        editTextAbstract.setBackgroundColor(-1728053248);
                     }
                 });
 
@@ -239,22 +255,22 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
                 prefs.reload();// Reload our prefs
-                editText = (EditText) param.thisObject;// Get the Caption box's edit text object.
+                editTextAbstract = (EditText) param.thisObject;// Get the Caption box's edit text object.
                 //Check to see if the app is being opened for the first time.
                 if (!notFirstRun) {
-                    defTypeFace = editText.getTypeface();
+                    defTypeFace = editTextAbstract.getTypeface();
                     notFirstRun = true;
                 }
                 // Get stuff from settings here
-                editText.setTextColor(prefs.getInt("TextColor", Color.WHITE));
-                editText.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
+                editTextAbstract.setTextColor(prefs.getInt("TextColor", Color.WHITE));
+                editTextAbstract.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
                 if (prefs.getBoolean("autoRandomize", false)) {
-                    new Util().random(editText);
+                    new Util().random(editTextAbstract);
                 }
                 if (prefs.getBoolean("setFont", false)) {
                     final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
                     Typeface face = Typeface.createFromFile(fontsDir + "/" + prefs.getString("Font", "0"));
-                    editText.setTypeface(face);
+                    editTextAbstract.setTypeface(face);
                 }
             }
         });
@@ -273,25 +289,31 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
         //For adding multiline support.
         try {
-            //For stable versions
+            //For versions below 8.1.1
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.snapchat.android.ui.VanillaCaptionView.VanillaCaptionEditText", lpparam.classLoader), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    XposedHelpers.callMethod(editText, "removeTextChangedListener",
+                    XposedHelpers.callMethod(editTextAbstract, "removeTextChangedListener",
                             (TextWatcher)XposedHelpers.findField(CaptionEditText, "g").get(param.thisObject));//For removing the character limit set on the caption.
                     EditText cap = (EditText) param.thisObject;
                     Util.doMultiLine(cap);
                 }
             });
         }catch (XposedHelpers.ClassNotFoundError e){
-            //For beta versions
+            //For versions above 8.1.1
             findAndHookMethod("com.snapchat.android.ui.caption.VanillaCaptionView", lpparam.classLoader, "a", Context.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    XposedHelpers.callMethod(editText, "removeTextChangedListener",
+                    XposedHelpers.callMethod(editTextAbstract, "removeTextChangedListener",
                             (TextWatcher)XposedHelpers.findField(CaptionEditText, "l").get(param.getResult()));//For removing the character limit set on the caption.
-                    EditText cap = (EditText) param.getResult();
+                    final EditText cap = (EditText) param.getResult();
+                    editText = cap;
                     Util.doMultiLine(cap);
+//                    Shader textShader=new LinearGradient(0, 0, 0, 30,
+//                            new int[]{Color.GREEN,Color.BLUE},
+//                            new float[]{0, 1}, Shader.TileMode.CLAMP);
+//
+//                    cap.getPaint().setShader(textShader);
                 }
             });
         }
