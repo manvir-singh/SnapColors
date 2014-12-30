@@ -9,8 +9,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +28,7 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -200,19 +205,30 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
-                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 910);
+                SButton btnTexture = new SButton(SnapChatContext, R.drawable.texture_btn, ly, 910);
+                btnTexture.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new TextureLayout(SnapChatContext, editTextAbstract, f, SnapColorsBtn, SnapChatLayout);
+                    }
+                });
+
+                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, ly, 1040);
                 btnReset.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        editTextAbstract.getPaint().reset();// This resets EVERYTHING a-z.
+
                         editTextAbstract.setTypeface(defTypeFace);
                         editTextAbstract.setTextColor(Color.WHITE);
                         editTextAbstract.setTextSize(21);
                         editTextAbstract.setBackgroundColor(-1728053248);
 
-                        ForegroundColorSpan[] mSpans = editTextAbstract.getText().getSpans(0, editTextAbstract.length(), ForegroundColorSpan.class);
-                        for(Object span: mSpans){
-                            editTextAbstract.getText().removeSpan(span);
-                        }
+                        //For removing LinearGradient
+//                        ForegroundColorSpan[] mSpans = editTextAbstract.getText().getSpans(0, editTextAbstract.length(), ForegroundColorSpan.class);
+//                        for(Object span: mSpans){
+//                            editTextAbstract.getText().removeSpan(span);
+//                        }
                     }
                 });
 
@@ -233,6 +249,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
                 SnapChatLayout.addView(SnapColorsBtn, params);
+
+//                Shader textShader=new LinearGradient(0, 0, 0, 100, new int[]{Color.WHITE,Color.BLACK}, new float[]{0, 1}, Shader.TileMode.CLAMP);
+//                editTextAbstract.getPaint().setShader(textShader);
             }
         });
     }

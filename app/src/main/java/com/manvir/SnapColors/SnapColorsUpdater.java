@@ -10,6 +10,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -68,10 +70,10 @@ public class SnapColorsUpdater extends Service{
 	class updateAv extends AsyncTask<Void, Void, Boolean>{
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			String updateUrl = "http://programming4life.com/snapcolors/version";
 			boolean returnVal = false;
-
             try {
+                String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                String updateUrl = "http://programming4life.com/snapcolors/version/"+currentVersion;
                 HttpClient httpclient = new DefaultHttpClient(); // Create HTTP Client
                 HttpGet httpget = new HttpGet(updateUrl); // Set the action you want to do
                 HttpResponse response = httpclient.execute(httpget); // Executeit
@@ -84,16 +86,9 @@ public class SnapColorsUpdater extends Service{
                     sb.append(line + "\n");
 
                 String resString = sb.toString(); // Result is here
-                try{
-                    Integer.valueOf(resString.replaceAll("\\W", ""));
-                    if(!resString.contains(getPackageManager().getPackageInfo(getPackageName(), 0).versionName)){
-                        returnVal = true;
-                    }
-                }catch (NumberFormatException e){
-                    returnVal = false;
-                }
-
+                JSONObject jsonObject = new JSONObject(resString);
                 is.close(); // Close the stream
+                returnVal = jsonObject.getBoolean("shouldUpdate");
             }
             catch (Exception e) {
                 e.printStackTrace();
