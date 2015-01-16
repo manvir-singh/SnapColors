@@ -4,7 +4,7 @@ android {
     signingConfigs {
     }
     compileSdkVersion 21
-    buildToolsVersion '21.1.1'
+    buildToolsVersion '21.1.2'
     defaultConfig {
         applicationId "com.manvir.SnapColors"
         minSdkVersion 15
@@ -24,7 +24,12 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v4:21.0.0'
     provided files('XposedBridgeApi-54.jar')
     compile files('libs/commons-io-2.4.jar')
+    compile 'com.android.support:appcompat-v7:21.0.3'
+}
+
+task upload(type: Exec) {
+    executable "node"
+    args 'upload.js', '"build\\outputs\\apk\\app-debug.apk"'
 }

@@ -45,7 +45,6 @@ import java.io.OutputStream;
 
 public class MainActivity extends Activity {
     static final String TAG = "SnapColors";
-	static boolean DEBUG = false;
 	static SharedPreferences prefs;
 	static String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.snapchat.android/files";
 
@@ -89,9 +88,6 @@ public class MainActivity extends Activity {
         return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
 	public static class PlaceholderFragment extends Fragment {
 		public PlaceholderFragment() {
 		}
@@ -223,23 +219,23 @@ public class MainActivity extends Activity {
 					if(isChecked){
 						try {
 							prefs.edit().putBoolean("setFont", true).apply();
-							Resources res = getActivity().getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
-							copyAssets(res);
-							
-							final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
-							
-							File file[] = new File(fontsDir).listFiles();
-                            for (File aFile : file) {
-                                arrayAdapter.add(aFile.getName());
-                            }
-							
-					    	AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
-				            builderSingle.setIcon(R.drawable.ic_launcher);
-				            builderSingle.setTitle("Select A Font:");
-				            builderSingle.setNegativeButton("Cancel", new OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									prefs.edit().putBoolean("setFont", false).apply();
+						                                    Resources res = getActivity().getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
+                                    copyAssets(res);
+
+                                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+
+                                    File file[] = new File(fontsDir).listFiles();
+                                    for (File aFile : file) {
+                                        arrayAdapter.add(aFile.getName());
+                                    }
+
+                                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
+                                    builderSingle.setIcon(R.drawable.ic_launcher);
+                                    builderSingle.setTitle("Select A Font:");
+                                    builderSingle.setNegativeButton("Cancel", new OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            prefs.edit().putBoolean("setFont", false).apply();
 									setFont.setChecked(false);
                                     System.gc(); //We need to run the GC, if we don't thetypefaces stay in memory.
 								}
@@ -416,12 +412,5 @@ public class MainActivity extends Activity {
 		      out.write(buffer, 0, read);
 		    }
 		}
-		
-		public void log(String text){
-			if(DEBUG){
-				Log.i("SnapColors: ", text);
-			}
-		}
-		
 	}
 }

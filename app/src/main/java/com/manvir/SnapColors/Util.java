@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -21,8 +24,11 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.manvir.logger.Logger;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,6 +43,7 @@ import java.util.Random;
 
 public class Util {
     public Context con;
+    static Logger logger = App.logger;
 
     public Util(Context con){
         this.con = con;
@@ -209,26 +216,34 @@ public class Util {
     }
 
     public static void doDonationMsg(Context con){
+        logger.log("Doing donation stuff");
         try {
-            int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
-            File versionFile = new File(con.getCacheDir().getAbsolutePath()+"/version");
+            logger.log("Checking to see if the user has donated");
+            con.createPackageContext("com.manvir.snapcolorsdonation", 0);
+            logger.log("User has donated don't do anything");
+        } catch (PackageManager.NameNotFoundException e) {
+            logger.log("User hasn't donated show the msg");
+            try {
+                int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
+                File versionFile = new File(con.getCacheDir().getAbsolutePath()+"/version");
 
-            if(!versionFile.exists())
-                versionFile.createNewFile();
+                if(!versionFile.exists())
+                    versionFile.createNewFile();
 
-            if(getStringFromFile(versionFile.getAbsolutePath()).equals("")){
-                new DonationDialog(con).show();
-                PrintWriter writer = new PrintWriter(versionFile);
-                writer.write(String.valueOf(SnapColorsVersionCode));
-                writer.close();
-            }else if(Integer.parseInt(getStringFromFile(versionFile.getAbsolutePath())) != SnapColorsVersionCode){
-                new DonationDialog(con).show();
-                PrintWriter writer = new PrintWriter(versionFile);
-                writer.write(String.valueOf(SnapColorsVersionCode));
-                writer.close();
+                if(getStringFromFile(versionFile.getAbsolutePath()).equals("")){
+                    new DonationDialog(con).show();
+                    PrintWriter writer = new PrintWriter(versionFile);
+                    writer.write(String.valueOf(SnapColorsVersionCode));
+                    writer.close();
+                }else if(Integer.parseInt(getStringFromFile(versionFile.getAbsolutePath())) != SnapColorsVersionCode){
+                    new DonationDialog(con).show();
+                    PrintWriter writer = new PrintWriter(versionFile);
+                    writer.write(String.valueOf(SnapColorsVersionCode));
+                    writer.close();
+                }
+            } catch (Exception ee) {
+                ee.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -252,5 +267,43 @@ public class Util {
                 DeleteRecursive(child);
 
         fileOrDirectory.delete();
+    }
+
+    public Bitmap getBorderPreview(String borderName){
+        Bitmap imgthumBitmap=null;
+        try
+        {
+            final int THUMBNAIL_SIZE = 64;
+            imgthumBitmap = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(borderName, "drawable", "com.manvir.SnapColors")));
+            imgthumBitmap = Bitmap.createScaledBitmap(imgthumBitmap,
+                    THUMBNAIL_SIZE, THUMBNAIL_SIZE, false);
+            ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
+            imgthumBitmap.compress(Bitmap.CompressFormat.JPEG, 100,bytearroutstream);
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return imgthumBitmap;
+    }
+
+    //Downscales the border bitmap and returns it as a drawable.
+    public static BitmapDrawable getBorder(String name, Context con){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        Bitmap map = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(name, "drawable", "com.manvir.SnapColors")), null, options);
+        int originalHeight = options.outHeight;
+        int originalWidth = options.outWidth;
+        // Calculate your sampleSize based on the requiredWidth and originalWidth
+        // For e.g you want the width to stay consistent at 500dp
+        float requiredWidth = (con.getResources().getDisplayMetrics().widthPixels/con.getResources().getDisplayMetrics().density) * con.getResources().getDisplayMetrics().density;
+        float sampleSize = originalWidth / requiredWidth;
+        // If the original image is smaller than required, don't sample
+        if(sampleSize < 1) { sampleSize = 1; }
+        options.inSampleSize = (int)sampleSize;
+        options.inPurgeable = true;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(name, "drawable", "com.manvir.SnapColors")), null, options);
+        return new BitmapDrawable(bitmap);
     }
 }
