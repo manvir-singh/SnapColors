@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Caption">
+        <CheckBoxPreference
+            android:title="Text Color"
+            android:summary="Change the color of the text"
+            android:key="TextColor"/>
+        <CheckBoxPreference
+            android:title="Background Color"
+            android:summary="Change the background color of the caption"
+            android:key="BGColor"/>
+        <CheckBoxPreference
+            android:title="Select Font"
+            android:summary="Set font on snapchat start up"
+            android:key="setFont"/>
+        <CheckBoxPreference
+            android:title="Randomize Colors"
+            android:summary="Randomize colors on startup of snapchat"
+            android:key="autoRandomize"/>
+        <CheckBoxPreference
+            android:title="Rainbow Text"
+            android:summary="Rainbow text on startup(The rainbow color is applied after you tap out side of the caption)"
+            android:key="shouldRainbow"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Fonts">
+        <Preference
+            android:title="Import Font"
+            android:summary="Import your own custom font to use on the caption text"
+            android:key="importFont"/>
+        <Preference
+            android:title="Clear Imported fonts"
+            android:summary="Import your own custom font to use on the caption text"
+            android:key="clearAllImportedFonts"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Updater">
+        <CheckBoxPreference
+            android:title="Enable Updater"
+            android:summary="Notify me when a new update is available."
+            android:key="checkForVer"/>
+        <CheckBoxPreference
+            android:title="Auto Install"
+            android:summary="If a new update is available it will be installed automatically"
+            android:key="autoInstallUpdate"/>
+    </PreferenceCategory>
+</PreferenceScreen>

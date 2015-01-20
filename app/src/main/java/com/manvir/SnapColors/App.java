@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -68,13 +69,13 @@ import static de.robv.android.xposed.XposedHelpers.findMethodBestMatch;
 @SuppressWarnings("UnusedDeclaration")
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     static final String TAG = "SnapColors";
+    static boolean DEBUG = BuildConfig.DEBUG;
     static String MODULE_PATH;
     static String SnapChatPKG = "com.snapchat.android";
 	static XSharedPreferences prefs;
 	static Activity SnapChatContext;
 	static Typeface defTypeFace;
 	static boolean notFirstRun = false;
-	static boolean DEBUG = true;
     public static EditText editTextAbstract;
     public static Point size;
     public static XModuleResources modRes;
@@ -88,7 +89,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
         prefs = new XSharedPreferences("com.manvir.SnapColors", "settings");
-        logger.shouldShowLogs(true);
+
+        logger.shouldShowLogs(DEBUG);
     }
 
     @Override

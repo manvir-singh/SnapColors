@@ -43,7 +43,6 @@ import java.util.Random;
 
 public class Util {
     public Context con;
-    static Logger logger = App.logger;
 
     public Util(Context con){
         this.con = con;
@@ -216,13 +215,11 @@ public class Util {
     }
 
     public static void doDonationMsg(Context con){
-        logger.log("Doing donation stuff");
+        App.logger.log("Doing donation stuff");
         try {
-            logger.log("Checking to see if the user has donated");
+            App.logger.log("Checking to see if the user has donated");
             con.createPackageContext("com.manvir.snapcolorsdonation", 0);
-            logger.log("User has donated don't do anything");
         } catch (PackageManager.NameNotFoundException e) {
-            logger.log("User hasn't donated show the msg");
             try {
                 int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
                 File versionFile = new File(con.getCacheDir().getAbsolutePath()+"/version");

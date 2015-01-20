@@ -67,7 +67,8 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/setFont"
         android:layout_below="@+id/fontPrev"
-        android:text="Auto randomize colors on startup" />
+        android:text="Auto randomize colors on startup"
+        android:checked="false" />
 
     <Button
         android:id="@+id/btnDonate"

@@ -17,6 +17,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBarActivity;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -43,7 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
     static final String TAG = "SnapColors";
 	static SharedPreferences prefs;
 	static String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.snapchat.android/files";
@@ -64,11 +65,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-			.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new Settings()).commit();
 	}
 
 	@Override

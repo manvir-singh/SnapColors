@@ -36,6 +36,12 @@
             android:enabled="true"
             android:exported="true">
         </activity>
+        <activity
+            android:name="com.manvir.SnapColors.Settings"
+            android:label="@string/app_name"
+            android:enabled="true"
+            android:exported="true">
+        </activity>
 		<receiver android:name=".onBooted">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

@@ -26,7 +26,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided files('XposedBridgeApi-54.jar')
     compile files('libs/commons-io-2.4.jar')
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.+'
 }
 
 task upload(type: Exec) {
