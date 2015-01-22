@@ -1,6 +1,8 @@
 package com.manvir.SnapColors;
 
 import android.content.Context;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,5 +23,22 @@ public class SButton extends ImageButton{
         setImageDrawable(App.modRes.getDrawable(btnImageId));// Set ImageButton drawable.
         setScaleType(ImageView.ScaleType.CENTER_INSIDE); //Fit image into view regardless of image size.
         ly.addView(this, btnParmas);
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_MOVE:
+                        setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
+                        break;
+                    case MotionEvent.ACTION_DOWN:
+                        setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner_touched));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
+                        break;
+                }
+                return false;
+            }
+        });
     }
 }

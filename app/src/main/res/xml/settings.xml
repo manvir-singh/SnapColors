@@ -28,7 +28,7 @@
             android:summary="Import your own custom font to use on the caption text"
             android:key="importFont"/>
         <Preference
-            android:title="Clear Imported fonts"
+            android:title="Clear all imported fonts"
             android:summary="Import your own custom font to use on the caption text"
             android:key="clearAllImportedFonts"/>
     </PreferenceCategory>
@@ -37,9 +37,5 @@
             android:title="Enable Updater"
             android:summary="Notify me when a new update is available."
             android:key="checkForVer"/>
-        <CheckBoxPreference
-            android:title="Auto Install"
-            android:summary="If a new update is available it will be installed automatically"
-            android:key="autoInstallUpdate"/>
     </PreferenceCategory>
 </PreferenceScreen>

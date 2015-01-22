@@ -45,9 +45,9 @@ public class Settings extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(BuildConfig.DEBUG) getActivity().setTitle(getActivity().getTitle()+": Dev");
-        prefs = getActivity().getSharedPreferences("settings", Context.MODE_WORLD_READABLE);
         addPreferencesFromResource(R.xml.settings);
+        prefs = getActivity().getSharedPreferences("settings", Context.MODE_WORLD_READABLE);
+        if(BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
 
         //Find all preferences
         final CheckBoxPreference TextColor = (CheckBoxPreference) getPreferenceManager().findPreference("TextColor");
@@ -58,7 +58,6 @@ public class Settings extends PreferenceFragment {
         final Preference importFont = getPreferenceManager().findPreference("importFont");
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
         final CheckBoxPreference checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
-        final CheckBoxPreference autoInstallUpdate = (CheckBoxPreference) getPreferenceManager().findPreference("autoInstallUpdate");
 
         //Startup stuff
         if(prefs.getBoolean("checkForVer", true)){
@@ -73,17 +72,6 @@ public class Settings extends PreferenceFragment {
         }
 
         //Listeners
-        autoInstallUpdate.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if(!autoInstallUpdate.isChecked()){
-                    prefs.edit().putBoolean("autoInstallUpdate", true).apply();
-                }else {
-                    prefs.edit().putBoolean("autoInstallUpdate", false).apply();
-                }
-                return true;
-            }
-        });
         checkForVer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -293,7 +281,7 @@ public class Settings extends PreferenceFragment {
             try {
                 File ttfFile = new File(Uri.decode(data.getDataString()).split(":/")[1]);//Todo Fix the import font bug. Fixed it temporally though.
 
-                FileUtils.copyFile(ttfFile, new File(fontsDir + "/" + ttfFile.getName()));
+                FileUtils.copyFile(ttfFile, new File(fontsDir+"/"+ttfFile.getName()));
                 Toast.makeText(getActivity(), "Import successful.", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();

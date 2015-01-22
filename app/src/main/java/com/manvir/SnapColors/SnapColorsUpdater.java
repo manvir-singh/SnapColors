@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
@@ -42,14 +43,9 @@ public class SnapColorsUpdater extends Service{
 		try {
 			if(new updateAv().execute().get()){
                 Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://repo.xposed.info/module/com.manvir.SnapColors"));
-                PendingIntent pendingIntent = PendingIntent.getActivity(
-                        getApplication(),
-                        0,
-                        myIntent,
-                        0);
+                PendingIntent pendingIntent = PendingIntent.getActivity(getApplication(), 0, myIntent, 0);
 				NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-				NotificationCompat.Builder mBuilder =
-				        new NotificationCompat.Builder(this)
+				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
 				        .setSmallIcon(R.drawable.ic_launcher)
 				        .setContentTitle("SnapColors Update Available")
 				        .setContentText("A new version of SnapColors is available, please update.")
@@ -65,12 +61,12 @@ public class SnapColorsUpdater extends Service{
         return Service.START_NOT_STICKY;
 	}
 	
-	class updateAv extends AsyncTask<Void, Void, Boolean>{
+	public static class updateAv extends AsyncTask<PackageManager, Void, Boolean>{
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected Boolean doInBackground(PackageManager... packageManager) {
 			boolean returnVal = false;
             try {
-                String currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                String currentVersion = packageManager[0].getPackageInfo("com.manvir.SnapColors", 0).versionName;
                 String updateUrl = "http://programming4life.com/snapcolors/version/"+currentVersion;
                 HttpClient httpclient = new DefaultHttpClient(); // Create HTTP Client
                 HttpGet httpget = new HttpGet(updateUrl); // Set the action you want to do

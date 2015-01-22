@@ -29,6 +29,7 @@ import com.manvir.logger.Logger;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -48,6 +49,19 @@ public class Util {
         this.con = con;
     }
     public Util(){}
+
+    public static void sofReboot(){
+        try{
+            Process su = Runtime.getRuntime().exec("su");
+            DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
+
+            outputStream.writeBytes("pkill zygote");
+            outputStream.flush();
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
 
     public static void doMultiLine(EditText editText){
         editText.setSingleLine(false);
@@ -157,11 +171,12 @@ public class Util {
     }
 
     public void downlaodFontsApk(){
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"SnapColorsFonts.apk";
         String url = "http://forum.xda-developers.com/devdb/project/dl/?id=5916&task=get";
-        new DownloadFileAsync().execute(url);
+        new DownloadFileAsync().execute(url, path);
     }
 
-    class DownloadFileAsync extends AsyncTask<String, String, String> {
+    public class DownloadFileAsync extends AsyncTask<String, String, String> {
         ProgressDialog pro;
         @Override
         protected void onPreExecute() {
@@ -186,7 +201,7 @@ public class Util {
                 int lenghtOfFile = conexion.getContentLength();
 
                 InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"SnapColorsFonts.apk");
+                OutputStream output = new FileOutputStream(aurl[1]);
 
                 byte data[] = new byte[1024];
 
