@@ -7,12 +7,20 @@
         android:orderInCategory="100"
         android:title="Version: Error"/>
     <item
-        android:id="@+id/action_donate"
+        android:id="@+id/action_twitter"
         android:orderInCategory="101"
+        android:title="Twitter"/>
+    <item
+        android:id="@+id/action_donate"
+        android:orderInCategory="102"
         android:title="Donate"/>
     <item
+        android:id="@+id/action_help"
+        android:orderInCategory="103"
+        android:title="Help"/>
+    <item
         android:id="@+id/action_about"
-        android:orderInCategory="102"
+        android:orderInCategory="104"
         android:title="About"/>
 
 </menu>

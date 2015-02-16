@@ -4,5 +4,7 @@
     <string name="title_activity_snap_colors">SnapColors</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">SnapColors</string>
-    <string name="title_activity_donate">SnapColors - Support Me</string>
+    <string name="title_activity_donate">Support Me</string>
+    <string name="title_activity_about">About</string>
+    <string name="title_activity_editgroups">Groups</string>
 </resources>

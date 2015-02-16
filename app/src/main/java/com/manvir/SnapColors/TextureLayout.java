@@ -96,7 +96,7 @@ public class TextureLayout extends RelativeLayout {
                     @Override
                     public void run() {
                         f.setVisibility(View.GONE);
-                        SnapChatLayout.addView(TextureLayout.this, App.param);
+                        SnapChatLayout.addView(TextureLayout.this, App.optionsViewLayoutParams);
                     }
                 });
             }

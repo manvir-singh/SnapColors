@@ -39,7 +39,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Settings extends PreferenceFragment {
-    SharedPreferences prefs;
+    public SharedPreferences prefs;
     String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.snapchat.android/files";
 
     @Override
@@ -57,9 +57,13 @@ public class Settings extends PreferenceFragment {
         final CheckBoxPreference shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
         final Preference importFont = getPreferenceManager().findPreference("importFont");
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
+        final CheckBoxPreference shouldGroups = (CheckBoxPreference) getPreferenceManager().findPreference("shouldGroups");
         final CheckBoxPreference checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
 
         //Startup stuff
+        if(prefs.getBoolean("shouldGroups", true)){
+            shouldGroups.setChecked(true);
+        }
         if(prefs.getBoolean("checkForVer", true)){
             checkForVer.setChecked(true);
         }
@@ -72,6 +76,17 @@ public class Settings extends PreferenceFragment {
         }
 
         //Listeners
+        shouldGroups.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(!shouldGroups.isChecked()){
+                    prefs.edit().putBoolean("shouldGroups", true).apply();
+                }else {
+                    prefs.edit().putBoolean("shouldGroups", false).apply();
+                }
+                return true;
+            }
+        });
         checkForVer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {

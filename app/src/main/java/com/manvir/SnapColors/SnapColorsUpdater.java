@@ -10,6 +10,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+
+import com.manvir.logger.Logger;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,7 +27,6 @@ import java.io.InputStreamReader;
 import java.util.concurrent.ExecutionException;
 
 public class SnapColorsUpdater extends Service{
-    static String TAG = "SnapColorsUpdater";
 	public SnapColorsUpdater() {
 	}
 
@@ -41,7 +43,7 @@ public class SnapColorsUpdater extends Service{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		try {
-			if(new updateAv().execute().get()){
+			if(new updateAv().execute(getPackageManager()).get()){
                 Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://repo.xposed.info/module/com.manvir.SnapColors"));
                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplication(), 0, myIntent, 0);
 				NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -66,8 +68,9 @@ public class SnapColorsUpdater extends Service{
 		protected Boolean doInBackground(PackageManager... packageManager) {
 			boolean returnVal = false;
             try {
+                Logger.log("Checking for new version.");
                 String currentVersion = packageManager[0].getPackageInfo("com.manvir.SnapColors", 0).versionName;
-                String updateUrl = "http://programming4life.com/snapcolors/version/"+currentVersion;
+                String updateUrl = "https://programming4life.com/snapcolors/updater.php?version="+currentVersion;
                 HttpClient httpclient = new DefaultHttpClient(); // Create HTTP Client
                 HttpGet httpget = new HttpGet(updateUrl); // Set the action you want to do
                 HttpResponse response = httpclient.execute(httpget); // Executeit

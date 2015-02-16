@@ -22,6 +22,7 @@
             android:summary="Rainbow text on startup(The rainbow color is applied after you tap out side of the caption)"
             android:key="shouldRainbow"/>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="Fonts">
         <Preference
             android:title="Import Font"
@@ -32,10 +33,17 @@
             android:summary="Import your own custom font to use on the caption text"
             android:key="clearAllImportedFonts"/>
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="Groups">
+        <CheckBoxPreference
+            android:title="Enable Groups"
+            android:key="shouldGroups"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Updater">
         <CheckBoxPreference
             android:title="Enable Updater"
-            android:summary="Notify me when a new update is available."
+            android:summary="Notify me when a new update is available. (Checks every day)"
             android:key="checkForVer"/>
     </PreferenceCategory>
 </PreferenceScreen>

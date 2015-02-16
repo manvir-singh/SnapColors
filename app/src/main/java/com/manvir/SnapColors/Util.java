@@ -53,6 +53,7 @@ public class Util {
     public static void sofReboot(){
         try{
             Process su = Runtime.getRuntime().exec("su");
+
             DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
 
             outputStream.writeBytes("pkill zygote");
@@ -128,7 +129,7 @@ public class Util {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            SnapChatLayout.addView(new FontsListView(con, defTypeFace, f, SnapColorsBtn), App.param);
+                            SnapChatLayout.addView(new FontsListView(con, defTypeFace, f, SnapColorsBtn), App.optionsViewLayoutParams);
                             pro.dismiss();
                         }
                     });
@@ -230,10 +231,9 @@ public class Util {
     }
 
     public static void doDonationMsg(Context con){
-        App.logger.log("Doing donation stuff");
+        Logger.log("Doing donation stuff");
         try {
-            App.logger.log("Checking to see if the user has donated");
-            con.createPackageContext("com.manvir.snapcolorsdonation", 0);
+            con.createPackageContext("com.manvir.programming4lifedonate", 0);
         } catch (PackageManager.NameNotFoundException e) {
             try {
                 int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
@@ -279,43 +279,5 @@ public class Util {
                 DeleteRecursive(child);
 
         fileOrDirectory.delete();
-    }
-
-    public Bitmap getBorderPreview(String borderName){
-        Bitmap imgthumBitmap=null;
-        try
-        {
-            final int THUMBNAIL_SIZE = 64;
-            imgthumBitmap = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(borderName, "drawable", "com.manvir.SnapColors")));
-            imgthumBitmap = Bitmap.createScaledBitmap(imgthumBitmap,
-                    THUMBNAIL_SIZE, THUMBNAIL_SIZE, false);
-            ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
-            imgthumBitmap.compress(Bitmap.CompressFormat.JPEG, 100,bytearroutstream);
-        }
-        catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        return imgthumBitmap;
-    }
-
-    //Downscales the border bitmap and returns it as a drawable.
-    public static BitmapDrawable getBorder(String name, Context con){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        Bitmap map = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(name, "drawable", "com.manvir.SnapColors")), null, options);
-        int originalHeight = options.outHeight;
-        int originalWidth = options.outWidth;
-        // Calculate your sampleSize based on the requiredWidth and originalWidth
-        // For e.g you want the width to stay consistent at 500dp
-        float requiredWidth = (con.getResources().getDisplayMetrics().widthPixels/con.getResources().getDisplayMetrics().density) * con.getResources().getDisplayMetrics().density;
-        float sampleSize = originalWidth / requiredWidth;
-        // If the original image is smaller than required, don't sample
-        if(sampleSize < 1) { sampleSize = 1; }
-        options.inSampleSize = (int)sampleSize;
-        options.inPurgeable = true;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(name, "drawable", "com.manvir.SnapColors")), null, options);
-        return new BitmapDrawable(bitmap);
     }
 }

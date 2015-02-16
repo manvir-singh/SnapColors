@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <!--Action Bar color-->
+        <item name="colorPrimary">#FDD835</item>
+        <!--Status bar color-->
+        <item name="colorPrimaryDark">#fff7d235</item>
+        <item name="android:textColor">#1C1C1C</item>
     </style>
 </resources>
