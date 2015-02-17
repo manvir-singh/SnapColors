@@ -14,7 +14,6 @@
 
     <Button
         android:layout_marginTop="40dp"
-        android:layout_below="@id/colorRed"
         android:layout_alignParentLeft="true"
         android:id="@+id/done"
         android:layout_height="33dp"
@@ -23,7 +22,6 @@
 
     <Button
         android:layout_marginTop="40dp"
-        android:layout_below="@id/colorRed"
         android:layout_alignParentRight="true"
         android:layout_alignRight="@id/done"
         android:id="@+id/cancel"
