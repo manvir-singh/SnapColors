@@ -10,14 +10,21 @@
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:id="@+id/topGrad"
         android:gravity="center_horizontal"/>
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+    <View
+        android:id="@+id/gradDivider"
         android:layout_below="@id/topGrad"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FFFF00"/>
+
+    <TextView
+        android:layout_below="@id/gradDivider"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
         android:id="@+id/bottomGrad"
         android:gravity="center_horizontal"/>
 

@@ -29,11 +29,11 @@ public class GradientLayout extends LinearLayout{
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.addView(inflater.inflate(App.modRes.getLayout(R.layout.gradient_layout), null));
 
-        final Button btnDone = (Button)findViewById(R.id.done);
+        final Button btnDone = (Button) findViewById(R.id.done);
         btnDone.setEnabled(false);
 
-        final TextView topGrad = (TextView)findViewById(R.id.topGrad);
-        topGrad.setText("Top Gradient Color");
+        final TextView topGrad = (TextView) findViewById(R.id.topGrad);
+        topGrad.setText("Top Gradient (Tap to change)");
         topGrad.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,8 +51,8 @@ public class GradientLayout extends LinearLayout{
         });
 
 
-        final TextView bottomGrad = (TextView)findViewById(R.id.bottomGrad);
-        bottomGrad.setText("Bottom Gradient Color");
+        final TextView bottomGrad = (TextView) findViewById(R.id.bottomGrad);
+        bottomGrad.setText("Bottom Gradient (Tap to change)");
         bottomGrad.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
