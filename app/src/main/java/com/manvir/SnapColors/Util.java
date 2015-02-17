@@ -269,12 +269,12 @@ public class Util {
                     if(getStringFromFile(versionFile.getAbsolutePath()).equals("")){
                         new DonationDialog(con).show();
                         PrintWriter writer = new PrintWriter(versionFile);
-                        writer.write(String.valueOf(SnapColorsVersionCode)+ "\n" + new Date().getTime());
+                        writer.write(String.valueOf(SnapColorsVersionCode));
                         writer.close();
                     }else if(Integer.parseInt(getStringFromFile(versionFile.getAbsolutePath())) != SnapColorsVersionCode){
                         new DonationDialog(con).show();
                         PrintWriter writer = new PrintWriter(versionFile);
-                        writer.write(String.valueOf(SnapColorsVersionCode)+ "\n" + new Date().getTime());
+                        writer.write(String.valueOf(SnapColorsVersionCode));
                         writer.close();
                     }
                 } catch (Exception ee) {
