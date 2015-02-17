@@ -175,7 +175,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 //Get Snapchats main layout.
-                final RelativeLayout SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout","id",SnapChatPKG));
+                final RelativeLayout SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id",SnapChatPKG));
 
                 //LayoutParams for the "T" that shows the options when tapped.
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn","id",SnapChatPKG)).getLayoutParams());
@@ -488,8 +488,10 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     XposedHelpers.callMethod(editTextAbstract, "removeTextChangedListener",
                             (TextWatcher)XposedHelpers.findField(CaptionEditText, "l").get(param.getResult()));//For removing the character limit set on the caption.
+
                     final EditText cap = (EditText) param.getResult();
                     editText = cap;
+
                     Util.doMultiLine(cap);
                 }
             });
@@ -588,7 +590,16 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
     //Hides or shows the bottom panel and populates the user names
     private static void doBottomSendToPanel() {
-        callMethod(SendToFragmentThisObject, "e");
-        callMethod(SendToFragmentThisObject, "g");
+        try {
+            callMethod(SendToFragmentThisObject, "e");
+            callMethod(SendToFragmentThisObject, "g");
+        } catch (NoSuchMethodError e) {
+            //For beta versions
+            callMethod(SendToFragmentThisObject, "b");
+            callMethod(SendToFragmentThisObject, "i");
+            //In the beta version calling the above methods scrolls the listview to the top so we scroll it back down
+            ListView usersListView = (ListView) getObjectField(SendToFragmentThisObject, "j");
+            usersListView.setSelection(usersListView.getAdapter().getCount() - 1);
+        }
     }
 }

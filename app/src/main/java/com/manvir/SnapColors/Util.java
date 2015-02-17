@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.Random;
 
 public class Util {
@@ -50,6 +51,7 @@ public class Util {
     }
     public Util(){}
 
+    /**Soft reboots the device <strong>(Development only)</strong>*/
     public static void sofReboot(){
         try{
             Process su = Runtime.getRuntime().exec("su");
@@ -64,18 +66,24 @@ public class Util {
         }
     }
 
+    /**Allows the {@link android.widget.EditText} to have multiple lines
+     * @param editText The EditText to enable multiline on*/
     public static void doMultiLine(EditText editText){
         editText.setSingleLine(false);
         editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
     }
 
-    //For converting px's to dpi
+    /**Converts px to dpi
+     * @param dips The dpi to convert
+     * */
     public int px(float dips){
         float DP = con.getResources().getDisplayMetrics().density;
         return Math.round(dips * DP);
     }
 
-    //Sets the EditText background, and the text color to a random color.
+    /**Sets the EditText background, and the text color to a random color.
+     * @param textsBox The {@link android.widget.EditText} to set a random background color and text color on.
+     * */
     public void random(EditText textsBox) {
         Random random = new Random();
         int colorBG = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -84,6 +92,10 @@ public class Util {
         textsBox.setTextColor(colorText);
     }
 
+    /**Used by {@link #doFonts(android.content.Context, android.app.ProgressDialog, android.os.Handler, android.graphics.Typeface, android.widget.RelativeLayout, android.widget.HorizontalScrollView, android.widget.ImageButton) doFonts}
+     * to copy the all assets(fonts) to sdcard/Android/data/com.snapchat.android/files
+     * @param res The {@link android.content.res.Resources} object of the application to extract assets from.
+     * */
     public void copyAssets(Resources res){
         AssetManager assetManager = res.getAssets();
         String[] files = null;
@@ -93,13 +105,17 @@ public class Util {
             Log.e("tag", "Failed to get asset file list.", e);
         }
         for(String filename : files) {
-            InputStream in = null;
-            OutputStream out = null;
+            InputStream in;
+            OutputStream out;
             try {
                 in = assetManager.open(filename);
                 File outFile = new File(con.getExternalFilesDir(null), filename);
                 out = new FileOutputStream(outFile);
-                copyFile(in, out);
+                byte[] buffer = new byte[1024];
+                int read;
+                while((read = in.read(buffer)) != -1){
+                    out.write(buffer, 0, read);
+                }
                 in.close();
                 in = null;
                 out.flush();
@@ -111,14 +127,15 @@ public class Util {
         }
     }
 
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-            out.write(buffer, 0, read);
-        }
-    }
-
+    /**Checks to see if the user has the fonts apk installed, if it is copy the fonts(.ttf) to snapchats data directory.
+     * @param con Snapchats {@link android.content.Context}.
+     * @param pro The {@link android.app.ProgressDialog} to show while copying the .ttf's or when the view is done loading.
+     * @param handler Used to run stuff on the uithread.
+     * @param defTypeFace The captions default {@link com.manvir.SnapColors.Typefaces}.
+     * @param SnapChatLayout Snapchats main layout to witch we add the preview view to.
+     * @param f SnapColors outer view.
+     * @param SnapColorsBtn SnapColors main options panel button(The colored "T").
+     * */
     public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final Typeface defTypeFace, final RelativeLayout SnapChatLayout, final HorizontalScrollView f, final ImageButton SnapColorsBtn){
         new Thread(){
             @Override
@@ -143,7 +160,7 @@ public class Util {
                             al.setNegativeButton("Download & Install", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new Util(con).downlaodFontsApk();
+                                    new Util(con).downloadFontsApk();
                                 }
                             });
                             al.setNeutralButton("Why", new DialogInterface.OnClickListener() {
@@ -171,12 +188,16 @@ public class Util {
         }.start();
     }
 
-    public void downlaodFontsApk(){
+    /**Downloads the fonts apk*/
+    public void downloadFontsApk() {
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"SnapColorsFonts.apk";
         String url = "http://forum.xda-developers.com/devdb/project/dl/?id=5916&task=get";
         new DownloadFileAsync().execute(url, path);
     }
 
+    /**
+     * Downloads a file from the given url then writes it to the given path.
+     * */
     public class DownloadFileAsync extends AsyncTask<String, String, String> {
         ProgressDialog pro;
         @Override
@@ -230,35 +251,48 @@ public class Util {
         }
     }
 
+    /**
+    * Checks to see if the user just updated. If they did then show the donation message
+    * @param con The current {@link android.content.Context}
+    * */
     public static void doDonationMsg(Context con){
         Logger.log("Doing donation stuff");
         try {
-            con.createPackageContext("com.manvir.programming4lifedonate", 0);
+            con.createPackageContext("com.manvir.snapcolorsdonation", 0); //old donation package
         } catch (PackageManager.NameNotFoundException e) {
             try {
-                int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
-                File versionFile = new File(con.getCacheDir().getAbsolutePath()+"/version");
+                con.createPackageContext("com.manvir.programming4lifedonate", 0); //new donation package
+            } catch (PackageManager.NameNotFoundException e1) {
+                try {
+                    int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
+                    File versionFile = new File(con.getCacheDir().getAbsolutePath()+"/version");
 
-                if(!versionFile.exists())
-                    versionFile.createNewFile();
+                    if(!versionFile.exists())
+                        versionFile.createNewFile();
 
-                if(getStringFromFile(versionFile.getAbsolutePath()).equals("")){
-                    new DonationDialog(con).show();
-                    PrintWriter writer = new PrintWriter(versionFile);
-                    writer.write(String.valueOf(SnapColorsVersionCode));
-                    writer.close();
-                }else if(Integer.parseInt(getStringFromFile(versionFile.getAbsolutePath())) != SnapColorsVersionCode){
-                    new DonationDialog(con).show();
-                    PrintWriter writer = new PrintWriter(versionFile);
-                    writer.write(String.valueOf(SnapColorsVersionCode));
-                    writer.close();
+                    if(getStringFromFile(versionFile.getAbsolutePath()).equals("")){
+                        new DonationDialog(con).show();
+                        PrintWriter writer = new PrintWriter(versionFile);
+                        writer.write(String.valueOf(SnapColorsVersionCode)+ "\n" + new Date().getTime());
+                        writer.close();
+                    }else if(Integer.parseInt(getStringFromFile(versionFile.getAbsolutePath())) != SnapColorsVersionCode){
+                        new DonationDialog(con).show();
+                        PrintWriter writer = new PrintWriter(versionFile);
+                        writer.write(String.valueOf(SnapColorsVersionCode)+ "\n" + new Date().getTime());
+                        writer.close();
+                    }
+                } catch (Exception ee) {
+                    ee.printStackTrace();
                 }
-            } catch (Exception ee) {
-                ee.printStackTrace();
             }
         }
     }
 
+    /**Reads a file into a single continues {@link java.lang.String}
+     * <p>Used by {@link #doDonationMsg(android.content.Context) doDonationMsg}</p>
+     * @param filePath The file you want to get data from as a {@link java.lang.String}
+     * @return A {@link java.lang.String} containing the data from the file
+     * */
     private static String getStringFromFile (String filePath) throws Exception {
         File fl = new File(filePath);
         FileInputStream fin = new FileInputStream(fl);
@@ -273,11 +307,15 @@ public class Util {
         return sb.toString();
     }
 
-    public static void DeleteRecursive(File fileOrDirectory) {
+    /**Deletes a directory regardless of whats in it.
+     * @param fileOrDirectory The directory or file you would like to delete.
+     * @return true if the file was deleted, false otherwise.
+     * */
+    public static boolean DeleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles())
                 DeleteRecursive(child);
 
-        fileOrDirectory.delete();
+        return fileOrDirectory.delete();
     }
 }

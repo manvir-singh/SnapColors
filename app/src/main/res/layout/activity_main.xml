@@ -1,8 +1,20 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.manvir.SnapColors.MainActivity"
-    tools:ignore="MergeRootFrame" />
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+    <FrameLayout
+        android:layout_marginBottom="50dp"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.manvir.SnapColors.MainActivity"
+        tools:ignore="MergeRootFrame" />
 
+    <com.startapp.android.publish.banner.Banner
+        android:id="@+id/startAppBanner"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

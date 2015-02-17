@@ -6,15 +6,27 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.startapp.android.publish.StartAppAd;
+import com.startapp.android.publish.StartAppSDK;
+import com.startapp.android.publish.banner.Banner;
 
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends ActionBarActivity {
+    private StartAppAd startAppAd = new StartAppAd(this);
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        //For ad network
+        StartAppSDK.init(this, "101601243", "201780741", true);
+        startAppAd.showAd();
+
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -22,7 +34,21 @@ public class MainActivity extends ActionBarActivity {
         }
 	}
 
-	@Override
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //For ad network
+        startAppAd.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //For ad network
+        startAppAd.onPause();
+    }
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
         MenuItem versionMenuItem = menu.findItem(R.id.action_version);

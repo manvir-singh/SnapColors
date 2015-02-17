@@ -137,8 +137,8 @@ public class Settings extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if(!setFont.isChecked()){
                     try {
-                        prefs.edit().putBoolean("setFont", true).apply();
                         Resources res = getActivity().getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
+                        prefs.edit().putBoolean("setFont", true).apply();
                         copyAssets(res);
 
                         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
