@@ -172,35 +172,40 @@ public class Settings extends PreferenceFragment {
                         });
                         builderSingle.show();
                     } catch (PackageManager.NameNotFoundException e) {
-                        AlertDialog.Builder al = new AlertDialog.Builder(getActivity());
-                        final TextView message = new TextView(getActivity());
-                        final SpannableString s = new SpannableString("You need to download fonts they are not included. Just download and install the apk.(Note no icon will be added) Fonts apk can be downloaded from this page: http://forum.xda-developers.com/devdb/project/?id=3684#downloads");
-                        Linkify.addLinks(s, Linkify.WEB_URLS);
-                        message.setText(s);
-                        message.setMovementMethod(LinkMovementMethod.getInstance());
+                        final AlertDialog.Builder al = new AlertDialog.Builder(getActivity());
+                        al.setCancelable(false);
                         al.setTitle("SnapColors");
-                        al.setView(message);
-                        al.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                        al.setMessage("You need to download fonts, they are not included. (Note no icon will be added)");
+                        al.setNegativeButton("Download & Install", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                new Util(getActivity()).downloadFontsApk();
+                            }
+                        });
+                        al.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                prefs.edit().putBoolean("setFont", false).apply();
                                 setFont.setChecked(false);
+                                dialog.dismiss();
                             }
                         });
                         al.setNeutralButton("Why", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String whyText = "The reason why fonts are not included with the tweak are simple.\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
-                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+                                String whyText = "The reason why fonts are not included with the tweak are:\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
+                                final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
                                 alertDialog.setTitle("SnapColors");
                                 alertDialog.setMessage(whyText);
-                                alertDialog.setButton(Dialog.BUTTON_NEUTRAL, "Okay", new DialogInterface.OnClickListener() {
+                                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+                                        prefs.edit().putBoolean("setFont", false).apply();
                                         setFont.setChecked(false);
+                                        alertDialog.dismiss();
                                     }
                                 });
                                 alertDialog.show();
-                                setFont.setChecked(false);
                             }
                         });
                         al.show();
