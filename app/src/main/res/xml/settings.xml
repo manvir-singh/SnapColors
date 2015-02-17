@@ -46,4 +46,11 @@
             android:summary="Notify me when a new update is available. (Checks every day)"
             android:key="checkForVer"/>
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="More">
+        <Preference
+            android:title="Donate"
+            android:summary="If you like my work, feel free to donate."
+            android:key="donate" />
+    </PreferenceCategory>
 </PreferenceScreen>

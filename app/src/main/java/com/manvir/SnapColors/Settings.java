@@ -2,6 +2,7 @@ package com.manvir.SnapColors;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -59,6 +60,7 @@ public class Settings extends PreferenceFragment {
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
         final CheckBoxPreference shouldGroups = (CheckBoxPreference) getPreferenceManager().findPreference("shouldGroups");
         final CheckBoxPreference checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
+        final Preference donate = getPreferenceManager().findPreference("donate");
 
         //Startup stuff
         if(prefs.getBoolean("shouldGroups", true)){
@@ -76,6 +78,15 @@ public class Settings extends PreferenceFragment {
         }
 
         //Listeners
+        donate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.manvir.SnapColors", "com.manvir.SnapColors.DonateActivity"));
+                getActivity().startActivity(intent);
+                return true;
+            }
+        });
         shouldGroups.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
