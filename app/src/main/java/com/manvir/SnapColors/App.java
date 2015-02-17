@@ -57,7 +57,6 @@ import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
-    static boolean DEBUG = BuildConfig.DEBUG;
 
     //Xposed
     static String MODULE_PATH;

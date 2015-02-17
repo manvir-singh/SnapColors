@@ -2,10 +2,7 @@ package com.manvir.SnapColors;
 
 import android.content.Context;
 import android.util.TypedValue;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class SButton extends ImageButton{

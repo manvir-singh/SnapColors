@@ -9,11 +9,6 @@ import android.content.Intent;
 import java.util.Calendar;
 
 public class onBooted extends BroadcastReceiver{
-
-	public onBooted() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public void onReceive(Context context, Intent intent) {
         if(context.getSharedPreferences("settings", Context.MODE_WORLD_READABLE).getBoolean("checkForVer", true)){
