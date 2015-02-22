@@ -302,7 +302,6 @@ public class Settings extends PreferenceFragment {
         if(resultCode != 0 && data != null){
             try {
                 File ttfFile = new File(Uri.decode(data.getDataString()).split(":/")[1]);//Todo Fix the import font bug. Fixed it temporally though.
-
                 FileUtils.copyFile(ttfFile, new File(fontsDir+"/"+ttfFile.getName()));
                 Toast.makeText(getActivity(), "Import successful.", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
