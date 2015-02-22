@@ -400,7 +400,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 prefs.reload();
                 SnapChatContext = (Activity) param.thisObject;
 
-//                Util.doDonationMsg(SnapChatContext);
+                //Util.doDonationMsg(SnapChatContext);
             }
         });
 
