@@ -14,13 +14,10 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -35,9 +32,6 @@ import android.widget.TextView;
 
 import com.manvir.logger.Logger;
 
-import org.xml.sax.Attributes;
-
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -57,12 +51,9 @@ import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
-import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
-import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findField;
-import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
@@ -385,11 +376,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
 
                     groupsList.add(new Group(SnapChatContext, listView, "Everyone", new String[]{"∞"}, true));
+
                     for(Map.Entry<String, ?> entry : groupsPref.getAll().entrySet()){
                         groupsList.add(new Group(SnapChatContext, listView, entry.getKey(), entry.getValue().toString().split(","), false));
                     }
+                    param.setResult(null); //Same thing as return; in a method I think
                 }
-                param.setResult(null);
             }
         });
 
