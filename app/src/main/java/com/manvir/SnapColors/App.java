@@ -515,8 +515,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         XposedBridge.hookAllConstructors(findClass("com.snapchat.android.fragments.sendto.SendToAdapter", lpparam.classLoader), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                //List friendsList = (List) findField(param.thisObject.getClass(), "e").get(param.thisObject); // Also stores friends
-                List friendsList = (List) findField(param.thisObject.getClass(), "d").get(param.thisObject);
+                List friendsList;
+                //Beta class check
+                try {
+                    friendsList = (List) findField(param.thisObject.getClass(), "d").get(param.thisObject);//Stable snapchat
+                } catch (ClassCastException e) {
+                    friendsList = (List) findField(param.thisObject.getClass(), "c").get(param.thisObject);//Beta snapchat
+                }
 
                 for (Object friendRaw : friendsList) {
                     if (!friendRaw.toString().contains("com.snapchat.android.model.MyPostToStory")) {
@@ -544,18 +549,38 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 SendToFragmentThisObject = param.thisObject;
             }
         });
+
+        //For checking users in the listview
+        findAndHookMethod("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "l", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                SendToFragmentThisObject = param.thisObject;
+            }
+        });
     }
 
     public static void unCheckAll() {
-        //noinspection unchecked
-        LinkedHashSet<Object> l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        LinkedHashSet<Object> l;
+        try {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        } catch (Exception e) {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
+        }
         l.clear();
         doBottomSendToPanel();
     }
 
     public static void unCheckUsers(String[] usersToUnSelect) {
-        //noinspection unchecked
-        LinkedHashSet<Object> l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        LinkedHashSet<Object> l;
+        try {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        } catch (Exception e) {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
+        }
         for (Object friendObject : friendsObjects) {
             for (String s : usersToUnSelect) {
                 if (getObjectField(friendObject, "mUsername").equals(s)) {
@@ -567,8 +592,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     }
 
     public static void checkAll() {
-        //noinspection unchecked
-        LinkedHashSet<Object> l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        LinkedHashSet<Object> l;
+        try {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        } catch (Exception e) {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
+        }
         for (Object friendObject : friendsObjects) {
             l.add(friendObject);
         }
@@ -576,8 +607,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     }
 
     public static void checkUsers(String[] usersToSelect) {
-        //noinspection unchecked
-        LinkedHashSet<Object> l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        if (SendToFragmentThisObject == null) {
+            Logger.log("SendToFragmentThisObject is nullllllllllllllllllll");
+        }
+        LinkedHashSet<Object> l;
+        try {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
+        } catch (Exception e) {
+            //noinspection unchecked
+            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
+        }
         for (String user : usersToSelect) {
             for (Object friendObject : friendsObjects) {
                 if (getObjectField(friendObject, "mUsername").equals(user)) {
@@ -598,7 +638,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             callMethod(SendToFragmentThisObject, "b");
             callMethod(SendToFragmentThisObject, "i");
             //In the beta version calling the above methods scrolls the listview to the top so we scroll it back down
-            ListView usersListView = (ListView) getObjectField(SendToFragmentThisObject, "j");
+            ListView usersListView;
+            try {
+                usersListView = (ListView) getObjectField(SendToFragmentThisObject, "j");
+            } catch (ClassCastException err) {
+                usersListView = (ListView) getObjectField(SendToFragmentThisObject, "k");
+            }
             usersListView.setSelection(usersListView.getAdapter().getCount() - 1);
         }
     }

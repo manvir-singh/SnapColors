@@ -9,8 +9,8 @@ android {
         applicationId "com.manvir.SnapColors"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 14
-        versionName '3.1.4'
+        versionCode 15
+        versionName '3.1.5'
     }
     buildTypes {
         release {
@@ -26,6 +26,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided files('XposedBridgeApi-54.jar')
     compile files('libs/commons-io-2.4.jar')
-    compile 'com.android.support:appcompat-v7:21.0.+'
+    compile 'com.android.support:appcompat-v7:21.0.3'
     compile files('libs/StartAppInApp-2.4.13.jar')
 }

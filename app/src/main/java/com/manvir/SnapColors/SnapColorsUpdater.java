@@ -62,7 +62,7 @@ public class SnapColorsUpdater extends Service{
         return Service.START_NOT_STICKY;
 	}
 	
-	public static class updateAv extends AsyncTask<PackageManager, Void, Boolean>{
+	public static class updateAv extends AsyncTask<PackageManager, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(PackageManager... packageManager) {
 			boolean returnVal = false;

@@ -183,8 +183,6 @@ public class EditGroups extends ActionBarActivity {
 
             groupUsers = (ListView) editGroupsDialog.findViewById(R.id.groupUsers);
             groupUsers.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-            UsersListAdapter usersListAdapter = new UsersListAdapter(getActivity(), usersList);
-            groupUsers.setAdapter(usersListAdapter);
 
             Button delete = new Button(getActivity());
             Button cancel = new Button(getActivity());
@@ -196,6 +194,9 @@ public class EditGroups extends ActionBarActivity {
             groupUsers.addFooterView(delete);
             groupUsers.addFooterView(cancel);
             groupUsers.addFooterView(done);
+
+            UsersListAdapter usersListAdapter = new UsersListAdapter(getActivity(), usersList);
+            groupUsers.setAdapter(usersListAdapter);
 
             //Checks the users in the list based on users who have been already added
             for (int i = 0; i < (groupUsers.getCount()-groupUsers.getFooterViewsCount()); i++) {
