@@ -20,7 +20,7 @@ public class Group {
     private RelativeLayout te;
     private CheckBox checkbox;
 
-    public Group(Context context, ListView listView, String GroupName, final String[] users, boolean isAllGroup) {
+    public Group(Context context, CustomListView listView, String GroupName, final String[] users, boolean isAllGroup) {
         this.isAllGroup = isAllGroup;
         this.users = users;
         te = (RelativeLayout) View.inflate(context, context.getResources().getIdentifier("send_to_item", "layout", "com.snapchat.android"), null);
@@ -37,6 +37,8 @@ public class Group {
         userName.setText(text);
 
         checkbox = (CheckBox) te.findViewById(context.getResources().getIdentifier("checkbox", "id", "com.snapchat.android"));
+        if (checkbox == null)
+            checkbox = (CheckBox) te.findViewById(context.getResources().getIdentifier("send_to_checkbox", "id", "com.snapchat.android"));;
         checkbox.setVisibility(View.VISIBLE);
 
         te.findViewById(context.getResources().getIdentifier("add_friend_checkbox", "id", "com.snapchat.android")).setVisibility(View.GONE);

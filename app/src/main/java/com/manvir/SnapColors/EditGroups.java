@@ -71,9 +71,6 @@ public class EditGroups extends ActionBarActivity {
                 groupUsers = (ListView) editGroupsDialog.findViewById(R.id.groupUsers);
                 groupUsers.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-                UsersListAdapter usersListAdapter = new UsersListAdapter(EditGroups.this, usersList);
-                groupUsers.setAdapter(usersListAdapter);
-
                 Button cancel = new Button(EditGroups.this);
                 Button done = new Button(EditGroups.this);
                 cancel.setText("Cancel");
@@ -81,6 +78,9 @@ public class EditGroups extends ActionBarActivity {
 
                 groupUsers.addFooterView(cancel);
                 groupUsers.addFooterView(done);
+
+                UsersListAdapter usersListAdapter = new UsersListAdapter(EditGroups.this, usersList);
+                groupUsers.setAdapter(usersListAdapter);
 
                 groupUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override

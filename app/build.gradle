@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     signingConfigs {
     }
     compileSdkVersion 21
@@ -9,8 +14,8 @@ android {
         applicationId "com.manvir.SnapColors"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 15
-        versionName '3.1.5'
+        versionCode 16
+        versionName '3.1.6'
     }
     buildTypes {
         release {
@@ -20,12 +25,20 @@ android {
     }
     productFlavors {
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided files('XposedBridgeApi-54.jar')
     compile files('libs/commons-io-2.4.jar')
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:recyclerview-v7:22.0.0'
     compile files('libs/StartAppInApp-2.4.13.jar')
+    compile files('libs/objenesis-2.1.jar')
+    compile files('libs/commons-lang3-3.3.2.jar')
+    compile files('libs/kryo-3.0.0.jar')
 }
