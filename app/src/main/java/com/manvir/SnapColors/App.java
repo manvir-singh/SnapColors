@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
@@ -18,7 +17,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -30,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.manvir.logger.Logger;
@@ -38,7 +36,6 @@ import com.manvir.logger.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,10 +67,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     //Caption related
     public static EditText editTextAbstract;
     //Groups related
-    public static List<View> usersList = new ArrayList<>(); //This is a list of all users that get added to the listview
-    public static List<Group> groupsList = new ArrayList<>(); //This is a list of all the groups that get added to the listview
     public static ArrayList<String> users = new ArrayList<>(); //Holds the usernames of all the users friends. People the user can send snaps to
-    public static String[] recipients;
+    static ArrayList<Object> friendsObjects = new ArrayList<>();
     //Xposed
     static String MODULE_PATH;
     static XSharedPreferences prefs;
@@ -85,27 +80,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     //SnapColors options view
     static RelativeLayout innerOptionsLayout; //Holds all out options the buttons etc (The outer view is a scrollview)
     static Typeface defTypeFace;
-    static ArrayList<Object> friendsObjects = new ArrayList<>();
     static View SendToBottomPanelView;
     private static Object SendToFragmentThisObject; //Class object of SendToFragment
     EditText editText;
     Class<?> CaptionEditText;
-    private List<String> groupsListBeta = new ArrayList<>(); //This is a list of all the groups that get added to the listview
+    private List<String> groupsList; //This is a list of all the groups that get added to the listview
     private XSharedPreferences groupsPref;
-    private CustomListView customListView;
-
-    public static void unCheckAll() {
-        LinkedHashSet<Object> l;
-        try {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
-        } catch (Exception e) {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
-        }
-        l.clear();
-        doBottomSendToPanel();
-    }
 
     public static void unCheckUsers(String[] usersToUnSelect) {
         LinkedHashSet<Object> l;
@@ -126,21 +106,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         doBottomSendToPanel();
     }
 
-    public static void checkAll() {
-        LinkedHashSet<Object> l;
-        try {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
-        } catch (Exception e) {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
-        }
-        for (Object friendObject : friendsObjects) {
-            l.add(friendObject);
-        }
-        doBottomSendToPanel();
-    }
-
     public static void checkUsers(String[] usersToSelect) {
         if (SendToFragmentThisObject == null) {
             Logger.log("SendToFragmentThisObject is nullllllllllllllllllll");
@@ -154,10 +119,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
         }
         for (String user : usersToSelect) {
-            for (Object friendObject : friendsObjects) {
-                if (getObjectField(friendObject, "mUsername").equals(user)) {
-                    l.add(friendObject);
+            try {
+                for (Object friendObject : friendsObjects) {
+                    if (getObjectField(friendObject, "mUsername").equals(user)) {
+                        l.add(friendObject);
+                    }
                 }
+            } catch (NoSuchFieldError ignore) {
             }
         }
         doBottomSendToPanel();
@@ -210,14 +178,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     return;
 
                 RelativeLayout SendToActivityLayout = (RelativeLayout) layoutInflatedParam.view;
-                try {
-                    ListView listView = (ListView) layoutInflatedParam.view.findViewById(layoutInflatedParam.res.getIdentifier("send_to_list", "id", SnapChatPKG));
-                    customListView = new CustomListView(SnapChatContext, listView, null);
-                } catch (ClassCastException e) {
-                    RelativeLayout layout = (RelativeLayout) SendToActivityLayout.findViewById(layoutInflatedParam.res.getIdentifier("send_to_list_container", "id", SnapChatPKG));
-
-                    customListView = new CustomListView(SnapChatContext, null, layout);
-                }
 
                 SendToBottomPanelView = SendToActivityLayout.findViewById(layoutInflatedParam.res.getIdentifier("bottom_panel", "id", SnapChatPKG));
 
@@ -253,16 +213,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 });
                 topPanle.addView(editGroups, editGroupsParams);
 
-                RelativeLayout divider = (RelativeLayout) View.inflate(SnapChatContext, SnapChatContext.getResources().getIdentifier("blue_list_section_header", "layout", "com.snapchat.android"), null);
-                ((TextView) divider.findViewById(SnapChatContext.getResources().getIdentifier("text", "id", App.SnapChatPKG))).setText("GROUPS");
-                customListView.addFooterView(divider);
-
-                groupsList.add(new Group(SnapChatContext, customListView, "Everyone", new String[]{"∞"}, true));
-
                 groupsPref.reload();
-                for (Map.Entry<String, ?> entry : groupsPref.getAll().entrySet()) {
-                    groupsList.add(new Group(SnapChatContext, customListView, entry.getKey(), entry.getValue().toString().split(","), false));
-                }
             }
         });
 
@@ -300,6 +251,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 int TopBottomMarginPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 13, SnapChatContext.getResources().getDisplayMetrics());
                 innerOptionsLayout.setPadding(LeftRightMarginPx, TopBottomMarginPx, LeftRightMarginPx, TopBottomMarginPx);
                 optionsView.setVisibility(View.GONE);
+                //noinspection deprecation
                 optionsView.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
                 optionsView.setOverScrollMode(View.OVER_SCROLL_NEVER);
                 optionsView.addView(innerOptionsLayout, new RelativeLayout.LayoutParams(size.x, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -320,17 +272,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                 SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, innerOptionsLayout, 130);
                 btnTextColor.setOnClickListener(view -> {
-                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, new ColorPickerDialog.OnColorSelectedListener() {
-                        @Override
-                        public void onColorSelected(int color) {
-                            editTextAbstract.setTextColor(color);
-                        }
-                    });
-                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            editTextAbstract.setTextColor(Color.WHITE);
-                        }
-                    });
+                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, editTextAbstract::setTextColor);
+                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> editTextAbstract.setTextColor(Color.WHITE));
                     colorPickerDialog.setTitle("Text Color");
                     colorPickerDialog.show();
                 });
@@ -338,9 +281,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, innerOptionsLayout, 260);
                 btnBgColor.setOnClickListener(view -> {
                     ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, editTextAbstract::setBackgroundColor);
-                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> {
-                        editTextAbstract.setBackgroundColor(-1728053248);
-                    });
+                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> editTextAbstract.setBackgroundColor(-1728053248));
                     colorPickerDialog.setTitle("Background Color");
                     colorPickerDialog.show();
                 });
@@ -427,7 +368,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 String arg = ((String) param.args[0]).replace("Everyone, ", "");
 
-                for (String groupName : groupsListBeta) {
+                for (String groupName : groupsList) {
                     if (arg.contains(groupName)) {
                         arg = arg.replace(groupName + ", ", "");
                     }
@@ -437,26 +378,50 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        findAndHookMethod("com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration", lpparam.classLoader, "a",
-                findClass("android.support.v7.widget.RecyclerView", lpparam.classLoader), int.class, new XC_MethodHook() {
-                    boolean flag = false;
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        if (!prefs.getBoolean("shouldGroups", true))
-                            return;
+        try {
+            findAndHookMethod("com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration", lpparam.classLoader, "a",
+                    findClass("android.support.v7.widget.RecyclerView", lpparam.classLoader), int.class, new XC_MethodHook() {
+                        boolean flag = false;
 
-                        TextView stickyHeader = (TextView) param.getResult();
-                        if (flag && stickyHeader.getText().toString().equals("RECENTS")) {
-                            stickyHeader.setText("GROUPS");
-                            flag = false;
-                        } else if (stickyHeader.getText().toString().equals("RECENTS")) {
-                            flag = true;
-                        } else if (!flag && stickyHeader.getText().toString().equals("GROUPS")) {
-                            stickyHeader.setText("RECENTS");
-                            flag = true;
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            if (!prefs.getBoolean("shouldGroups", true))
+                                return;
+
+                            TextView stickyHeader = (TextView) param.getResult();
+                            if (flag && stickyHeader.getText().toString().equals("RECENTS")) {
+                                stickyHeader.setText("GROUPS");
+                                flag = false;
+                            } else if (stickyHeader.getText().toString().equals("RECENTS")) {
+                                flag = true;
+                            } else if (!flag && stickyHeader.getText().toString().equals("GROUPS")) {
+                                stickyHeader.setText("RECENTS");
+                                flag = true;
+                            }
                         }
-                    }
-                });
+                    });
+        } catch (XposedHelpers.ClassNotFoundError ignore) {
+//            //TODO Add header "GROUPS"
+//            findAndHookMethod("com.emilsjolander.components.stickylistheaders.AdapterWrapper", lpparam.classLoader, "getHeaderView", int.class, View.class, ViewGroup.class, new XC_MethodHook() {
+//                boolean flag = false;
+//                @Override
+//                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                    if (!prefs.getBoolean("shouldGroups", true))
+//                        return;
+//
+//                    TextView stickyHeader = (TextView) param.getResult();
+//                    if (flag && stickyHeader.getText().toString().equals("RECENTS")) {
+//                        stickyHeader.setText("GROUPS");
+//                        flag = false;
+//                    } else if (stickyHeader.getText().toString().equals("RECENTS")) {
+//                        flag = true;
+//                    } else if (!flag && stickyHeader.getText().toString().equals("GROUPS")) {
+//                        stickyHeader.setText("RECENTS");
+//                        flag = true;
+//                    }
+//                }
+//            });
+        }
 
         findAndHookMethod("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "a", findClass("com.snapchat.android.model.Friend", lpparam.classLoader), boolean.class, new XC_MethodHook() {
             ArrayList<String> groupsChecked = new ArrayList<>();
@@ -483,12 +448,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         XposedBridge.hookAllConstructors(findClass("com.snapchat.android.fragments.sendto.SendToAdapter", lpparam.classLoader), new XC_MethodHook() {
+            @SuppressWarnings("unchecked")
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldGroups", true))
                     return;
 
-                @SuppressWarnings("unchecked")
                 List<Object> j = (List<Object>) getObjectField(param.thisObject, "j");
                 List<Object> i = (List<Object>) getObjectField(param.thisObject, "i");
                 Kryo cloner = new Kryo();
@@ -509,7 +474,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     j.add(friend);
                     i.add(friend);
 
-                    groupsListBeta.add(groupName);
+                    if (groupsList == null) groupsList = new ArrayList<>();
+                    groupsList.add(groupName);
                 }
             }
         });
@@ -520,16 +486,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (((Integer) param.args[0]) == 10) { //10 is our activity
                     Logger.log("Refreshing groups");
                     groupsPref.reload(); //Reload the groups from file
-                    for (Group group : groupsList) {
-                        customListView.removeFooterView(group.getView());
-                    }
 
-                    groupsList.add(new Group(SnapChatContext, customListView, "Everyone", new String[]{"∞"}, true));
-
-                    //noinspection Convert2streamapi
-                    for (Map.Entry<String, ?> entry : groupsPref.getAll().entrySet()) {
-                        groupsList.add(new Group(SnapChatContext, customListView, entry.getKey(), entry.getValue().toString().split(","), false));
-                    }
                     param.setResult(null); //Same thing as return; in a method I think
                 }
             }
@@ -549,14 +506,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod("com.snapchat.android.api.SendSnapTask", lpparam.classLoader, "b", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                Logger.log("Sending");
                 Bundle bundle = (Bundle) param.getResult();
 
-                String[] recipients = bundle.getString("recipients").split("\"")[1].split(",");
-                for (int index = 0; index < recipients.length; index++) {
-                    recipients[index] = recipients[index].replace(recipients[index], "\"" + recipients[index] + "\"");
-                }
-                bundle.putString("recipients", Arrays.toString(recipients));
+                String recipients = "[\"" + bundle.getString("recipients").split(",\",\"")[1];
+                bundle.putString("recipients", recipients);
 
+                Logger.log(bundle.getString("recipients"));
                 Logger.log(bundle.getString("username"));
                 Logger.log(bundle.getString("media_id"));
                 Logger.log(bundle.getString("recipients"));
@@ -596,7 +552,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     new Util().random(editTextAbstract);
                 }
                 if (prefs.getBoolean("setFont", false)) {
-                    final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
+                    @SuppressWarnings("ConstantConditions") final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
                     Typeface face = Typeface.createFromFile(fontsDir + "/" + prefs.getString("Font", "0"));
                     editTextAbstract.setTypeface(face);
                 }
@@ -621,18 +577,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
         //For adding multiline support.
         try {
-            //For versions below 8.0.0 stable
-            XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.snapchat.android.ui.VanillaCaptionView.VanillaCaptionEditText", lpparam.classLoader), new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    XposedHelpers.callMethod(editTextAbstract, "removeTextChangedListener",
-                            (TextWatcher) XposedHelpers.findField(CaptionEditText, "g").get(param.thisObject));//For removing the character limit set on the caption.
-                    EditText cap = (EditText) param.thisObject;
-                    Util.doMultiLine(cap);
-                }
-            });
-        } catch (XposedHelpers.ClassNotFoundError e) {
-            //For versions above 8.1.1 beta
             findAndHookMethod("com.snapchat.android.ui.caption.VanillaCaptionView", lpparam.classLoader, "a", Context.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -645,21 +589,20 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     Util.doMultiLine(cap);
                 }
             });
+        } catch (NoSuchMethodError ignore) {
+            findAndHookConstructor("com.snapchat.android.ui.caption.VanillaCaptionEditText", lpparam.classLoader, Context.class, AttributeSet.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener",
+                            (TextWatcher) XposedHelpers.findField(CaptionEditText, "m").get(param.thisObject));//For removing the character limit set on the caption.
+
+                    final EditText cap = (EditText) param.thisObject;
+                    editText = cap;
+
+                    Util.doMultiLine(cap);
+                }
+            });
         }
-
-        findAndHookMethod("com.emilsjolander.components.stickylistheaders.WrapperView", lpparam.classLoader, "onLayout", boolean.class, int.class, int.class, int.class, int.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("shouldGroups", true))
-                    return;
-
-                final View sendToItem = (View) findField(param.thisObject.getClass(), "mItem").get(param.thisObject);
-                if (sendToItem.getId() != View.NO_ID)
-                    return;
-
-                usersList.add(sendToItem);
-            }
-        });
 
         //For getting the users contacts aka friends
         XposedBridge.hookAllConstructors(findClass("com.snapchat.android.fragments.sendto.SendToAdapter", lpparam.classLoader), new XC_MethodHook() {
@@ -676,17 +619,23 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 for (Object friendRaw : friendsList) {
                     if (!friendRaw.toString().contains("com.snapchat.android.model.MyPostToStory")) {
                         if (!friendRaw.toString().contains("com.snapchat.android.sendto.SeeMoreRecentsItem")) {
-                            friendsObjects.add(friendRaw);
+                            if (!friendRaw.toString().equals("lk")) {
+                                friendsObjects.add(friendRaw);
 
-                            String[] tempFriend = friendRaw.toString().replace("]", "").split("mUsername=");
-                            Logger.log(Arrays.toString(tempFriend));
-                            String friend = tempFriend[1];
+                                Logger.log(friendRaw.toString());
 
-                            //Check to see if the user has already been added to the list, also don't add the user teamsnapchat
-                            if (!friend.equals("teamsnapchat")) {
-                                if (!users.contains(friend)) {
-                                    Logger.log("Adding user to users list: " + friend);
-                                    users.add(friend);
+                                String[] tempFriend = friendRaw.toString().replace("]", "").split("mUsername=");
+                                if (tempFriend.length <= 1) {
+                                    continue;
+                                }
+                                String friend = tempFriend[1];
+
+                                //Check to see if the user has already been added to the list, also don't add the user teamsnapchat
+                                if (!friend.equals("teamsnapchat")) {
+                                    if (!users.contains(friend)) {
+                                        //Logger.log("Adding user to users list: " + friend);
+                                        users.add(friend);
+                                    }
                                 }
                             }
                         }
@@ -696,7 +645,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For checking users in the listview
-        findAndHookMethod("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "h", new XC_MethodHook() {
+        findAndHookMethod("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "m", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 SendToFragmentThisObject = param.thisObject;
