@@ -35,6 +35,7 @@ import com.manvir.logger.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,8 +68,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     //Caption related
     public static EditText editTextAbstract;
     //Groups related
-    public static ArrayList<String> users = new ArrayList<>(); //Holds the usernames of all the users friends. People the user can send snaps to
-    static ArrayList<Object> friendsObjects = new ArrayList<>();
+    public static ArrayList<String> users; //Holds the usernames of all the users friends. People the user can send snaps to
+    static ArrayList<Object> friendsObjects;
     //Xposed
     static String MODULE_PATH;
     static XSharedPreferences prefs;
@@ -253,6 +254,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 optionsView.setVisibility(View.GONE);
                 //noinspection deprecation
                 optionsView.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
+                optionsView.setScrollbarFadingEnabled(false);
                 optionsView.setOverScrollMode(View.OVER_SCROLL_NEVER);
                 optionsView.addView(innerOptionsLayout, new RelativeLayout.LayoutParams(size.x, RelativeLayout.LayoutParams.MATCH_PARENT));
 
@@ -620,6 +622,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     if (!friendRaw.toString().contains("com.snapchat.android.model.MyPostToStory")) {
                         if (!friendRaw.toString().contains("com.snapchat.android.sendto.SeeMoreRecentsItem")) {
                             if (!friendRaw.toString().equals("lk")) {
+                                if (friendsObjects == null) friendsObjects = new ArrayList<>();
                                 friendsObjects.add(friendRaw);
 
                                 Logger.log(friendRaw.toString());
@@ -631,6 +634,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                                 String friend = tempFriend[1];
 
                                 //Check to see if the user has already been added to the list, also don't add the user teamsnapchat
+                                if (users == null) users = new ArrayList<>();
                                 if (!friend.equals("teamsnapchat")) {
                                     if (!users.contains(friend)) {
                                         //Logger.log("Adding user to users list: " + friend);
@@ -652,8 +656,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
+        Method SendToFragmentMethod;
+        try {
+            SendToFragmentMethod = XposedHelpers.findMethodExact("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "l");
+        }catch (NoSuchMethodError ignore){
+            SendToFragmentMethod = XposedHelpers.findMethodExact("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "k");
+        }
+
         //For checking users in the listview
-        findAndHookMethod("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "l", new XC_MethodHook() {
+        XposedBridge.hookMethod(SendToFragmentMethod, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 SendToFragmentThisObject = param.thisObject;
