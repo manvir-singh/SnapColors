@@ -18,6 +18,7 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -35,8 +36,10 @@ import com.manvir.logger.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +90,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     Class<?> CaptionEditText;
     private List<String> groupsList; //This is a list of all the groups that get added to the listview
     private XSharedPreferences groupsPref;
+    boolean isEveryone;
+    boolean isGroup;
 
     public static void unCheckUsers(String[] usersToUnSelect) {
         LinkedHashSet<Object> l;
@@ -140,7 +145,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         } catch (NoSuchMethodError e) {
             //For beta versions
             callMethod(SendToFragmentThisObject, "b");
-            callMethod(SendToFragmentThisObject, "i");
             //In the beta version calling the above methods scrolls the listview to the top so we scroll it back down
             ListView usersListView = null;
             try {
@@ -368,15 +372,22 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod("com.snapchat.android.ui.SendToBottomPanelView", lpparam.classLoader, "setText", String.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                String arg = ((String) param.args[0]).replace("Everyone, ", "");
-
-                for (String groupName : groupsList) {
-                    if (arg.contains(groupName)) {
-                        arg = arg.replace(groupName + ", ", "");
+                try {
+                    isEveryone = ((String) param.args[0]).contains("Everyone, ");
+                    for (String groupName : groupsList) {
+                        isGroup = ((String) param.args[0]).contains(groupName);
                     }
-                }
 
-                param.args[0] = arg;
+                    String arg = ((String) param.args[0]).replace("Everyone, ", "");
+
+                    for (String groupName : groupsList) {
+                        if (arg.contains(groupName)) {
+                            arg = arg.replace(groupName + ", ", "");
+                        }
+                    }
+
+                    param.args[0] = arg;
+                } catch (NullPointerException ignore){}
             }
         });
 
@@ -511,8 +522,26 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 Logger.log("Sending");
                 Bundle bundle = (Bundle) param.getResult();
 
-                String recipients = "[\"" + bundle.getString("recipients").split(",\",\"")[1];
-                bundle.putString("recipients", recipients);
+                try {
+                    String recipients = "[\"" + bundle.getString("recipients").split(",\",\"")[1];
+                    bundle.putString("recipients", recipients);
+                } catch (ArrayIndexOutOfBoundsException ignore) {
+                    //Only
+                    if (isEveryone || isGroup) {
+                        StringBuilder recipientsTemp = new StringBuilder("[\"");
+                        String recipients[] = bundle.getString("recipients").split(",\"");
+                        for (int i = 0; i < recipients.length; i++) {
+                            if (i == 0) continue;
+                            recipientsTemp.append(",\""+recipients[i]);
+                        }
+                        bundle.putString("recipients", "[\""+recipientsTemp.toString().substring(4));
+                        if (bundle.getString("recipients").substring(0, 3).equals("[\",")) {
+                            bundle.putString("recipients", "["+bundle.getString("recipients").substring(3));
+                        }
+                        isEveryone = false;
+                        isGroup = false;
+                    }
+                }
 
                 Logger.log(bundle.getString("recipients"));
                 Logger.log(bundle.getString("username"));
@@ -645,14 +674,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         }
                     }
                 }
-            }
-        });
-
-        //For checking users in the listview
-        findAndHookMethod("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "m", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                SendToFragmentThisObject = param.thisObject;
             }
         });
 

@@ -86,9 +86,7 @@ public class SnapColorsUpdater extends Service{
                 is.close(); // Close the stream
                 returnVal = jsonObject.getBoolean("shouldUpdate");
             }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+            catch (Exception ingore) {}
 			return returnVal;
 		}
 	}
