@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeListener{
-    EditText editText;
+    private EditText editText;
     public Sizelayout(Context context, final EditText editText, int textSize, final HorizontalScrollView f, final ImageButton SnapColorsBtn) {
         super(context);
         this.editText = editText;

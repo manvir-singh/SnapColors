@@ -3,9 +3,7 @@ package com.manvir.SnapColors;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
@@ -18,31 +16,14 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.manvir.logger.Logger;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -56,172 +37,40 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
-import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import static de.robv.android.xposed.XposedHelpers.findClass;
-import static de.robv.android.xposed.XposedHelpers.findField;
-import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
-
-    public static XModuleResources modRes;
-    public static Point size;
-    public static RelativeLayout.LayoutParams optionsViewLayoutParams; //Layout params for the main SnapColors options view
-    //Caption related
-    public static EditText editTextAbstract;
-    //Groups related
-    public static ArrayList<String> users; //Holds the usernames of all the users friends. People the user can send snaps to
-    static ArrayList<Object> friendsObjects;
     //Xposed
-    static String MODULE_PATH;
-    static XSharedPreferences prefs;
-    //Misc
-    static Activity SnapChatContext; //Snapchats main context
-    static boolean notFirstRun = false;
-    //Package names
-    static String SnapChatPKG = "com.snapchat.android";
+    public static XModuleResources modRes;
     //SnapColors options view
+    public static RelativeLayout.LayoutParams optionsViewLayoutParams; //Layout params for the main SnapColors options view
+    public static Point size;
+    public static EditText editTextAbstract;
+    static Activity SnapChatContext; //Snapchats main activity
+    static XSharedPreferences prefs;
+    static String MODULE_PATH;
     static RelativeLayout innerOptionsLayout; //Holds all out options the buttons etc (The outer view is a scrollview)
-    static Typeface defTypeFace;
-    static View SendToBottomPanelView;
-    private static Object SendToFragmentThisObject; //Class object of SendToFragment
-    EditText editText;
+    //Caption related
+    private static boolean notFirstRun = false; //Used when getting the default typeface
+    private static Typeface defTypeFace;
+    //Package names
+    private static String SnapChatPKG = "com.snapchat.android";
+    public EditText editText;
     Class<?> CaptionEditText;
-    private List<String> groupsList; //This is a list of all the groups that get added to the listview
-    private XSharedPreferences groupsPref;
-    boolean isEveryone;
-    boolean isGroup;
-
-    public static void unCheckUsers(String[] usersToUnSelect) {
-        LinkedHashSet<Object> l;
-        try {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
-        } catch (Exception e) {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
-        }
-        for (Object friendObject : friendsObjects) {
-            for (String s : usersToUnSelect) {
-                if (getObjectField(friendObject, "mUsername").equals(s)) {
-                    l.remove(friendObject);
-                }
-            }
-        }
-        doBottomSendToPanel();
-    }
-
-    public static void checkUsers(String[] usersToSelect) {
-        if (SendToFragmentThisObject == null) {
-            Logger.log("SendToFragmentThisObject is nullllllllllllllllllll");
-        }
-        LinkedHashSet<Object> l;
-        try {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "l");
-        } catch (Exception e) {
-            //noinspection unchecked
-            l = (LinkedHashSet<Object>) getObjectField(SendToFragmentThisObject, "m");
-        }
-        for (String user : usersToSelect) {
-            try {
-                for (Object friendObject : friendsObjects) {
-                    if (getObjectField(friendObject, "mUsername").equals(user)) {
-                        l.add(friendObject);
-                    }
-                }
-            } catch (NoSuchFieldError ignore) {
-            }
-        }
-        doBottomSendToPanel();
-    }
-
-    //Hides or shows the bottom panel and populates the user names
-    private static void doBottomSendToPanel() {
-        try {
-            callMethod(SendToFragmentThisObject, "e");
-            callMethod(SendToFragmentThisObject, "g");
-        } catch (NoSuchMethodError e) {
-            //For beta versions
-            callMethod(SendToFragmentThisObject, "b");
-            //In the beta version calling the above methods scrolls the listview to the top so we scroll it back down
-            ListView usersListView = null;
-            try {
-                usersListView = (ListView) getObjectField(SendToFragmentThisObject, "j");
-            } catch (ClassCastException err) {
-                try {
-                    usersListView = (ListView) getObjectField(SendToFragmentThisObject, "k");
-                } catch (ClassCastException ignore) {
-                }
-            }
-
-            if (usersListView != null) {
-                usersListView.setSelection(usersListView.getAdapter().getCount() - 1);
-            }
-        }
-    }
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
         prefs = new XSharedPreferences("com.manvir.SnapColors", "settings");
-        groupsPref = new XSharedPreferences("com.manvir.SnapColors", "groups");
     }
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
         if (!resparam.packageName.equals(SnapChatPKG))
             return;
+
         modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
-
-        //For adding groups
-        resparam.res.hookLayout(SnapChatPKG, "layout", "send_to", new XC_LayoutInflated() {
-            @Override
-            public void handleLayoutInflated(final LayoutInflatedParam layoutInflatedParam) throws Throwable {
-                if (!prefs.getBoolean("shouldGroups", true))
-                    return;
-
-                RelativeLayout SendToActivityLayout = (RelativeLayout) layoutInflatedParam.view;
-
-                SendToBottomPanelView = SendToActivityLayout.findViewById(layoutInflatedParam.res.getIdentifier("bottom_panel", "id", SnapChatPKG));
-
-                //Add edit groups button to the action bar
-                final RelativeLayout topPanle = (RelativeLayout) SendToActivityLayout.findViewById(layoutInflatedParam.res.getIdentifier("action_bar", "id", SnapChatPKG));
-                RelativeLayout backArrow = (RelativeLayout) SendToActivityLayout.findViewById(layoutInflatedParam.res.getIdentifier("send_to_back_button_area", "id", SnapChatPKG));
-                ImageView searchButton = (ImageView) SendToActivityLayout.findViewById(layoutInflatedParam.res.getIdentifier("send_to_action_bar_search_button", "id", SnapChatPKG));
-                final RelativeLayout.LayoutParams editGroupsParams = new RelativeLayout.LayoutParams(
-                        SendToActivityLayout.findViewById(layoutInflatedParam.res.getIdentifier("send_to_action_bar_search_button", "id", SnapChatPKG)).getLayoutParams());
-                editGroupsParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                editGroupsParams.addRule(RelativeLayout.LEFT_OF, layoutInflatedParam.res.getIdentifier("send_to_action_bar_search_button", "id", SnapChatPKG));
-                editGroupsParams.rightMargin = 0;
-                final ImageView editGroups = new ImageView(SnapChatContext);
-                editGroups.setBackgroundDrawable(modRes.getDrawable(R.drawable.group_btn));
-
-                backArrow.setOnTouchListener((v, event) -> {
-                    if (event.getAction() != MotionEvent.ACTION_UP) {
-                        editGroups.setVisibility(View.VISIBLE);
-                    }
-                    return false;
-                });
-                searchButton.setOnTouchListener((v, event) -> {
-                    if (event.getAction() != MotionEvent.ACTION_UP) {
-                        editGroups.setVisibility(View.INVISIBLE);
-                    }
-                    return false;
-                });
-                editGroups.setOnClickListener(v -> {
-                    Intent intent = new Intent();
-                    intent.putStringArrayListExtra("users", users);
-                    intent.setComponent(new ComponentName("com.manvir.SnapColors", "com.manvir.SnapColors.EditGroups"));
-                    SnapChatContext.startActivityForResult(intent, 10);
-                });
-                topPanle.addView(editGroups, editGroupsParams);
-
-                groupsPref.reload();
-            }
-        });
-
         resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
@@ -238,6 +87,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 //The "T" ImageButton object that shows the options when tapped.
                 final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
                 SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
+                //noinspection deprecation
                 SnapColorsBtn.setImageDrawable(modRes.getDrawable(R.drawable.snapcolorsbtn));
 
                 //Get the display params for our layout.
@@ -341,11 +191,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     editTextAbstract.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", SnapChatPKG));
                 });
 
-                //Add our layout to SnapChat's main layout.
-                SnapChatLayout.addView(optionsView, optionsViewLayoutParams);
-
                 SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
-                    boolean SnapColorsBtnBool = true; //To see if the button is pressed again.
+                    boolean SnapColorsBtnBool = true;
 
                     @Override
                     public void onClick(View v) {
@@ -359,6 +206,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     }
                 });
 
+                //Add our layout to SnapChat's main layout.
+                SnapChatLayout.addView(optionsView, optionsViewLayoutParams);
                 SnapChatLayout.addView(SnapColorsBtn, params);
             }
         });
@@ -369,200 +218,23 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         if (!lpparam.packageName.equals(SnapChatPKG))
             return;
 
-        findAndHookMethod("com.snapchat.android.ui.SendToBottomPanelView", lpparam.classLoader, "setText", String.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                try {
-                    isEveryone = ((String) param.args[0]).contains("Everyone, ");
-                    for (String groupName : groupsList) {
-                        isGroup = ((String) param.args[0]).contains(groupName);
-                    }
-
-                    String arg = ((String) param.args[0]).replace("Everyone, ", "");
-
-                    for (String groupName : groupsList) {
-                        if (arg.contains(groupName)) {
-                            arg = arg.replace(groupName + ", ", "");
-                        }
-                    }
-
-                    param.args[0] = arg;
-                } catch (NullPointerException ignore){}
-            }
-        });
-
-        try {
-            findAndHookMethod("com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration", lpparam.classLoader, "a",
-                    findClass("android.support.v7.widget.RecyclerView", lpparam.classLoader), int.class, new XC_MethodHook() {
-                        boolean flag = false;
-
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            if (!prefs.getBoolean("shouldGroups", true))
-                                return;
-
-                            TextView stickyHeader = (TextView) param.getResult();
-                            if (flag && stickyHeader.getText().toString().equals("RECENTS")) {
-                                stickyHeader.setText("GROUPS");
-                                flag = false;
-                            } else if (stickyHeader.getText().toString().equals("RECENTS")) {
-                                flag = true;
-                            } else if (!flag && stickyHeader.getText().toString().equals("GROUPS")) {
-                                stickyHeader.setText("RECENTS");
-                                flag = true;
-                            }
-                        }
-                    });
-        } catch (XposedHelpers.ClassNotFoundError ignore) {
-//            //TODO Add header "GROUPS"
-//            findAndHookMethod("com.emilsjolander.components.stickylistheaders.AdapterWrapper", lpparam.classLoader, "getHeaderView", int.class, View.class, ViewGroup.class, new XC_MethodHook() {
-//                boolean flag = false;
-//                @Override
-//                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                    if (!prefs.getBoolean("shouldGroups", true))
-//                        return;
-//
-//                    TextView stickyHeader = (TextView) param.getResult();
-//                    if (flag && stickyHeader.getText().toString().equals("RECENTS")) {
-//                        stickyHeader.setText("GROUPS");
-//                        flag = false;
-//                    } else if (stickyHeader.getText().toString().equals("RECENTS")) {
-//                        flag = true;
-//                    } else if (!flag && stickyHeader.getText().toString().equals("GROUPS")) {
-//                        stickyHeader.setText("RECENTS");
-//                        flag = true;
-//                    }
-//                }
-//            });
-        }
-
-        findAndHookMethod("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "a", findClass("com.snapchat.android.model.Friend", lpparam.classLoader), boolean.class, new XC_MethodHook() {
-            ArrayList<String> groupsChecked = new ArrayList<>();
-
+        // Get snapchats activity also reload our settings
+        XC_MethodHook startUpHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("shouldGroups", true))
-                    return;
-                Object friend = param.args[0];
-
-                String mUsername = (String) findField(friend.getClass(), "mUsername").get(friend);
-                if (!mUsername.contains(",")) //If the username field contains commas its a group
-                    return;
-
-                String GroupName = (String) findField(friend.getClass(), "mDisplayName").get(friend);
-                if (!groupsChecked.contains(GroupName)) {
-                    groupsChecked.add(GroupName);
-                    checkUsers(mUsername.split(","));
-                } else {
-                    groupsChecked.remove(GroupName);
-                    unCheckUsers(mUsername.split(","));
-                }
-            }
-        });
-
-        XposedBridge.hookAllConstructors(findClass("com.snapchat.android.fragments.sendto.SendToAdapter", lpparam.classLoader), new XC_MethodHook() {
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("shouldGroups", true))
-                    return;
-
-                List<Object> j = (List<Object>) getObjectField(param.thisObject, "j");
-                List<Object> i = (List<Object>) getObjectField(param.thisObject, "i");
-                Kryo cloner = new Kryo();
-
-                Object everyOne = cloner.copy(j.get(2));
-                findField(everyOne.getClass(), "mUsername").set(everyOne, StringUtils.join(users, ','));
-                findField(everyOne.getClass(), "mDisplayName").set(everyOne, "Everyone");
-                j.add(everyOne);
-                i.add(everyOne);
-
-                for (Map.Entry<String, ?> entry : groupsPref.getAll().entrySet()) {
-                    String groupName = entry.getKey();
-                    String users = entry.getValue().toString();
-
-                    Object friend = cloner.copy(j.get(2));
-                    findField(friend.getClass(), "mUsername").set(friend, users);
-                    findField(friend.getClass(), "mDisplayName").set(friend, groupName);
-                    j.add(friend);
-                    i.add(friend);
-
-                    if (groupsList == null) groupsList = new ArrayList<>();
-                    groupsList.add(groupName);
-                }
-            }
-        });
-
-        findAndHookMethod("com.snapchat.android.LandingPageActivity", lpparam.classLoader, "onActivityResult", int.class, int.class, Intent.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (((Integer) param.args[0]) == 10) { //10 is our activity
-                    Logger.log("Refreshing groups");
-                    groupsPref.reload(); //Reload the groups from file
-
-                    param.setResult(null); //Same thing as return; in a method I think
-                }
-            }
-        });
-
-        // Hook snapchats "onCreate" method.
-        findAndHookMethod("com.snapchat.android.LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                if (SnapChatContext == null) SnapChatContext = (Activity) param.thisObject;
                 prefs.reload();
-                SnapChatContext = (Activity) param.thisObject;
-
-                //Util.doDonationMsg(SnapChatContext);
             }
-        });
-
-        findAndHookMethod("com.snapchat.android.api.SendSnapTask", lpparam.classLoader, "b", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                Logger.log("Sending");
-                Bundle bundle = (Bundle) param.getResult();
-
-                try {
-                    String recipients = "[\"" + bundle.getString("recipients").split(",\",\"")[1];
-                    bundle.putString("recipients", recipients);
-                } catch (ArrayIndexOutOfBoundsException ignore) {
-                    //Only
-                    if (isEveryone || isGroup) {
-                        StringBuilder recipientsTemp = new StringBuilder("[\"");
-                        String recipients[] = bundle.getString("recipients").split(",\"");
-                        for (int i = 0; i < recipients.length; i++) {
-                            if (i == 0) continue;
-                            recipientsTemp.append(",\""+recipients[i]);
-                        }
-                        bundle.putString("recipients", "[\""+recipientsTemp.toString().substring(4));
-                        if (bundle.getString("recipients").substring(0, 3).equals("[\",")) {
-                            bundle.putString("recipients", "["+bundle.getString("recipients").substring(3));
-                        }
-                        isEveryone = false;
-                        isGroup = false;
-                    }
-                }
-
-                Logger.log(bundle.getString("recipients"));
-                Logger.log(bundle.getString("username"));
-                Logger.log(bundle.getString("media_id"));
-                Logger.log(bundle.getString("recipients"));
-                Logger.log(bundle.getString("time"));
-            }
-        });
+        };
+        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, startUpHook);
+        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onResume", startUpHook);
 
         /*
         *The location of the "CaptionEditText" class in the beta version of SnapChat is different then in
         *SnapChat stable, so we check to see if the class was found, if not then we are most likely using the beta version
         *of SnapChat.
         */
-        try {
-            //For stable versions
-            CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.SnapCaptionView.CaptionEditText", lpparam.classLoader);
-        } catch (XposedHelpers.ClassNotFoundError e) {
-            //For beta versions
-            CaptionEditText = XposedHelpers.findClass("com.snapchat.android.ui.caption.CaptionEditText", lpparam.classLoader);
-        }
+        CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", lpparam.classLoader);
 
         //Get some settings, also get the caption box's edit text object.
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
@@ -606,89 +278,20 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        //For adding multiline support.
-        try {
-            findAndHookMethod("com.snapchat.android.ui.caption.VanillaCaptionView", lpparam.classLoader, "a", Context.class, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    XposedHelpers.callMethod(param.getResult(), "removeTextChangedListener",
-                            (TextWatcher) XposedHelpers.findField(CaptionEditText, "m").get(param.getResult()));//For removing the character limit set on the caption.
-
-                    final EditText cap = (EditText) param.getResult();
-                    editText = cap;
-
-                    Util.doMultiLine(cap);
-                }
-            });
-        } catch (NoSuchMethodError ignore) {
-            findAndHookConstructor("com.snapchat.android.ui.caption.VanillaCaptionEditText", lpparam.classLoader, Context.class, AttributeSet.class, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener",
-                            (TextWatcher) XposedHelpers.findField(CaptionEditText, "m").get(param.thisObject));//For removing the character limit set on the caption.
-
-                    final EditText cap = (EditText) param.thisObject;
-                    editText = cap;
-
-                    Util.doMultiLine(cap);
-                }
-            });
-        }
-
-        //For getting the users contacts aka friends
-        XposedBridge.hookAllConstructors(findClass("com.snapchat.android.fragments.sendto.SendToAdapter", lpparam.classLoader), new XC_MethodHook() {
+        //For adding multiline support
+        findAndHookConstructor(SnapChatPKG + ".ui.caption.VanillaCaptionEditText", lpparam.classLoader, Context.class, AttributeSet.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                List friendsList;
-                //Beta class check
+                TextWatcher textWatcher;
                 try {
-                    friendsList = (List) findField(param.thisObject.getClass(), "d").get(param.thisObject);//Stable snapchat
-                } catch (ClassCastException e) {
-                    friendsList = (List) findField(param.thisObject.getClass(), "j").get(param.thisObject);//Beta snapchat
+                    textWatcher = (TextWatcher) XposedHelpers.findField(CaptionEditText, "m").get(param.thisObject);
+                } catch (ClassCastException BETA) {
+                    textWatcher = (TextWatcher) XposedHelpers.findField(CaptionEditText, "p").get(param.thisObject);
                 }
-
-                for (Object friendRaw : friendsList) {
-                    if (!friendRaw.toString().contains("com.snapchat.android.model.MyPostToStory")) {
-                        if (!friendRaw.toString().contains("com.snapchat.android.sendto.SeeMoreRecentsItem")) {
-                            if (!friendRaw.toString().equals("lk")) {
-                                if (friendsObjects == null) friendsObjects = new ArrayList<>();
-                                friendsObjects.add(friendRaw);
-
-                                Logger.log(friendRaw.toString());
-
-                                String[] tempFriend = friendRaw.toString().replace("]", "").split("mUsername=");
-                                if (tempFriend.length <= 1) {
-                                    continue;
-                                }
-                                String friend = tempFriend[1];
-
-                                //Check to see if the user has already been added to the list, also don't add the user teamsnapchat
-                                if (users == null) users = new ArrayList<>();
-                                if (!friend.equals("teamsnapchat")) {
-                                    if (!users.contains(friend)) {
-                                        //Logger.log("Adding user to users list: " + friend);
-                                        users.add(friend);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        Method SendToFragmentMethod;
-        try {
-            SendToFragmentMethod = XposedHelpers.findMethodExact("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "l");
-        }catch (NoSuchMethodError ignore){
-            SendToFragmentMethod = XposedHelpers.findMethodExact("com.snapchat.android.fragments.sendto.SendToFragment", lpparam.classLoader, "k");
-        }
-
-        //For checking users in the listview
-        XposedBridge.hookMethod(SendToFragmentMethod, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                SendToFragmentThisObject = param.thisObject;
+                XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener", textWatcher);//For removing the character limit set on the caption
+                final EditText cap = (EditText) param.thisObject;
+                editText = cap;
+                Util.doMultiLine(cap);
             }
         });
     }

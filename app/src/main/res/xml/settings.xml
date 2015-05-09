@@ -34,12 +34,6 @@
             android:key="clearAllImportedFonts"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Groups">
-        <CheckBoxPreference
-            android:title="Enable Groups"
-            android:key="shouldGroups"/>
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Updater">
         <CheckBoxPreference
             android:title="Enable Updater"

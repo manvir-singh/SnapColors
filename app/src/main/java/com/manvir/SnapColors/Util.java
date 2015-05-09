@@ -24,15 +24,11 @@ import android.widget.RelativeLayout;
 import com.manvir.logger.Logger;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Random;
@@ -84,22 +80,16 @@ public class Util {
                         final AlertDialog.Builder al = new AlertDialog.Builder(con);
                         al.setTitle("SnapColors");
                         al.setMessage("You need to download fonts, they are not included. To download just tap \"Download & Install\". (Note no icon will be added)");
-                        al.setNegativeButton("Download & Install", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new Util(con).downloadFontsApk();
-                            }
+                        al.setNegativeButton("Download & Install", (dialog, which) -> {
+                            new Util(con).downloadFontsApk();
                         });
-                        al.setNeutralButton("Why", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String whyText = "The reason why fonts are not included with the tweak are:\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
-                                final AlertDialog alertDialog = new AlertDialog.Builder(con).create();
-                                alertDialog.setTitle("SnapColors");
-                                alertDialog.setMessage(whyText);
-                                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", (dialog1, which1) -> alertDialog.dismiss());
-                                alertDialog.show();
-                            }
+                        al.setNeutralButton("Why", (dialog, which) -> {
+                            String whyText = "The reason why fonts are not included with the tweak are:\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
+                            final AlertDialog alertDialog = new AlertDialog.Builder(con).create();
+                            alertDialog.setTitle("SnapColors");
+                            alertDialog.setMessage(whyText);
+                            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", (dialog1, which1) -> alertDialog.dismiss());
+                            alertDialog.show();
                         });
                         al.show();
                         pro.dismiss();
@@ -107,66 +97,6 @@ public class Util {
                 }
             }
         }.start();
-    }
-
-    /**
-     * Checks to see if the user just updated. If they did then show the donation message
-     *
-     * @param con The current {@link android.content.Context}
-     */
-    public static void doDonationMsg(Context con) {
-        Logger.log("Doing donation stuff");
-        try {
-            con.createPackageContext("com.manvir.snapcolorsdonation", 0); //old donation package
-        } catch (PackageManager.NameNotFoundException e) {
-            try {
-                con.createPackageContext("com.manvir.programming4lifedonate", 0); //new donation package
-            } catch (PackageManager.NameNotFoundException e1) {
-                try {
-                    int SnapColorsVersionCode = con.getPackageManager().getPackageInfo("com.manvir.SnapColors", 0).versionCode;
-                    File versionFile = new File(con.getCacheDir().getAbsolutePath() + "/version");
-
-                    if (!versionFile.exists())
-                        //noinspection ResultOfMethodCallIgnored
-                        versionFile.createNewFile();
-
-                    if (getStringFromFile(versionFile.getAbsolutePath()).equals("")) {
-                        new DonationDialog(con).show();
-                        PrintWriter writer = new PrintWriter(versionFile);
-                        writer.write(String.valueOf(SnapColorsVersionCode));
-                        writer.close();
-                    } else if (Integer.parseInt(getStringFromFile(versionFile.getAbsolutePath())) != SnapColorsVersionCode) {
-                        new DonationDialog(con).show();
-                        PrintWriter writer = new PrintWriter(versionFile);
-                        writer.write(String.valueOf(SnapColorsVersionCode));
-                        writer.close();
-                    }
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /**
-     * Reads a file into a single continues {@link java.lang.String}
-     * <p>Used by {@link #doDonationMsg(android.content.Context) doDonationMsg}</p>
-     *
-     * @param filePath The file you want to get data from as a {@link java.lang.String}
-     * @return A {@link java.lang.String} containing the data from the file
-     */
-    private static String getStringFromFile(String filePath) throws Exception {
-        File fl = new File(filePath);
-        FileInputStream fin = new FileInputStream(fl);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
-        reader.close();
-        fin.close();
-        return sb.toString();
     }
 
     /**

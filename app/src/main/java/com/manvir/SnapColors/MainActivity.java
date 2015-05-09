@@ -14,6 +14,8 @@ import com.startapp.android.publish.StartAppSDK;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends ActionBarActivity {
+    public static String SnapColorsPKG = "com.manvir.SnapColors";
+    public static String SnapChatPKG = "com.snapchat.android";
     private StartAppAd startAppAd = new StartAppAd(this);
 
     @Override

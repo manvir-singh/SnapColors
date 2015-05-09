@@ -32,14 +32,14 @@ import java.io.OutputStream;
 
 public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
-    String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.snapchat.android/files";
+    String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + MainActivity.SnapChatPKG + "/files";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
         prefs = getActivity().getSharedPreferences("settings", Context.MODE_WORLD_READABLE);
-        if(BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
+        if (BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
 
         //Find all preferences
         final CheckBoxPreference TextColor = (CheckBoxPreference) getPreferenceManager().findPreference("TextColor");
@@ -49,21 +49,17 @@ public class Settings extends PreferenceFragment {
         final CheckBoxPreference shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
         final Preference importFont = getPreferenceManager().findPreference("importFont");
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
-        final CheckBoxPreference shouldGroups = (CheckBoxPreference) getPreferenceManager().findPreference("shouldGroups");
         final CheckBoxPreference checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
         final Preference donate = getPreferenceManager().findPreference("donate");
 
         //Startup stuff
-        if(prefs.getBoolean("shouldGroups", true)){
-            shouldGroups.setChecked(true);
-        }
-        if(prefs.getBoolean("checkForVer", true)){
+        if (prefs.getBoolean("checkForVer", true)) {
             checkForVer.setChecked(true);
         }
-        if(TextColor.isChecked() || BGColor.isChecked()){
+        if (TextColor.isChecked() || BGColor.isChecked()) {
             autoRandomize.setEnabled(false);
         }
-        if(autoRandomize.isChecked()){
+        if (autoRandomize.isChecked()) {
             TextColor.setEnabled(false);
             BGColor.setEnabled(false);
         }
@@ -73,28 +69,18 @@ public class Settings extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent();
-                intent.setComponent(new ComponentName("com.manvir.SnapColors", "com.manvir.SnapColors.DonateActivity"));
+                intent.setComponent(new ComponentName(MainActivity.SnapColorsPKG, MainActivity.SnapColorsPKG + ".DonateActivity"));
                 getActivity().startActivity(intent);
                 return true;
             }
         });
-        shouldGroups.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if(!shouldGroups.isChecked()){
-                    prefs.edit().putBoolean("shouldGroups", true).apply();
-                }else {
-                    prefs.edit().putBoolean("shouldGroups", false).apply();
-                }
-                return true;
-            }
-        });
+        
         checkForVer.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if(!checkForVer.isChecked()){
+                if (!checkForVer.isChecked()) {
                     prefs.edit().putBoolean("checkForVer", true).apply();
-                }else {
+                } else {
                     prefs.edit().putBoolean("checkForVer", false).apply();
                 }
                 return true;
@@ -111,9 +97,9 @@ public class Settings extends PreferenceFragment {
         shouldRainbow.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if(!shouldRainbow.isChecked()){
+                if (!shouldRainbow.isChecked()) {
                     prefs.edit().putBoolean("shouldRainbow", true).apply();
-                }else {
+                } else {
                     prefs.edit().putBoolean("shouldRainbow", false).apply();
                 }
                 return true;
@@ -122,11 +108,11 @@ public class Settings extends PreferenceFragment {
         autoRandomize.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if(!autoRandomize.isChecked()){
+                if (!autoRandomize.isChecked()) {
                     TextColor.setEnabled(false);
                     BGColor.setEnabled(false);
                     prefs.edit().putBoolean("autoRandomize", true).apply();
-                }else {
+                } else {
                     prefs.edit().putBoolean("autoRandomize", false).apply();
                     TextColor.setEnabled(true);
                     BGColor.setEnabled(true);
@@ -137,7 +123,7 @@ public class Settings extends PreferenceFragment {
         setFont.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if(!setFont.isChecked()){
+                if (!setFont.isChecked()) {
                     try {
                         Resources res = getActivity().getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
                         prefs.edit().putBoolean("setFont", true).apply();
@@ -166,7 +152,7 @@ public class Settings extends PreferenceFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String strName = arrayAdapter.getItem(which).replace(".TTF", ".ttf");
-                                Typeface face = Typeface.createFromFile(fontsDir+ "/" + strName);
+                                Typeface face = Typeface.createFromFile(fontsDir + "/" + strName);
                                 prefs.edit().putString("Font", strName).apply();
                                 prefs.edit().putBoolean("setFont", true).apply();
                                 System.gc(); //We need to run the GC, if we don't thetypefaces stay in memory.
@@ -212,7 +198,7 @@ public class Settings extends PreferenceFragment {
                         });
                         al.show();
                     }
-                }else {
+                } else {
                     prefs.edit().putBoolean("setFont", false).apply();
                 }
                 return true;
@@ -299,10 +285,10 @@ public class Settings extends PreferenceFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode != 0 && data != null){
+        if (resultCode != 0 && data != null) {
             try {
                 File ttfFile = new File(Uri.decode(data.getDataString()).split(":/")[1]);//Todo Fix the import font bug. Fixed it temporally though.
-                FileUtils.copyFile(ttfFile, new File(fontsDir+"/"+ttfFile.getName()));
+                FileUtils.copyFile(ttfFile, new File(fontsDir + "/" + ttfFile.getName()));
                 Toast.makeText(getActivity(), "Import successful.", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -311,8 +297,8 @@ public class Settings extends PreferenceFragment {
         }
     }
 
-    public void copyAssets(Resources res){
-        if(!new File(fontsDir).exists()){
+    public void copyAssets(Resources res) {
+        if (!new File(fontsDir).exists()) {
             if (!new File(fontsDir).mkdirs())
                 throw new RuntimeException("SnapColors was unable to create fontsDir.");
         }
@@ -323,7 +309,7 @@ public class Settings extends PreferenceFragment {
         } catch (IOException e) {
             Log.e("tag", "Failed to get asset file list.", e);
         }
-        for(String filename : files) {
+        for (String filename : files) {
             try {
                 InputStream in;
                 OutputStream out;
@@ -336,7 +322,7 @@ public class Settings extends PreferenceFragment {
                 out.flush();
                 out.close();
                 out = null;
-            } catch(IOException e) {
+            } catch (IOException e) {
                 Log.e("SnapColors", "Failed to copy asset file: " + filename, e);
             }
         }
@@ -345,7 +331,7 @@ public class Settings extends PreferenceFragment {
     private void copyFile(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int read;
-        while((read = in.read(buffer)) != -1){
+        while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
         }
     }

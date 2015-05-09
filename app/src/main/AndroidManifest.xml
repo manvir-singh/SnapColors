@@ -40,12 +40,6 @@
             android:exported="true"
             android:label="@string/title_activity_donate" >
         </activity>
-        <activity
-            android:name=".EditGroups"
-            android:enabled="true"
-            android:exported="true"
-            android:label="@string/title_activity_editgroups" >
-        </activity>
 
         <receiver android:name=".onBooted" >
             <intent-filter>
