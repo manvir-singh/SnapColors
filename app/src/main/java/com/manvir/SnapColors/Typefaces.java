@@ -11,7 +11,7 @@ import java.util.Hashtable;
 
 public class Typefaces {
     private static final String TAG = "Typefaces";
-    private static final Hashtable<String, Typeface> cache = new Hashtable<String, Typeface>();
+    private static final Hashtable<String, Typeface> cache = new Hashtable<>();
 
     public static Typeface get(String path) {
         synchronized (cache) {
