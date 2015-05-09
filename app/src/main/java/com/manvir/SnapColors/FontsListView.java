@@ -50,14 +50,14 @@ public class FontsListView extends RelativeLayout {
             String fontName = aFile.getName().replace(".ttf", "").replace(".TTF", "");
             TextView v = new TextView(context);
             v.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-            v.setTypeface(Typefaces.get(context, fontsDir+ "/" + fontName+".ttf"));
+            v.setTypeface(Typefaces.get(fontsDir+ "/" + fontName+".ttf"));
             v.setTextSize(20);
             v.setText(fontName);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String fontName = ((TextView)v).getText().toString();
-                    App.editTextAbstract.setTypeface(Typefaces.get(context, fontsDir+ "/" + fontName+".ttf"));
+                    App.editTextAbstract.setTypeface(Typefaces.get(fontsDir+ "/" + fontName+".ttf"));
                     ((RelativeLayout) FontsListView.this.getParent()).removeView(FontsListView.this);
                     f.setVisibility(View.VISIBLE);
                     SnapColorsBtn.setClickable(true);
