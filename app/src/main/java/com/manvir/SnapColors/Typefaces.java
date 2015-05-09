@@ -1,6 +1,5 @@
 package com.manvir.SnapColors;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
 
@@ -12,7 +11,6 @@ import java.util.Hashtable;
 
 public class Typefaces {
     private static final String TAG = "Typefaces";
-
     private static final Hashtable<String, Typeface> cache = new Hashtable<String, Typeface>();
 
     public static Typeface get(String path) {
