@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -13,7 +14,7 @@ import com.startapp.android.publish.StartAppSDK;
 
 import java.util.concurrent.ExecutionException;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
     public static String SnapColorsPKG = "com.manvir.SnapColors";
     public static String SnapChatPKG = "com.snapchat.android";
     private StartAppAd startAppAd = new StartAppAd(this);

@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
+@SuppressWarnings("deprecation")
 public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeListener{
     private EditText editText;
     public Sizelayout(Context context, final EditText editText, int textSize, final HorizontalScrollView f, final ImageButton SnapColorsBtn) {
@@ -31,26 +32,20 @@ public class Sizelayout extends LinearLayout implements SeekBar.OnSeekBarChangeL
         Button btnDone = (Button)findViewById(R.id.done);
         btnDone.getLayoutParams().width = (App.size.x/2)-40;
         btnDone.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
-        btnDone.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
-                f.setVisibility(View.VISIBLE);
-                SnapColorsBtn.setClickable(true);
-            }
+        btnDone.setOnClickListener(v -> {
+            ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
+            f.setVisibility(View.VISIBLE);
+            SnapColorsBtn.setClickable(true);
         });
 
         Button btnCancel = (Button)findViewById(R.id.cancel);
         btnCancel.getLayoutParams().width = (App.size.x/2)-40;
         btnCancel.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
-        btnCancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, 57.0f);
-                ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
-                f.setVisibility(View.VISIBLE);
-                SnapColorsBtn.setClickable(true);
-            }
+        btnCancel.setOnClickListener(v -> {
+            editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, 57.0f);
+            ((RelativeLayout) Sizelayout.this.getParent()).removeView(Sizelayout.this);
+            f.setVisibility(View.VISIBLE);
+            SnapColorsBtn.setClickable(true);
         });
     }
 
