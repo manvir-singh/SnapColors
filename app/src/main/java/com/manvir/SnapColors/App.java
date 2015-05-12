@@ -229,11 +229,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, startUpHook);
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onResume", startUpHook);
 
-        /*
-        *The location of the "CaptionEditText" class in the beta version of SnapChat is different then in
-        *SnapChat stable, so we check to see if the class was found, if not then we are most likely using the beta version
-        *of SnapChat.
-        */
         CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", lpparam.classLoader);
 
         //Get some settings, also get the caption box's edit text object.
