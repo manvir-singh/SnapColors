@@ -46,7 +46,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     //SnapColors options view
     public static RelativeLayout.LayoutParams optionsViewLayoutParams; //Layout params for the main SnapColors options view
     public static Point size;
-    public static EditText editTextAbstract;
+    public static EditText SnapChatEditText;
     static Activity SnapChatContext; //Snapchats main activity
     static XSharedPreferences prefs;
     static String MODULE_PATH;
@@ -56,7 +56,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private static Typeface defTypeFace;
     //Package names
     private static String SnapChatPKG = "com.snapchat.android";
-    public EditText editText;
     Class<?> CaptionEditText;
 
     @Override
@@ -114,43 +113,43 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                 SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, innerOptionsLayout, 0);//Add 130 to every button
                 btnRandomize.setOnLongClickListener(v -> {
-                    editTextAbstract.setTextColor(Color.WHITE);
-                    editTextAbstract.setBackgroundColor(-1728053248);
+                    SnapChatEditText.setTextColor(Color.WHITE);
+                    SnapChatEditText.setBackgroundColor(-1728053248);
                     return true;
                 });
                 btnRandomize.setOnClickListener(view -> {
                     Random random = new Random();
                     int colorBG = Color.argb(random.nextInt(256), random.nextInt(256), random.nextInt(256), random.nextInt(256));
                     int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-                    editTextAbstract.setBackgroundColor(colorBG);
-                    editTextAbstract.setTextColor(colorText);
+                    SnapChatEditText.setBackgroundColor(colorBG);
+                    SnapChatEditText.setTextColor(colorText);
                 });
 
                 SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, innerOptionsLayout, 130);
                 btnTextColor.setOnClickListener(view -> {
-                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, editTextAbstract::setTextColor);
-                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> editTextAbstract.setTextColor(Color.WHITE));
+                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, SnapChatEditText::setTextColor);
+                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> SnapChatEditText.setTextColor(Color.WHITE));
                     colorPickerDialog.setTitle("Text Color");
                     colorPickerDialog.show();
                 });
 
                 SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, innerOptionsLayout, 260);
                 btnBgColor.setOnClickListener(view -> {
-                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, editTextAbstract::setBackgroundColor);
-                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> editTextAbstract.setBackgroundColor(-1728053248));
+                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, SnapChatEditText::setBackgroundColor);
+                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> SnapChatEditText.setBackgroundColor(-1728053248));
                     colorPickerDialog.setTitle("Background Color");
                     colorPickerDialog.show();
                 });
 
                 SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, innerOptionsLayout, 390);
                 btnSize.setOnClickListener(v -> {
-                    Sizelayout sizelayout = new Sizelayout(SnapChatContext, editTextAbstract, (int) editTextAbstract.getTextSize(), optionsView, SnapColorsBtn);
+                    Sizelayout sizelayout = new Sizelayout(SnapChatContext, SnapChatEditText, (int) SnapChatEditText.getTextSize(), optionsView, SnapColorsBtn);
                     SnapChatLayout.addView(sizelayout, optionsViewLayoutParams);
                 });
 
                 SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, innerOptionsLayout, 520);
                 btnAlpha.setOnClickListener(v -> {
-                    AlphaLayout alphalayout = new AlphaLayout(SnapChatContext, editTextAbstract, optionsView, SnapColorsBtn);
+                    AlphaLayout alphalayout = new AlphaLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn);
                     SnapChatLayout.addView(alphalayout, optionsViewLayoutParams);
                 });
 
@@ -164,31 +163,31 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                     @Override
                     public void onClick(View v) {
-                        for (int i = 0; i < editTextAbstract.getText().length(); i++) {
-                            SpannableString ss = new SpannableString(editTextAbstract.getText());
+                        for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
+                            SpannableString ss = new SpannableString(SnapChatEditText.getText());
                             ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            editTextAbstract.setText(ss);
+                            SnapChatEditText.setText(ss);
                         }
                     }
                 });
 
                 SButton btnTexture = new SButton(SnapChatContext, R.drawable.texture_btn, innerOptionsLayout, 910);
-                btnTexture.setOnClickListener(v -> new TextureLayout(SnapChatContext, editTextAbstract, optionsView, SnapColorsBtn, SnapChatLayout));
+                btnTexture.setOnClickListener(v -> new TextureLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn, SnapChatLayout));
 
                 SButton btnGradient = new SButton(SnapChatContext, R.drawable.grad_btn, innerOptionsLayout, 1040);
                 btnGradient.setOnClickListener(v -> {
-                    GradientLayout gradientLayout = new GradientLayout(SnapChatContext, editTextAbstract, optionsView, SnapColorsBtn);
+                    GradientLayout gradientLayout = new GradientLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn);
                     SnapChatLayout.addView(gradientLayout, optionsViewLayoutParams);
                 });
 
                 SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, innerOptionsLayout, 1170);
                 btnReset.setOnClickListener(v -> {
-                    editTextAbstract.getPaint().reset(); //Notice: resets EVERYTHING!
-                    editTextAbstract.setText(editTextAbstract.getText().toString()); //Resets the rainbow color.
-                    editTextAbstract.setTypeface(defTypeFace);
-                    editTextAbstract.setTextColor(Color.WHITE);
-                    editTextAbstract.setTextSize(21f);
-                    editTextAbstract.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", SnapChatPKG));
+                    SnapChatEditText.getPaint().reset(); //Notice: resets EVERYTHING!
+                    SnapChatEditText.setText(SnapChatEditText.getText().toString()); //Resets the rainbow color.
+                    SnapChatEditText.setTypeface(defTypeFace);
+                    SnapChatEditText.setTextColor(Color.WHITE);
+                    SnapChatEditText.setTextSize(21f);
+                    SnapChatEditText.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", SnapChatPKG));
                 });
 
                 SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
@@ -236,35 +235,35 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
                 prefs.reload();
-                editTextAbstract = (EditText) param.thisObject;// Get the Caption box's edit text object.
+                SnapChatEditText = (EditText) param.thisObject;// Get the Caption box's edit text object.
 
                 //Check to see if the app is being opened for the first time.
                 if (!notFirstRun) {
-                    defTypeFace = editTextAbstract.getTypeface();
+                    defTypeFace = SnapChatEditText.getTypeface();
                     notFirstRun = true;
                 }
                 // Get stuff from settings here
-                editTextAbstract.setTextColor(prefs.getInt("TextColor", Color.WHITE));
-                editTextAbstract.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
+                SnapChatEditText.setTextColor(prefs.getInt("TextColor", Color.WHITE));
+                SnapChatEditText.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
                 if (prefs.getBoolean("autoRandomize", false)) {
-                    new Util().random(editTextAbstract);
+                    new Util().random(SnapChatEditText);
                 }
                 if (prefs.getBoolean("setFont", false)) {
                     @SuppressWarnings("ConstantConditions") final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
                     Typeface face = Typeface.createFromFile(fontsDir + "/" + prefs.getString("Font", "0"));
-                    editTextAbstract.setTypeface(face);
+                    SnapChatEditText.setTypeface(face);
                 }
                 if (prefs.getBoolean("shouldRainbow", false)) {
-                    editTextAbstract.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    SnapChatEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                         Random random = new Random();
 
                         @Override
                         public void onFocusChange(View v, boolean hasFocus) {
                             if (!hasFocus) {
-                                for (int i = 0; i < editTextAbstract.getText().length(); i++) {
-                                    SpannableString ss = new SpannableString(editTextAbstract.getText());
+                                for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
+                                    SpannableString ss = new SpannableString(SnapChatEditText.getText());
                                     ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                    editTextAbstract.setText(ss);
+                                    SnapChatEditText.setText(ss);
                                 }
                             }
                         }
@@ -283,10 +282,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 } catch (ClassCastException BETA) {
                     textWatcher = (TextWatcher) XposedHelpers.findField(CaptionEditText, "p").get(param.thisObject);
                 }
-                XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener", textWatcher);//For removing the character limit set on the caption
-                final EditText cap = (EditText) param.thisObject;
-                editText = cap;
-                Util.doMultiLine(cap);
+                XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener", textWatcher);
+                Util.doMultiLine(SnapChatEditText);
             }
         });
     }
