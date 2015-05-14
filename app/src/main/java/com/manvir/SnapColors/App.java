@@ -229,7 +229,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onResume", startUpHook);
 
         CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", lpparam.classLoader);
-
         //Get some settings, also get the caption box's edit text object.
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
