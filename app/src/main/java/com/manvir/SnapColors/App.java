@@ -47,16 +47,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public static RelativeLayout.LayoutParams optionsViewLayoutParams; //Layout params for the main SnapColors options view
     public static Point size;
     public static EditText SnapChatEditText;
-    static Activity SnapChatContext; //Snapchats main activity
     static XSharedPreferences prefs;
     static String MODULE_PATH;
-    static RelativeLayout innerOptionsLayout; //Holds all out options the buttons etc (The outer view is a scrollview)
+    //SnapChat
+    private static String SnapChatPKG = "com.snapchat.android";
     //Caption related
     private static boolean notFirstRun = false; //Used when getting the default typeface
     private static Typeface defTypeFace;
+    private Activity SnapChatContext; //Snapchats main activity
     //Package names
-    private static String SnapChatPKG = "com.snapchat.android";
-    Class<?> CaptionEditText;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -71,10 +70,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
         modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
         resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
+            RelativeLayout SnapChatLayout = null;
+            RelativeLayout innerOptionsLayout; //Holds all out options the buttons etc (The outer view is a scrollview)
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 //Get Snapchats main layout.
-                final RelativeLayout SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", SnapChatPKG));
+                SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", SnapChatPKG));
+                if (SnapChatLayout == null) //Beta support
+                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_decor_relative_layout", "id", SnapChatPKG));
 
                 //LayoutParams for the "T" that shows the options when tapped.
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn", "id", SnapChatPKG)).getLayoutParams());
@@ -217,6 +220,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         if (!lpparam.packageName.equals(SnapChatPKG))
             return;
 
+        Class<?> CaptionEditText;
         // Get snapchats activity also reload our settings
         XC_MethodHook startUpHook = new XC_MethodHook() {
             @Override
