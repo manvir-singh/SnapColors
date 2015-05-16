@@ -72,6 +72,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
             RelativeLayout SnapChatLayout = null;
             RelativeLayout innerOptionsLayout; //Holds all out options the buttons etc (The outer view is a scrollview)
+
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 //Get Snapchats main layout.
@@ -166,6 +167,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                     @Override
                     public void onClick(View v) {
+                        for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
+                            SnapChatEditText.getText().removeSpan(SnapChatEditText.getText().getSpans(i, i + 1, ForegroundColorSpan.class));
+                        }
                         for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
                             SpannableString ss = new SpannableString(SnapChatEditText.getText());
                             ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
