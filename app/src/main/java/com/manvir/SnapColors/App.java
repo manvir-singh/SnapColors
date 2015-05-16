@@ -243,6 +243,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
                 prefs.reload();
                 SnapChatEditText = (EditText) param.thisObject;// Get the Caption box's edit text object.
+                SnapChatEditText.setOnEditorActionListener(null);
 
                 //Check to see if the app is being opened for the first time.
                 if (!notFirstRun) {
