@@ -89,11 +89,9 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Catalano.Android.Image" level="project" />
     <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.1.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.1.1" level="project" />
-    <orderEntry type="library" exported="" name="commons-lang3-3.3.2" level="project" />
     <orderEntry type="library" exported="" name="StartAppInApp-2.4.13" level="project" />
     <orderEntry type="library" exported="" name="XposedBridgeApi-20150213" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.1.1" level="project" />
