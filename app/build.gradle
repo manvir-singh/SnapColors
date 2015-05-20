@@ -26,6 +26,7 @@ android {
     productFlavors {
     }
     lintOptions {
+        abortOnError false
         checkReleaseBuilds false
     }
     packagingOptions {
