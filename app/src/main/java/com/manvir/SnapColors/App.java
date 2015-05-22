@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
@@ -24,6 +26,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import java.lang.reflect.Method;
 import java.util.Random;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -37,8 +40,12 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
+import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.findClass;
+import static de.robv.android.xposed.XposedHelpers.findField;
+import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     //Xposed
@@ -54,8 +61,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     //Caption related
     private static boolean notFirstRun = false; //Used when getting the default typeface
     private static Typeface defTypeFace;
+    boolean imgFromGallery = false;
     private Activity SnapChatContext; //Snapchats main activity
-    //Package names
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -231,10 +238,36 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (SnapChatContext == null) SnapChatContext = (Activity) param.thisObject;
                 prefs.reload();
+
+                //For opening image from gallery
+                Method onActivityResult = findMethodExact(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onActivityResult",
+                        int.class, int.class, Intent.class);
+                if (!param.method.getName().equals("onCreate")) return;
+                Intent intent = (Intent) callMethod(SnapChatContext, "getIntent");
+                if (intent.getExtras() == null) return;
+                Uri image = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+                intent.setData(image);
+                try {
+                    imgFromGallery = true;
+                    onActivityResult.invoke(SnapChatContext, 1001, -1, intent);
+                } catch (Exception theEnd) {
+                    theEnd.printStackTrace();
+                }
             }
         };
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, startUpHook);
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onResume", startUpHook);
+
+        //For opening image from gallery
+        findAndHookConstructor("bdm", lpparam.classLoader, findClass("ahd", lpparam.classLoader), findClass("bdl", lpparam.classLoader), new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!imgFromGallery) return;
+                imgFromGallery = false;
+                param.args[1] = param.args[1].getClass().getEnumConstants()[2];//bdl.PHONE_GALLERY
+                findField(param.args[0].getClass(), "mIsChatMedia").set(param.args[0], false);
+            }
+        });
 
         CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", lpparam.classLoader);
         //Get some settings, also get the caption box's edit text object.
