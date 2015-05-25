@@ -43,9 +43,7 @@
             android:name=".OpenInSCActivity"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
-            <intent-filter
-                android:icon="@drawable/share_icon"
-                android:label="Snapchat">
+            <intent-filter android:label="Snapchat">
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
