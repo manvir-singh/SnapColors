@@ -114,6 +114,20 @@ public class Util {
     }
 
     /**
+     * Used to determine if a reboot needs to be done after updating the module
+     */
+    public static int activeVersion() {
+        return -1;
+    }
+
+    /**
+     * Returns true if the passed int is a negative value, returns false otherwise.
+     */
+    public static boolean isNegative(int i) {
+        return i != 0 && i >> 31 != 0;
+    }
+
+    /**
      * Sets the EditText background, and the text color to a random color.
      *
      * @param textsBox The {@link android.widget.EditText} to set a random background color and text color on.

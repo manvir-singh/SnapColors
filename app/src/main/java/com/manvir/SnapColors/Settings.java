@@ -64,6 +64,11 @@ public class Settings extends PreferenceFragment {
             TextColor.setEnabled(false);
             BGColor.setEnabled(false);
         }
+        if (Util.activeVersion() != BuildConfig.VERSION_CODE && !Util.isNegative(Util.activeVersion())) {
+            Toast.makeText(getActivity(), "Warning: Did you forget to reboot/soft reboot?!", Toast.LENGTH_LONG).show();
+        } else if (Util.isNegative(Util.activeVersion())) {
+            Toast.makeText(getActivity(), "Warning: Module disabled in xposed!", Toast.LENGTH_LONG).show();
+        }
 
         //Listeners
         donate.setOnPreferenceClickListener(preference -> {
@@ -233,6 +238,7 @@ public class Settings extends PreferenceFragment {
         }
     }
 
+    @SuppressWarnings("UnusedAssignment")
     public void copyAssets(Resources res) {
         if (!new File(fontsDir).exists()) {
             if (!new File(fontsDir).mkdirs())

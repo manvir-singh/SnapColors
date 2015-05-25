@@ -33,6 +33,7 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -228,6 +229,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
+        //DownloadAI
+        if (lpparam.packageName.equals("com.manvir.SnapColors"))
+            findAndHookMethod("com.manvir.SnapColors.Util", lpparam.classLoader, "activeVersion", XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
+
+        //SnapChat
         if (!lpparam.packageName.equals(SnapChatPKG))
             return;
 
