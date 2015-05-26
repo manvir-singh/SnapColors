@@ -15,6 +15,7 @@ public class OpenInSCActivity extends Activity {
         Intent intent = getIntent();
         if (intent.getType().startsWith("image/")) {
             initSC();
+            intent.putExtra("com.manvir.SnapColors.isSnapColors", true);
             intent.setComponent(new ComponentName("com.snapchat.android", "com.snapchat.android.LandingPageActivity"));
             startActivity(intent);
             finish();
