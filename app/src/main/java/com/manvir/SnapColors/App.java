@@ -246,9 +246,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 prefs.reload();
 
                 //For opening image from gallery
+                if (!param.method.getName().equals("onCreate")) return;
                 Method onActivityResult = findMethodExact(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onActivityResult",
                         int.class, int.class, Intent.class);
-                if (!param.method.getName().equals("onCreate")) return;
                 Intent intent = (Intent) callMethod(SnapChatContext, "getIntent");
                 if (intent.getExtras() == null) return;
                 Uri image = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
