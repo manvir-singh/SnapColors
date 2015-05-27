@@ -10,14 +10,14 @@ public class Logger {
     static boolean showLogs = BuildConfig.DEBUG;
     static String TAG = "SnapColors";
 
-    public static void log(String msg){
+    public static void log(Object msg){
         if(!showLogs)
             return;
 
         try {
-            XposedBridge.log(TAG+": "+msg);
+            XposedBridge.log(TAG+": "+String.valueOf(msg));
         } catch (NoClassDefFoundError e){
-            Log.d(TAG, msg);
+            Log.d(TAG, String.valueOf(msg));
         }
     }
 }
