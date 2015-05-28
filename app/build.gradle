@@ -9,7 +9,7 @@ android {
     signingConfigs {
     }
     compileSdkVersion 22
-    buildToolsVersion '21.1.2'
+    buildToolsVersion '22.0.1'
     defaultConfig {
         applicationId "com.manvir.SnapColors"
         minSdkVersion 15
@@ -39,6 +39,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/StartAppInApp-2.4.13.jar')
     provided files('XposedBridgeApi-20150213.jar')
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'commons-io:commons-io:2.4'
 }
