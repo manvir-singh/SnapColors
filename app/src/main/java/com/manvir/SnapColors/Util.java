@@ -132,7 +132,7 @@ public class Util {
      *
      * @param textsBox The {@link android.widget.EditText} to set a random background color and text color on.
      */
-    public void random(EditText textsBox) {
+    public static void random(EditText textsBox) {
         Random random = new Random();
         int colorBG = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
         int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));

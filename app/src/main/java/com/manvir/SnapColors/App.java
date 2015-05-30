@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -26,6 +27,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Random;
 
@@ -45,6 +47,7 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
+import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 
@@ -57,13 +60,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public static EditText SnapChatEditText;
     static XSharedPreferences prefs;
     static String MODULE_PATH;
-    //SnapChat
     private static String SnapChatPKG = "com.snapchat.android";
     //Caption related
     private static boolean notFirstRun = false; //Used when getting the default typeface
     private static Typeface defTypeFace;
     boolean imgFromGallery = false;
+    //SnapChat
     private Activity SnapChatContext; //Snapchats main activity
+    private Resources SnapChatResources;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -250,6 +254,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (SnapChatContext == null) SnapChatContext = (Activity) param.thisObject;
+                if (SnapChatResources == null) SnapChatResources = SnapChatContext.getResources();
                 prefs.reload();
 
                 //For opening image from gallery
@@ -272,9 +277,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onResume", startUpHook);
 
         //For opening image from gallery
-        findAndHookConstructor("bdm", lpparam.classLoader, findClass("ahd", lpparam.classLoader), findClass("bdl", lpparam.classLoader), new XC_MethodHook() {
+        Constructor<?> constructor;
+        try {
+            constructor = findConstructorExact("bdm", lpparam.classLoader, findClass("ahd", lpparam.classLoader), findClass("bdl", lpparam.classLoader));
+        } catch (NoSuchMethodError beta) {
+            constructor = findConstructorExact("azb", lpparam.classLoader, findClass("ael", lpparam.classLoader), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", lpparam.classLoader));
+        }
+        XposedBridge.hookMethod(constructor, new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!imgFromGallery) return;
                 imgFromGallery = false;
                 param.args[1] = param.args[1].getClass().getEnumConstants()[2];//bdl.PHONE_GALLERY
@@ -282,8 +293,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", lpparam.classLoader);
         //Get some settings, also get the caption box's edit text object.
+        CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", lpparam.classLoader);
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
@@ -300,7 +311,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 SnapChatEditText.setTextColor(prefs.getInt("TextColor", Color.WHITE));
                 SnapChatEditText.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
                 if (prefs.getBoolean("autoRandomize", false)) {
-                    new Util().random(SnapChatEditText);
+                    Util.random(SnapChatEditText);
                 }
                 if (prefs.getBoolean("setFont", false)) {
                     @SuppressWarnings("ConstantConditions") final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
