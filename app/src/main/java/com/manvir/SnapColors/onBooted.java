@@ -11,6 +11,7 @@ import java.util.Calendar;
 public class onBooted extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
+        if (BuildConfig.DEBUG) return;
         if(context.getSharedPreferences("settings", Context.MODE_WORLD_READABLE).getBoolean("checkForVer", true)){
             Intent intent1 = new Intent(context, SnapColorsUpdater.class);
             PendingIntent pintent = PendingIntent.getService(context, 0, intent1, 0);

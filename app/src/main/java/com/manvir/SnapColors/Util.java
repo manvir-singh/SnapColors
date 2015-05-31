@@ -40,9 +40,6 @@ public class Util {
         this.con = con;
     }
 
-    public Util() {
-    }
-
     /**
      * Allows the {@link android.widget.EditText} to have multiple lines
      *
