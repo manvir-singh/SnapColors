@@ -41,12 +41,8 @@ import java.util.Date;
 import java.util.Random;
 
 public class Util {
+    private static Context mContext;
     public static String SDCARD_SNAPCOLORS = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SnapColors";
-    public Context con;
-
-    public Util(Context con) {
-        this.con = con;
-    }
 
     public static void saveSnap(String mSender, Object mSnap, int mMediaType) {
         @SuppressLint("SimpleDateFormat")
@@ -117,7 +113,7 @@ public class Util {
             public void run() {
                 try {
                     Resources res = con.getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
-                    new Util(con).copyAssets(res);
+                    Util.copyAssets(res, con);
                     handler.post(() -> {
                         SnapChatLayout.addView(new FontsListView(con, defTypeFace, f, SnapColorsBtn), App.optionsViewLayoutParams);
                         pro.dismiss();
@@ -128,7 +124,7 @@ public class Util {
                         al.setTitle("SnapColors");
                         al.setMessage("You need to download fonts, they are not included. To download just tap \"Download & Install\". (Note no icon will be added)");
                         al.setNegativeButton("Download & Install", (dialog, which) -> {
-                            new Util(con).downloadFontsApk();
+                            Util.downloadFontsApk(con);
                         });
                         al.setNeutralButton("Why", (dialog, which) -> {
                             String whyText = "The reason why fonts are not included with the tweak are:\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
@@ -194,7 +190,7 @@ public class Util {
      * @param res The {@link android.content.res.Resources} object of the application to extract assets from.
      */
     @SuppressWarnings("UnusedAssignment")
-    public void copyAssets(Resources res) {
+    public static void copyAssets(Resources res, Context con) {
         AssetManager assetManager = res.getAssets();
         String[] files = null;
         try {
@@ -232,7 +228,8 @@ public class Util {
     /**
      * Downloads the fonts apk
      */
-    public void downloadFontsApk() {
+    public static void downloadFontsApk(Context con) {
+        mContext = con;
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "SnapColorsFonts.apk";
         String url = "http://forum.xda-developers.com/devdb/project/dl/?id=5916&task=get";
         new DownloadFileAsync().execute(url, path);
@@ -241,13 +238,13 @@ public class Util {
     /**
      * Downloads a file from the given url then writes it to the given path.
      */
-    public class DownloadFileAsync extends AsyncTask<String, String, String> {
+    public static class DownloadFileAsync extends AsyncTask<String, String, String> {
         ProgressDialog pro;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pro = ProgressDialog.show(con, "", "Downloading");
+            pro = ProgressDialog.show(mContext, "", "Downloading");
         }
 
         @Override
@@ -286,7 +283,7 @@ public class Util {
                 install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 install.setDataAndType(Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "SnapColorsFonts.apk")),
                         "application/vnd.android.package-archive");
-                con.startActivity(install);
+                mContext.startActivity(install);
 
             } catch (Exception e) {
                 e.printStackTrace();
