@@ -8,9 +8,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.XModuleResources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,10 +28,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.VideoView;
 
+import com.manvir.logger.Logger;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Random;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -50,6 +61,7 @@ import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
+import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     //Xposed
@@ -68,6 +80,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     //SnapChat
     private Activity SnapChatContext; //Snapchats main activity
     private Resources SnapChatResources;
+    private Bitmap mSnapImage;
+    private String mSender;
+    private FileInputStream mSnapVideo;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -349,6 +364,76 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
                 XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener", textWatcher);
                 Util.doMultiLine(SnapChatEditText);
+            }
+        });
+
+        //Everything below this point is for saving snaps
+        Method a;
+        try {
+            a = findMethodExact(SnapChatPKG + ".ui.SnapView", lpparam.classLoader, "a", findClass("aic", lpparam.classLoader), findClass("ahg", lpparam.classLoader), boolean.class, boolean.class);
+        } catch (Throwable beta) {
+            a = findMethodExact(SnapChatPKG + ".ui.SnapView", lpparam.classLoader, "a", findClass(SnapChatPKG + ".model.ReceivedSnap", lpparam.classLoader), findClass("aen", lpparam.classLoader), boolean.class, boolean.class);
+        }
+        XposedBridge.hookMethod(a, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                new Thread(() -> {
+                    //noinspection ResultOfMethodCallIgnored
+                    new File(Util.SDCARD_SNAPCOLORS).mkdirs();
+                    String mSender = (String) getObjectField(param.args[0], "mSender");
+                    try {
+                        if (getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "f") != null) { //Its a story
+                            mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "g");
+                        }
+                    } catch (NoSuchFieldError beta) {
+                        if (getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "f") != null) { //Its a story
+                            mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "g");
+                        }
+                    }
+                    if (mSender == null) mSender = "unknown";
+                    if (mSnapImage != null) {
+                        Logger.log("Saving image sent by: " + mSender);
+                        Util.saveSnap(mSender, mSnapImage, 0);
+                    } else if (mSnapVideo != null) {
+                        Logger.log("Saving video sent by: " + mSender);
+                        Util.saveSnap(mSender, mSnapVideo, 1);
+                    }
+                    mSnapImage = null;
+                    mSnapVideo = null;
+                }).start();
+            }
+        });
+
+        //Get the video data from file
+        findAndHookMethod(VideoView.class, "setVideoURI", Uri.class, Map.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                //We have to store the file data before snapchat deletes it
+                new Thread(() -> {
+                    try {
+                        mSnapVideo = new FileInputStream(param.args[0].toString());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
+        });
+
+        //For saving a received image
+        findAndHookMethod(ImageView.class, "updateDrawable", Drawable.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                new Thread(() -> {
+                    try {
+                        if (!SnapChatResources.getResourceName(((ImageView) param.thisObject).getId()).equals(SnapChatPKG + ":id/snap_image_view"))
+                            return;
+
+                        if (((BitmapDrawable) param.args[0]).getBitmap() == null) return;
+                        mSnapImage = ((BitmapDrawable) param.args[0]).getBitmap();
+                    } catch (NullPointerException | Resources.NotFoundException ignore) {
+                        //Sometimes getResourceName is going to return null that's okay
+                    }
+                }).start();
             }
         });
     }
