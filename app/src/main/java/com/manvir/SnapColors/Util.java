@@ -1,6 +1,5 @@
 package com.manvir.SnapColors;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,48 +24,21 @@ import android.widget.RelativeLayout;
 
 import com.manvir.logger.Logger;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
 public class Util {
-    private static Context mContext;
     public static String SDCARD_SNAPCOLORS = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SnapColors";
+    private static Context mContext;
 
-    public static void saveSnap(String mSender, Object mSnap, int mMediaType) {
-        @SuppressLint("SimpleDateFormat")
-        String date = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
-        switch (mMediaType) {
-            case 0: //Image
-                saveBitmap((Bitmap) mSnap, new File(SDCARD_SNAPCOLORS + "/" + mSender, mSender + "_" + date + ".png"));
-                break;
-            case 1: //Video
-            case 2: //Video no sound
-                FileInputStream videoData = (FileInputStream) mSnap;
-                try {
-                    FileUtils.copyInputStreamToFile(videoData, new File(SDCARD_SNAPCOLORS + "/" + mSender, mSender + "_" + date + ".mp4"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-            default:
-                Logger.log("Unknown snap type");
-                break;
-        }
-    }
-
-    private static void saveBitmap(Bitmap bitmap, File out) {
+    public static void saveBitmap(Bitmap bitmap, File out) {
         FileOutputStream outStream = null;
         try {
             //noinspection ResultOfMethodCallIgnored
