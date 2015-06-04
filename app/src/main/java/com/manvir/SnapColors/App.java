@@ -377,30 +377,27 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         XposedBridge.hookMethod(a, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                new Thread(() -> {
-                    //noinspection ResultOfMethodCallIgnored
-                    new File(Util.SDCARD_SNAPCOLORS).mkdirs();
-                    String mSender = (String) getObjectField(param.args[0], "mSender");
-                    try {
-                        if (getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "f") != null) { //Its a story
-                            mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "g");
-                        }
-                    } catch (NoSuchFieldError beta) {
-                        if (getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "f") != null) { //Its a story
-                            mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "g");
-                        }
+                new File(Util.SDCARD_SNAPCOLORS).mkdirs();
+                String mSender = (String) getObjectField(param.args[0], "mSender");
+                try {
+                    if (getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "f") != null) { //Its a story
+                        mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "g");
                     }
-                    if (mSender == null) mSender = "unknown";
-                    if (mSnapImage != null) {
-                        Logger.log("Saving image sent by: " + mSender);
-                        Util.saveSnap(mSender, mSnapImage, 0);
-                    } else if (mSnapVideo != null) {
-                        Logger.log("Saving video sent by: " + mSender);
-                        Util.saveSnap(mSender, mSnapVideo, 1);
+                } catch (NoSuchFieldError beta) {
+                    if (getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "f") != null) { //Its a story
+                        mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "g");
                     }
-                    mSnapImage = null;
-                    mSnapVideo = null;
-                }).start();
+                }
+                if (mSender == null) mSender = "unknown";
+                if (mSnapImage != null) {
+                    Logger.log("Saving image sent by: " + mSender);
+                    Util.saveSnap(mSender, mSnapImage, 0);
+                } else if (mSnapVideo != null) {
+                    Logger.log("Saving video sent by: " + mSender);
+                    Util.saveSnap(mSender, mSnapVideo, 1);
+                }
+                mSnapImage = null;
+                mSnapVideo = null;
             }
         });
 

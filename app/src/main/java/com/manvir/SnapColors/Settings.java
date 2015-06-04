@@ -148,7 +148,7 @@ public class Settings extends PreferenceFragment {
                     al.setTitle("SnapColors");
                     al.setMessage("You need to download fonts, they are not included. (Note no icon will be added)");
                     al.setNegativeButton("Download & Install", (dialog, which) -> {
-                        new Util(getActivity()).downloadFontsApk();
+                        Util.downloadFontsApk(getActivity());
                     });
                     al.setPositiveButton("Cancel", (dialog, which) -> {
                         prefs.edit().putBoolean("setFont", false).apply();
