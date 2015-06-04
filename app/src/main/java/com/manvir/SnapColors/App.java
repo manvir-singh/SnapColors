@@ -296,7 +296,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         try {
             constructor = findConstructorExact("bdm", lpparam.classLoader, findClass("ahd", lpparam.classLoader), findClass("bdl", lpparam.classLoader));
         } catch (NoSuchMethodError beta) {
-            constructor = findConstructorExact("azb", lpparam.classLoader, findClass("ael", lpparam.classLoader), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", lpparam.classLoader));
+            constructor = findConstructorExact("azc", lpparam.classLoader, findClass("aem", lpparam.classLoader), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", lpparam.classLoader));
         }
         XposedBridge.hookMethod(constructor, new XC_MethodHook() {
             @Override
@@ -372,7 +372,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         try {
             a = findMethodExact(SnapChatPKG + ".ui.SnapView", lpparam.classLoader, "a", findClass("aic", lpparam.classLoader), findClass("ahg", lpparam.classLoader), boolean.class, boolean.class);
         } catch (Throwable beta) {
-            a = findMethodExact(SnapChatPKG + ".ui.SnapView", lpparam.classLoader, "a", findClass(SnapChatPKG + ".model.ReceivedSnap", lpparam.classLoader), findClass("aen", lpparam.classLoader), boolean.class, boolean.class);
+            a = findMethodExact(SnapChatPKG + ".ui.SnapView", lpparam.classLoader, "a", findClass(SnapChatPKG + ".model.ReceivedSnap", lpparam.classLoader), findClass("aeo", lpparam.classLoader), boolean.class, boolean.class);
         }
         XposedBridge.hookMethod(a, new XC_MethodHook() {
             @Override
