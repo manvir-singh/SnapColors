@@ -2,49 +2,49 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="Caption">
         <CheckBoxPreference
-            android:title="Text Color"
+            android:key="TextColor"
             android:summary="Change the color of the text"
-            android:key="TextColor"/>
+            android:title="Text Color" />
         <CheckBoxPreference
-            android:title="Background Color"
+            android:key="BGColor"
             android:summary="Change the background color of the caption"
-            android:key="BGColor"/>
+            android:title="Background Color" />
         <CheckBoxPreference
-            android:title="Select Font"
+            android:key="setFont"
             android:summary="Set font on snapchat start up"
-            android:key="setFont"/>
+            android:title="Select Font" />
         <CheckBoxPreference
-            android:title="Randomize Colors"
+            android:key="autoRandomize"
             android:summary="Randomize colors on startup of snapchat"
-            android:key="autoRandomize"/>
+            android:title="Randomize Colors" />
         <CheckBoxPreference
-            android:title="Rainbow Text"
+            android:key="shouldRainbow"
             android:summary="Rainbow text on startup(The rainbow color is applied after you tap out side of the caption)"
-            android:key="shouldRainbow"/>
+            android:title="Rainbow Text" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Fonts">
         <Preference
-            android:title="Import Font"
+            android:key="importFont"
             android:summary="Import your own custom font to use on the caption text"
-            android:key="importFont"/>
+            android:title="Import Font" />
         <Preference
-            android:title="Clear all imported fonts"
+            android:key="clearAllImportedFonts"
             android:summary="Import your own custom font to use on the caption text"
-            android:key="clearAllImportedFonts"/>
+            android:title="Clear all imported fonts" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Updater">
         <CheckBoxPreference
-            android:title="Enable Updater"
+            android:key="checkForVer"
             android:summary="Notify me when a new update is available. (Checks every day)"
-            android:key="checkForVer"/>
+            android:title="Enable Updater" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="More">
         <Preference
-            android:title="Donate"
+            android:key="donate"
             android:summary="If you like my work, feel free to donate."
-            android:key="donate" />
+            android:title="Donate" />
     </PreferenceCategory>
 </PreferenceScreen>
