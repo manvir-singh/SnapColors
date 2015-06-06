@@ -381,6 +381,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 //noinspection ResultOfMethodCallIgnored,ConstantConditions
                 new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
                 String mSender = (String) getObjectField(param.args[0], "mSender");
+                if (mSender == null) return;
                 if (mSnapImage != null) {
                     Logger.log("Saving image sent by: " + mSender);
                     new Thread(new SaveSnapTask(mSender, mSnapImage, 0)).start();
