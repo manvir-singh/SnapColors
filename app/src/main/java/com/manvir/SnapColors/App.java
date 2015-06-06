@@ -381,16 +381,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 //noinspection ResultOfMethodCallIgnored,ConstantConditions
                 new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
                 String mSender = (String) getObjectField(param.args[0], "mSender");
-                try {
-                    if (getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "f") != null) { //Its a story
-                        mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "g");
-                    }
-                } catch (NoSuchFieldError beta) {
-                    if (getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "f") != null) { //Its a story
-                        mSender = (String) getObjectField(getObjectField(getObjectField(param.thisObject, "s"), "c"), "g");
-                    }
-                }
-                if (mSender == null) mSender = "unknown";
                 if (mSnapImage != null) {
                     Logger.log("Saving image sent by: " + mSender);
                     new Thread(new SaveSnapTask(mSender, mSnapImage, 0)).start();
@@ -406,7 +396,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         //Get the video data from file
         findAndHookMethod(VideoView.class, "setVideoURI", Uri.class, Map.class, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 //We have to store the file data before snapchat deletes it
                 new Thread(() -> {
@@ -422,7 +412,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         //For saving a received image
         findAndHookMethod(ImageView.class, "updateDrawable", Drawable.class, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 new Thread(() -> {
                     try {
