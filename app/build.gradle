@@ -40,5 +40,6 @@ dependencies {
     compile files('libs/StartAppInApp-2.4.13.jar')
     provided files('XposedBridgeApi-20150213.jar')
     compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.nononsenseapps:filepicker:2.1'
     compile 'commons-io:commons-io:2.4'
 }

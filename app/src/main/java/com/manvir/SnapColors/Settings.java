@@ -22,6 +22,9 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.manvir.logger.Logger;
+import com.nononsenseapps.filepicker.FilePickerActivity;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -186,9 +189,13 @@ public class Settings extends PreferenceFragment {
             return true;
         });
         importFont.setOnPreferenceClickListener(preference -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("font/opentype");
-            startActivityForResult(intent, 0);
+            Intent i = new Intent(getActivity(), FilePickerActivity.class);
+            i.setType("font/opentype");
+            i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+            i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+            i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+            i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+            startActivityForResult(i, 0);
             return true;
         });
         BGColor.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -239,12 +246,12 @@ public class Settings extends PreferenceFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != 0 && data != null) {
             try {
-                File ttfFile = new File(Uri.decode(data.getDataString()).split(":/")[1]);//Todo Fix the import font bug. Fixed it temporally though.
+                File ttfFile = new File(Uri.decode(data.getDataString()).replace("file://", ""));
                 FileUtils.copyFile(ttfFile, new File(fontsDir + "/" + ttfFile.getName()));
                 Toast.makeText(getActivity(), "Import successful.", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(getActivity(), "Import failed! Something went wrong =0", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Import failed!", Toast.LENGTH_SHORT).show();
             }
         }
     }
