@@ -377,6 +377,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         XposedBridge.hookMethod(a, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
+                //noinspection ResultOfMethodCallIgnored
                 new File(Util.SDCARD_SNAPCOLORS).mkdirs();
                 String mSender = (String) getObjectField(param.args[0], "mSender");
                 try {
@@ -405,6 +407,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(VideoView.class, "setVideoURI", Uri.class, Map.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 //We have to store the file data before snapchat deletes it
                 new Thread(() -> {
                     try {
@@ -420,6 +423,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(ImageView.class, "updateDrawable", Drawable.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 new Thread(() -> {
                     try {
                         if (!SnapChatResources.getResourceName(((ImageView) param.thisObject).getId()).equals(SnapChatPKG + ":id/snap_image_view"))

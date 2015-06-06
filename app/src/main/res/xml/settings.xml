@@ -34,6 +34,13 @@
             android:title="Clear all imported fonts" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Save Snaps">
+        <CheckBoxPreference
+            android:key="shouldSaveSnaps"
+            android:summary="Enable disable the saving of received snaps"
+            android:title="Enable Save" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Updater">
         <CheckBoxPreference
             android:key="checkForVer"

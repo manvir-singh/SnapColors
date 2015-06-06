@@ -38,7 +38,7 @@ public class Settings extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
-        //noinspection Annotator
+        //noinspection Annotator,deprecation
         prefs = getActivity().getSharedPreferences("settings", Context.MODE_WORLD_READABLE);
         if (BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
 
@@ -48,6 +48,7 @@ public class Settings extends PreferenceFragment {
         final CheckBoxPreference setFont = (CheckBoxPreference) getPreferenceManager().findPreference("setFont");
         final CheckBoxPreference autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
         final CheckBoxPreference shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
+        final CheckBoxPreference shouldSaveSnaps = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveSnaps");
         final Preference importFont = getPreferenceManager().findPreference("importFont");
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
         final CheckBoxPreference checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
@@ -56,6 +57,9 @@ public class Settings extends PreferenceFragment {
         //Startup stuff
         if (prefs.getBoolean("checkForVer", true)) {
             checkForVer.setChecked(true);
+        }
+        if (prefs.getBoolean("shouldSaveSnaps", true)) {
+            shouldSaveSnaps.setChecked(true);
         }
         if (TextColor.isChecked() || BGColor.isChecked()) {
             autoRandomize.setEnabled(false);
@@ -77,7 +81,14 @@ public class Settings extends PreferenceFragment {
             getActivity().startActivity(intent);
             return true;
         });
-
+        shouldSaveSnaps.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!shouldSaveSnaps.isChecked()) {
+                prefs.edit().putBoolean("shouldSaveSnaps", true).apply();
+            } else {
+                prefs.edit().putBoolean("shouldSaveSnaps", false).apply();
+            }
+            return true;
+        });
         checkForVer.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!checkForVer.isChecked()) {
                 prefs.edit().putBoolean("checkForVer", true).apply();
