@@ -30,13 +30,13 @@ public class SaveSnapTask implements Runnable {
         String date = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
         switch (mMediaType) {
             case 0: //Image
-                Util.saveBitmap((Bitmap) mSnap, new File(Util.SDCARD_SNAPCOLORS + "/" + mSender, mSender + "_" + date + ".png"));
+                Util.saveBitmap((Bitmap) mSnap, new File(App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender, mSender + "_" + date + ".png"));
                 break;
             case 1: //Video
             case 2: //Video no sound
                 FileInputStream videoData = (FileInputStream) mSnap;
                 try {
-                    FileUtils.copyInputStreamToFile(videoData, new File(Util.SDCARD_SNAPCOLORS + "/" + mSender, mSender + "_" + date + ".mp4"));
+                    FileUtils.copyInputStreamToFile(videoData, new File(App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender, mSender + "_" + date + ".mp4"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

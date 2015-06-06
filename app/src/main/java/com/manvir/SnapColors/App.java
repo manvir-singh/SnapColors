@@ -378,8 +378,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
-                //noinspection ResultOfMethodCallIgnored
-                new File(Util.SDCARD_SNAPCOLORS).mkdirs();
+                //noinspection ResultOfMethodCallIgnored,ConstantConditions
+                new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
                 String mSender = (String) getObjectField(param.args[0], "mSender");
                 try {
                     if (getObjectField(getObjectField(getObjectField(param.thisObject, "u"), "b"), "f") != null) { //Its a story

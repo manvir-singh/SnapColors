@@ -39,6 +39,10 @@
             android:key="shouldSaveSnaps"
             android:summary="Enable disable the saving of received snaps"
             android:title="Enable Save" />
+        <Preference
+            android:key="saveLocation"
+            android:summary=""
+            android:title="Save Location" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Updater">

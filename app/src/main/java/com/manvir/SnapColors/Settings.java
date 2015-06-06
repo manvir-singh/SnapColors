@@ -1,5 +1,6 @@
 package com.manvir.SnapColors;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -35,6 +36,7 @@ import java.io.OutputStream;
 
 public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
+    Preference saveLocation;
     String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + MainActivity.SnapChatPKG + "/files";
 
     @Override
@@ -52,12 +54,14 @@ public class Settings extends PreferenceFragment {
         final CheckBoxPreference autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
         final CheckBoxPreference shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
         final CheckBoxPreference shouldSaveSnaps = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveSnaps");
+        saveLocation = getPreferenceManager().findPreference("saveLocation");
         final Preference importFont = getPreferenceManager().findPreference("importFont");
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
         final CheckBoxPreference checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
         final Preference donate = getPreferenceManager().findPreference("donate");
 
         //Startup stuff
+        saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
         if (prefs.getBoolean("checkForVer", true)) {
             checkForVer.setChecked(true);
         }
@@ -78,6 +82,15 @@ public class Settings extends PreferenceFragment {
         }
 
         //Listeners
+        saveLocation.setOnPreferenceClickListener(preference -> {
+            Intent i = new Intent(getActivity(), FilePickerActivity.class);
+            i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+            i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+            i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
+            i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+            startActivityForResult(i, 1);
+            return true;
+        });
         donate.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent();
             intent.setComponent(new ComponentName(MainActivity.SnapColorsPKG, MainActivity.SnapColorsPKG + ".DonateActivity"));
@@ -244,7 +257,7 @@ public class Settings extends PreferenceFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != 0 && data != null) {
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
             try {
                 File ttfFile = new File(Uri.decode(data.getDataString()).replace("file://", ""));
                 FileUtils.copyFile(ttfFile, new File(fontsDir + "/" + ttfFile.getName()));
@@ -253,6 +266,12 @@ public class Settings extends PreferenceFragment {
                 e.printStackTrace();
                 Toast.makeText(getActivity(), "Import failed!", Toast.LENGTH_SHORT).show();
             }
+        } else if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            @SuppressWarnings("ConstantConditions")
+            File path = new File(Uri.decode(data.getDataString()).replace("file://", ""));
+            prefs.edit().putString("saveLocation", path.getAbsolutePath()).apply();
+            saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
+            Logger.log("Set save location: " + prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
         }
     }
 
