@@ -38,7 +38,11 @@
         <CheckBoxPreference
             android:key="shouldSaveSnaps"
             android:summary="Enable disable the saving of received snaps"
-            android:title="Enable Save" />
+            android:title="Enable" />
+        <CheckBoxPreference
+            android:key="shouldSaveStories"
+            android:summary="Enable disable the saving of stories"
+            android:title="Enable Story Save" />
         <Preference
             android:key="saveLocation"
             android:summary=""

@@ -54,6 +54,7 @@ public class Settings extends PreferenceFragment {
         final CheckBoxPreference autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
         final CheckBoxPreference shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
         final CheckBoxPreference shouldSaveSnaps = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveSnaps");
+        final CheckBoxPreference shouldSaveStories = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveStories");
         saveLocation = getPreferenceManager().findPreference("saveLocation");
         final Preference importFont = getPreferenceManager().findPreference("importFont");
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
@@ -67,6 +68,11 @@ public class Settings extends PreferenceFragment {
         }
         if (prefs.getBoolean("shouldSaveSnaps", true)) {
             shouldSaveSnaps.setChecked(true);
+        } else {
+            shouldSaveStories.setEnabled(false);
+        }
+        if (prefs.getBoolean("shouldSaveStories", true)) {
+            shouldSaveStories.setChecked(true);
         }
         if (TextColor.isChecked() || BGColor.isChecked()) {
             autoRandomize.setEnabled(false);
@@ -82,6 +88,14 @@ public class Settings extends PreferenceFragment {
         }
 
         //Listeners
+        shouldSaveStories.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!shouldSaveStories.isChecked()) {
+                prefs.edit().putBoolean("shouldSaveStories", true).apply();
+            } else {
+                prefs.edit().putBoolean("shouldSaveStories", false).apply();
+            }
+            return true;
+        });
         saveLocation.setOnPreferenceClickListener(preference -> {
             Intent i = new Intent(getActivity(), FilePickerActivity.class);
             i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
@@ -100,8 +114,10 @@ public class Settings extends PreferenceFragment {
         shouldSaveSnaps.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!shouldSaveSnaps.isChecked()) {
                 prefs.edit().putBoolean("shouldSaveSnaps", true).apply();
+                shouldSaveStories.setEnabled(true);
             } else {
                 prefs.edit().putBoolean("shouldSaveSnaps", false).apply();
+                shouldSaveStories.setEnabled(false);
             }
             return true;
         });

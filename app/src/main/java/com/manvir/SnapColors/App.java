@@ -380,7 +380,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 //noinspection ResultOfMethodCallIgnored,ConstantConditions
                 new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
                 String mSender = (String) getObjectField(param.args[0], "mSender");
-                if (mSender == null) { //This means its a story
+                if (mSender == null && prefs.getBoolean("shouldSaveStories", true)) { //This means its a story
                     Class<?> afr = findClass("afr", lpparam.classLoader);
                     if (((String)getObjectField(afr.cast(param.args[0]), "mId")).split("~").length == 3)
                         return; //I don't think you need to save live events
