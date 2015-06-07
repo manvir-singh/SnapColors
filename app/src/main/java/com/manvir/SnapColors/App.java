@@ -382,7 +382,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 String mSender = (String) getObjectField(param.args[0], "mSender");
                 if (mSender == null) { //This means its a story
                     Class<?> afr = findClass("afr", lpparam.classLoader);
-                    if (((String)getObjectField(afr.cast(param.args[0]), "mId")).endsWith("BRAND_SNAP"))
+                    if (((String)getObjectField(afr.cast(param.args[0]), "mId")).split("~").length == 3)
                         return; //I don't think you need to save live events
                     mSender = (String) getObjectField(afr.cast(param.args[0]), "mUsername");
                 }
@@ -422,7 +422,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 new Thread(() -> {
                     try {
-                        if (!SnapChatResources.getResourceName(((ImageView) param.thisObject).getId()).equals(SnapChatPKG + ":id/snap_image_view"))
+                        if (!SnapChatResources.getResourceName(((View) param.thisObject).getId()).equals(SnapChatPKG + ":id/snap_image_view"))
                             return;
 
                         if (((BitmapDrawable) param.args[0]).getBitmap() == null) return;
