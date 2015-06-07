@@ -381,7 +381,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 //noinspection ResultOfMethodCallIgnored,ConstantConditions
                 new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
                 String mSender = (String) getObjectField(param.args[0], "mSender");
-                if (mSender == null) return;
+                if (mSender == null) { //This means its a story
+                    Class<?> afr = findClass("afr", lpparam.classLoader);
+                    if (((String)getObjectField(afr.cast(param.args[0]), "mId")).endsWith("BRAND_SNAP"))
+                        return; //I don't think you need to save live events
+                    mSender = (String) getObjectField(afr.cast(param.args[0]), "mUsername");
+                }
+                if (mSender == null) return;//Abort mission!
                 if (mSnapImage != null) {
                     Logger.log("Saving image sent by: " + mSender);
                     new Thread(new SaveSnapTask(mSender, mSnapImage, 0)).start();
