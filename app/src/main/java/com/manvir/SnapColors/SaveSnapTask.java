@@ -32,8 +32,7 @@ public class SaveSnapTask implements Runnable {
             case 0: //Image
                 Util.saveBitmap((Bitmap) mSnap, new File(App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender, mSender + "_" + date + ".png"));
                 break;
-            case 1: //Video
-            case 2: //Video no sound
+            case 1: //Video no sound
                 FileInputStream videoData = (FileInputStream) mSnap;
                 try {
                     FileUtils.copyInputStreamToFile(videoData, new File(App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender, mSender + "_" + date + ".mp4"));
