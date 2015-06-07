@@ -81,7 +81,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private Activity SnapChatContext; //Snapchats main activity
     private Resources SnapChatResources;
     private Bitmap mSnapImage;
-    private String mSender;
     private FileInputStream mSnapVideo;
 
     @Override
