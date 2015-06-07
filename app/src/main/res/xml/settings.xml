@@ -46,7 +46,7 @@
         <CheckBoxPreference
             android:key="shouldSaveInSub"
             android:summary="Create a new folder for each user"
-            android:title="Enable Sub Folder" />
+            android:title="Create Sub Folder" />
         <Preference
             android:key="saveLocation"
             android:summary=""
