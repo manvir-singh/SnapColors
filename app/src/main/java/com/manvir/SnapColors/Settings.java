@@ -55,6 +55,7 @@ public class Settings extends PreferenceFragment {
         final CheckBoxPreference shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
         final CheckBoxPreference shouldSaveSnaps = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveSnaps");
         final CheckBoxPreference shouldSaveStories = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveStories");
+        final CheckBoxPreference shouldSaveInSub = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveInSub");
         saveLocation = getPreferenceManager().findPreference("saveLocation");
         final Preference importFont = getPreferenceManager().findPreference("importFont");
         final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
@@ -73,6 +74,9 @@ public class Settings extends PreferenceFragment {
         }
         if (prefs.getBoolean("shouldSaveStories", true)) {
             shouldSaveStories.setChecked(true);
+        }
+        if (prefs.getBoolean("shouldSaveInSub", true)) {
+            shouldSaveInSub.setChecked(true);
         }
         if (TextColor.isChecked() || BGColor.isChecked()) {
             autoRandomize.setEnabled(false);
@@ -93,6 +97,14 @@ public class Settings extends PreferenceFragment {
                 prefs.edit().putBoolean("shouldSaveStories", true).apply();
             } else {
                 prefs.edit().putBoolean("shouldSaveStories", false).apply();
+            }
+            return true;
+        });
+        shouldSaveInSub.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!shouldSaveInSub.isChecked()) {
+                prefs.edit().putBoolean("shouldSaveInSub", true).apply();
+            } else {
+                prefs.edit().putBoolean("shouldSaveInSub", false).apply();
             }
             return true;
         });

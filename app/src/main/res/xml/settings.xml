@@ -43,6 +43,10 @@
             android:key="shouldSaveStories"
             android:summary="Enable disable the saving of stories"
             android:title="Enable Story Save" />
+        <CheckBoxPreference
+            android:key="shouldSaveInSub"
+            android:summary="Create a new folder for each user"
+            android:title="Enable Sub Folder" />
         <Preference
             android:key="saveLocation"
             android:summary=""

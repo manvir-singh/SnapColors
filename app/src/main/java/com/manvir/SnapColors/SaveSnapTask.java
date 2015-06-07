@@ -30,12 +30,24 @@ public class SaveSnapTask implements Runnable {
         String date = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
         switch (mMediaType) {
             case 0: //Image
-                Util.saveBitmap((Bitmap) mSnap, new File(App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender, mSender + "_" + date + ".png"));
+                String outFolderImage;
+                if (App.prefs.getBoolean("shouldSaveInSub", true)){
+                    outFolderImage = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender;
+                } else {
+                    outFolderImage = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS);
+                }
+                Util.saveBitmap((Bitmap) mSnap, new File(outFolderImage, mSender + "_" + date + ".png"));
                 break;
             case 1: //Video
                 FileInputStream videoData = (FileInputStream) mSnap;
                 try {
-                    FileUtils.copyInputStreamToFile(videoData, new File(App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender, mSender + "_" + date + ".mp4"));
+                    String outFolderVideo;
+                    if (App.prefs.getBoolean("shouldSaveInSub", true)){
+                        outFolderVideo = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender;
+                    } else {
+                        outFolderVideo = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS);
+                    }
+                    FileUtils.copyInputStreamToFile(videoData, new File(outFolderVideo, mSender + "_" + date + ".mp4"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
