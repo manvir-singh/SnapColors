@@ -95,13 +95,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             return;
 
         modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
-        resparam.res.hookLayout(SnapChatPKG, "layout", "snap_image", new XC_LayoutInflated() {
-            @Override
-            public void handleLayoutInflated(LayoutInflatedParam layoutInflatedParam) throws Throwable {
-                layoutInflatedParam.view.setBackgroundColor(Color.CYAN);
-            }
-        });
-
         resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
             RelativeLayout SnapChatLayout = null;
             RelativeLayout innerOptionsLayout; //Holds all our options the buttons etc (The outer view is a scrollview)
