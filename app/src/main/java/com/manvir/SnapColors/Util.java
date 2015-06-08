@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -37,6 +38,10 @@ import java.util.Random;
 public class Util {
     public static String SDCARD_SNAPCOLORS = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SnapColors";
     private static Context mContext;
+
+    public static void runMediaScanner(Context context, File file) {
+        MediaScannerConnection.scanFile(context, new String[]{file.toString()}, null, (path, uri) -> Logger.log("Scanner added: " + path));
+    }
 
     public static void saveBitmap(Bitmap bitmap, File out) {
         FileOutputStream outStream = null;

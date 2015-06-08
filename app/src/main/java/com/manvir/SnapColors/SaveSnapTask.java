@@ -1,6 +1,7 @@
 package com.manvir.SnapColors;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.manvir.logger.Logger;
@@ -17,8 +18,10 @@ public class SaveSnapTask implements Runnable {
     private final String mSender;
     private final Object mSnap;
     private final int mMediaType;
+    private final Context mContext;
 
-    public SaveSnapTask(String mSender, Object mSnap, int mMediaType) {
+    public SaveSnapTask(Context context, String mSender, Object mSnap, int mMediaType) {
+        this.mContext = context;
         this.mSender = mSender;
         this.mSnap = mSnap;
         this.mMediaType = mMediaType;
@@ -31,23 +34,27 @@ public class SaveSnapTask implements Runnable {
         switch (mMediaType) {
             case 0: //Image
                 String outFolderImage;
-                if (App.prefs.getBoolean("shouldSaveInSub", true)){
+                if (App.prefs.getBoolean("shouldSaveInSub", true)) {
                     outFolderImage = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender;
                 } else {
                     outFolderImage = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS);
                 }
-                Util.saveBitmap((Bitmap) mSnap, new File(outFolderImage, mSender + "_" + date + ".png"));
+                File outFileImage = new File(outFolderImage, mSender + "_" + date + ".png");
+                Util.saveBitmap((Bitmap) mSnap, outFileImage);
+                Util.runMediaScanner(mContext, outFileImage);
                 break;
             case 1: //Video
                 FileInputStream videoData = (FileInputStream) mSnap;
                 try {
                     String outFolderVideo;
-                    if (App.prefs.getBoolean("shouldSaveInSub", true)){
+                    if (App.prefs.getBoolean("shouldSaveInSub", true)) {
                         outFolderVideo = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS) + "/" + mSender;
                     } else {
                         outFolderVideo = App.prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS);
                     }
-                    FileUtils.copyInputStreamToFile(videoData, new File(outFolderVideo, mSender + "_" + date + ".mp4"));
+                    File outFileVideo = new File(outFolderVideo, mSender + "_" + date + ".mp4");
+                    FileUtils.copyInputStreamToFile(videoData, outFileVideo);
+                    Util.runMediaScanner(mContext, outFileVideo);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

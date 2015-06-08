@@ -375,17 +375,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 String mSender = (String) getObjectField(param.args[0], "mSender");
                 if (mSender == null && prefs.getBoolean("shouldSaveStories", true)) { //This means its a story
                     Class<?> afr = findClass("afr", lpparam.classLoader);
-                    if (((String)getObjectField(afr.cast(param.args[0]), "mId")).split("~").length == 3)
+                    if (((String) getObjectField(afr.cast(param.args[0]), "mId")).split("~").length == 3)
                         return; //I don't think you need to save live events
                     mSender = (String) getObjectField(afr.cast(param.args[0]), "mUsername");
                 }
                 if (mSender == null) return;//Abort mission!
                 if (mSnapImage != null) {
                     Logger.log("Saving image sent by: " + mSender);
-                    new Thread(new SaveSnapTask(mSender, mSnapImage, 0)).start();
+                    new Thread(new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0)).start();
                 } else if (mSnapVideo != null) {
                     Logger.log("Saving video sent by: " + mSender);
-                    new Thread(new SaveSnapTask(mSender, mSnapVideo, 1)).start();
+                    new Thread(new SaveSnapTask(SnapChatContext, mSender, mSnapVideo, 1)).start();
                 }
                 mSnapImage = null;
                 mSnapVideo = null;
