@@ -82,6 +82,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private Resources SnapChatResources;
     private Bitmap mSnapImage;
     private FileInputStream mSnapVideo;
+    private boolean mIsViewingSnap;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -255,6 +256,16 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         if (!lpparam.packageName.equals(SnapChatPKG))
             return;
 
+        if (BuildConfig.DEBUG) {
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "b", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "c", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "d", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "e", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "f", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "g", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "h", XC_MethodReplacement.returnConstant(true));
+        }
+
         Class<?> CaptionEditText;
         // Get snapchats activity also reload our settings
         XC_MethodHook startUpHook = new XC_MethodHook() {
@@ -395,7 +406,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         //Get the video data from file
         findAndHookMethod(VideoView.class, "setVideoURI", Uri.class, Map.class, new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 //We have to store the file data before snapchat deletes it
                 new Thread(() -> {
@@ -411,7 +422,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         //For saving a received image
         findAndHookMethod(ImageView.class, "updateDrawable", Drawable.class, new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 new Thread(() -> {
                     try {
