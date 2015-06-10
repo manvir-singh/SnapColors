@@ -409,13 +409,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 //We have to store the file data before snapchat deletes it
-                new Thread(() -> {
-                    try {
-                        mSnapVideo = new FileInputStream(param.args[0].toString());
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                try {
+                    mSnapVideo = new FileInputStream(param.args[0].toString());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -424,17 +422,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
-                new Thread(() -> {
-                    try {
-                        if (!SnapChatResources.getResourceName(((View) param.thisObject).getId()).equals(SnapChatPKG + ":id/snap_image_view"))
-                            return;
+                try {
+                    if (!SnapChatResources.getResourceName(((View) param.thisObject).getId()).equals(SnapChatPKG + ":id/snap_image_view"))
+                        return;
 
-                        if (((BitmapDrawable) param.args[0]).getBitmap() == null) return;
-                        mSnapImage = ((BitmapDrawable) param.args[0]).getBitmap();
-                    } catch (NullPointerException | Resources.NotFoundException ignore) {
-                        //Sometimes getResourceName is going to return null that's okay
-                    }
-                }).start();
+                    if (((BitmapDrawable) param.args[0]).getBitmap() == null) return;
+                    mSnapImage = ((BitmapDrawable) param.args[0]).getBitmap();
+                } catch (NullPointerException | Resources.NotFoundException ignore) {
+                    //Sometimes getResourceName is going to return null that's okay
+                }
             }
         });
     }
