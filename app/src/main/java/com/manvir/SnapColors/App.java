@@ -393,10 +393,10 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (mSender == null) return;//Abort mission!
                 if (mSnapImage != null) {
                     Logger.log("Saving image sent by: " + mSender);
-                    new Thread(new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0)).start();
+                    new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0);
                 } else if (mSnapVideo != null) {
                     Logger.log("Saving video sent by: " + mSender);
-                    new Thread(new SaveSnapTask(SnapChatContext, mSender, mSnapVideo, 1)).start();
+                    new SaveSnapTask(SnapChatContext, mSender, mSnapVideo, 1);
                 }
                 mSnapImage = null;
                 mSnapVideo = null;

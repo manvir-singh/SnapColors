@@ -14,21 +14,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SaveSnapTask implements Runnable {
-    private final String mSender;
-    private final Object mSnap;
-    private final int mMediaType;
-    private final Context mContext;
-
+public class SaveSnapTask {
     public SaveSnapTask(Context context, String mSender, Object mSnap, int mMediaType) {
-        this.mContext = context;
-        this.mSender = mSender;
-        this.mSnap = mSnap;
-        this.mMediaType = mMediaType;
-    }
-
-    @Override
-    public void run() {
         @SuppressLint("SimpleDateFormat")
         String date = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
         switch (mMediaType) {
@@ -41,7 +28,7 @@ public class SaveSnapTask implements Runnable {
                 }
                 File outFileImage = new File(outFolderImage, mSender + "_" + date + ".png");
                 Util.saveBitmap((Bitmap) mSnap, outFileImage);
-                Util.runMediaScanner(mContext, outFileImage);
+                Util.runMediaScanner(context, outFileImage);
                 break;
             case 1: //Video
                 FileInputStream videoData = (FileInputStream) mSnap;
@@ -54,7 +41,7 @@ public class SaveSnapTask implements Runnable {
                     }
                     File outFileVideo = new File(outFolderVideo, mSender + "_" + date + ".mp4");
                     FileUtils.copyInputStreamToFile(videoData, outFileVideo);
-                    Util.runMediaScanner(mContext, outFileVideo);
+                    Util.runMediaScanner(context, outFileVideo);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
