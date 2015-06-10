@@ -39,6 +39,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -82,6 +84,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private Resources SnapChatResources;
     private Bitmap mSnapImage;
     private FileInputStream mSnapVideo;
+    private List<String> savedSnapsCache;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -390,7 +393,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     mSender = (String) getObjectField(afr.cast(param.args[0]), "mUsername");
                 }
                 if (mSender == null) return;//Abort mission!
-                Logger.log(getObjectField(param.args[0], "mMediaKey"));
+                if (savedSnapsCache == null) savedSnapsCache = new ArrayList<>();
+                String mMediaKey = (String) getObjectField(param.args[0], "mMediaKey");
+                if (!savedSnapsCache.contains(mMediaKey)) {
+                    savedSnapsCache.add(mMediaKey);
+                } else {
+                    Logger.log("Skipping saving snap already saved");
+                    return;
+                }
                 if (mSnapImage != null) {
                     Logger.log("Saving image sent by: " + mSender);
                     new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0);
