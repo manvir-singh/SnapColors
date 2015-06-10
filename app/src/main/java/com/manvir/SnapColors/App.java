@@ -82,7 +82,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private Resources SnapChatResources;
     private Bitmap mSnapImage;
     private FileInputStream mSnapVideo;
-    private boolean mIsViewingSnap;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -391,6 +390,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     mSender = (String) getObjectField(afr.cast(param.args[0]), "mUsername");
                 }
                 if (mSender == null) return;//Abort mission!
+                Logger.log(getObjectField(param.args[0], "mMediaKey"));
                 if (mSnapImage != null) {
                     Logger.log("Saving image sent by: " + mSender);
                     new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0);
