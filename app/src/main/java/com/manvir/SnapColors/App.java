@@ -1,6 +1,7 @@
 package com.manvir.SnapColors;
 
 import android.app.Activity;
+import android.app.AndroidAppHelper;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,12 +25,15 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.manvir.logger.Logger;
@@ -85,6 +89,41 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private Bitmap mSnapImage;
     private FileInputStream mSnapVideo;
     private List<String> savedSnapsCache;
+    private Object ReceivedSnap;
+    private ClassLoader CLSnapChat;
+
+    private void saveSnap(){
+        if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
+        if (CLSnapChat == null || ReceivedSnap == null) {
+            Logger.log("Something went wrong when saving snap");
+        }
+        new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
+        String mSender = (String) getObjectField(ReceivedSnap, "mSender");
+        if (mSender == null && prefs.getBoolean("shouldSaveStories", true)) { //This means its a story
+            Class<?> afr = findClass("afr", CLSnapChat);
+            if (((String) getObjectField(afr.cast(ReceivedSnap), "mId")).split("~").length == 3)
+                return; //I don't think you need to save live events
+            mSender = (String) getObjectField(afr.cast(ReceivedSnap), "mUsername");
+        }
+        if (mSender == null) return;//Abort mission!
+        if (savedSnapsCache == null) savedSnapsCache = new ArrayList<>();
+        String mMediaKey = (String) getObjectField(ReceivedSnap, "mMediaKey");
+        if (!savedSnapsCache.contains(mMediaKey)) {
+            savedSnapsCache.add(mMediaKey);
+        } else {
+            Logger.log("Skipping saving snap already saved");
+            return;
+        }
+        if (mSnapImage != null) {
+            Logger.log("Saving image sent by: " + mSender);
+            new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0);
+        } else if (mSnapVideo != null) {
+            Logger.log("Saving video sent by: " + mSender);
+            new SaveSnapTask(SnapChatContext, mSender, mSnapVideo, 1);
+        }
+        mSnapImage = null;
+        mSnapVideo = null;
+    }
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -258,14 +297,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         if (!lpparam.packageName.equals(SnapChatPKG))
             return;
 
+        if (CLSnapChat == null) CLSnapChat = lpparam.classLoader;
         if (BuildConfig.DEBUG) {
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "b", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "c", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "d", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "e", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "f", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "g", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", lpparam.classLoader, "h", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "b", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "c", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "d", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "e", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "f", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "g", XC_MethodReplacement.returnConstant(true));
+            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "h", XC_MethodReplacement.returnConstant(true));
         }
 
         Class<?> CaptionEditText;
@@ -281,7 +321,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (!param.method.getName().equals("onCreate")) return;
                 Intent intent = (Intent) callMethod(SnapChatContext, "getIntent");
                 if (!intent.getBooleanExtra("com.manvir.SnapColors.isSnapColors", false)) return;
-                Method onActivityResult = findMethodExact(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onActivityResult",
+                Method onActivityResult = findMethodExact(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "onActivityResult",
                         int.class, int.class, Intent.class);
                 Uri image = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
                 intent.setData(image);
@@ -293,15 +333,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
             }
         };
-        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onCreate", Bundle.class, startUpHook);
-        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", lpparam.classLoader, "onResume", startUpHook);
+        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "onCreate", Bundle.class, startUpHook);
+        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
         Constructor<?> constructor;
         try {
-            constructor = findConstructorExact("bdm", lpparam.classLoader, findClass("ahd", lpparam.classLoader), findClass("bdl", lpparam.classLoader));
+            constructor = findConstructorExact("azc", CLSnapChat, findClass("aem", CLSnapChat), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         } catch (NoSuchMethodError beta) {
-            constructor = findConstructorExact("azc", lpparam.classLoader, findClass("aem", lpparam.classLoader), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", lpparam.classLoader));
+            constructor = findConstructorExact("ayt", CLSnapChat, findClass("aeu", CLSnapChat), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         }
         XposedBridge.hookMethod(constructor, new XC_MethodHook() {
             @Override
@@ -314,7 +354,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //Get some settings, also get the caption box's edit text object.
-        CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", lpparam.classLoader);
+        CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", CLSnapChat);
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
@@ -358,7 +398,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For adding multiline support
-        findAndHookConstructor(SnapChatPKG + ".ui.caption.VanillaCaptionEditText", lpparam.classLoader, Context.class, AttributeSet.class, new XC_MethodHook() {
+        findAndHookConstructor(SnapChatPKG + ".ui.caption.VanillaCaptionEditText", CLSnapChat, Context.class, AttributeSet.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 TextWatcher textWatcher;
@@ -375,41 +415,18 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         //Everything below this point is for saving snaps
         Method a;
         try {
-            a = findMethodExact(SnapChatPKG + ".ui.SnapView", lpparam.classLoader, "a", findClass("aic", lpparam.classLoader), findClass("ahg", lpparam.classLoader), boolean.class, boolean.class);
+            a = findMethodExact(SnapChatPKG + ".ui.SnapView", CLSnapChat, "a", findClass("aic", CLSnapChat), findClass("ahg", CLSnapChat), boolean.class, boolean.class);
         } catch (Throwable beta) {
-            a = findMethodExact(SnapChatPKG + ".ui.SnapView", lpparam.classLoader, "a", findClass(SnapChatPKG + ".model.ReceivedSnap", lpparam.classLoader), findClass("aeo", lpparam.classLoader), boolean.class, boolean.class);
+            a = findMethodExact(SnapChatPKG + ".ui.SnapView", CLSnapChat, "c", findClass(SnapChatPKG + ".model.ReceivedSnap", CLSnapChat), findClass("aew", CLSnapChat), boolean.class);
         }
         XposedBridge.hookMethod(a, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
                 //noinspection ResultOfMethodCallIgnored,ConstantConditions
-                new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
-                String mSender = (String) getObjectField(param.args[0], "mSender");
-                if (mSender == null && prefs.getBoolean("shouldSaveStories", true)) { //This means its a story
-                    Class<?> afr = findClass("afr", lpparam.classLoader);
-                    if (((String) getObjectField(afr.cast(param.args[0]), "mId")).split("~").length == 3)
-                        return; //I don't think you need to save live events
-                    mSender = (String) getObjectField(afr.cast(param.args[0]), "mUsername");
-                }
-                if (mSender == null) return;//Abort mission!
-                if (savedSnapsCache == null) savedSnapsCache = new ArrayList<>();
-                String mMediaKey = (String) getObjectField(param.args[0], "mMediaKey");
-                if (!savedSnapsCache.contains(mMediaKey)) {
-                    savedSnapsCache.add(mMediaKey);
-                } else {
-                    Logger.log("Skipping saving snap already saved");
-                    return;
-                }
-                if (mSnapImage != null) {
-                    Logger.log("Saving image sent by: " + mSender);
-                    new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0);
-                } else if (mSnapVideo != null) {
-                    Logger.log("Saving video sent by: " + mSender);
-                    new SaveSnapTask(SnapChatContext, mSender, mSnapVideo, 1);
-                }
-                mSnapImage = null;
-                mSnapVideo = null;
+                ReceivedSnap = param.args[0];
+                CLSnapChat = lpparam.classLoader;
+                saveSnap();
             }
         });
 
