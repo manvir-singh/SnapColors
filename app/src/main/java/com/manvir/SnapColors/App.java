@@ -299,16 +299,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             return;
 
         if (CLSnapChat == null) CLSnapChat = lpparam.classLoader;
-        if (BuildConfig.DEBUG) {
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "b", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "c", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "d", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "e", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "f", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "g", XC_MethodReplacement.returnConstant(true));
-            findAndHookMethod(SnapChatPKG + ".util.debug.ReleaseManager", CLSnapChat, "h", XC_MethodReplacement.returnConstant(true));
-        }
-
         Class<?> CaptionEditText;
         // Get snapchats activity also reload our settings
         XC_MethodHook startUpHook = new XC_MethodHook() {
