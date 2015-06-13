@@ -25,7 +25,6 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -91,8 +90,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private List<String> savedSnapsCache;
     private Object ReceivedSnap;
     private ClassLoader CLSnapChat;
+    private boolean isInSnap;
 
-    private void saveSnap(){
+    private void saveSnap() {
         if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
         if (CLSnapChat == null || ReceivedSnap == null) {
             Logger.log("Something went wrong when saving snap");
@@ -105,6 +105,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 return; //I don't think you need to save live events
             mSender = (String) getObjectField(afx.cast(ReceivedSnap), "mUsername");
         }
+        Logger.log(mSender);
         if (mSender == null) return;//Abort mission!
         if (savedSnapsCache == null) savedSnapsCache = new ArrayList<>();
         String mMediaKey = (String) getObjectField(ReceivedSnap, "mMediaKey");
@@ -121,9 +122,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             Logger.log("Saving video sent by: " + mSender);
             new SaveSnapTask(SnapChatContext, mSender, mSnapVideo, 1);
         }
+        Toast.makeText(AndroidAppHelper.currentApplication(), "Saved", Toast.LENGTH_SHORT).show();
         mSnapImage = null;
         mSnapVideo = null;
         ReceivedSnap = null;
+        isInSnap = false;
     }
 
     @Override
@@ -404,27 +407,39 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //Everything below this point is for saving snaps
-        GestureDetector gestureDetector = new GestureDetector(AndroidAppHelper.currentApplication(), new GestureDetector.SimpleOnGestureListener(){
-            private static final int SWIPE_MIN_DISTANCE = 120;
-            private static final int SWIPE_MAX_OFF_PATH = 200;
-            private static final int SWIPE_THRESHOLD_VELOCITY = 100;
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (ReceivedSnap == null) return false;
-                float diffAbs = Math.abs(e1.getY() - e2.getY());
-                float diff = e1.getX() - e2.getX();
-                if (diffAbs > SWIPE_MAX_OFF_PATH) return false;
-                if (-diff > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) { //Right
-                    saveSnap();
-                    Toast.makeText(AndroidAppHelper.currentApplication(), "Saved", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            }
-        });
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "dispatchTouchEvent", MotionEvent.class, new XC_MethodHook() {
+            public float upY;
+            public float upX;
+            public float downY;
+            public float downX;
+            private int min_distance = 100;
+
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                gestureDetector.onTouchEvent((MotionEvent) param.args[0]);
+                if (!isInSnap) return;
+                if (!prefs.getBoolean("swipeSave", true)) return;
+                MotionEvent event = (MotionEvent) param.args[0];
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        downX = event.getX();
+                        downY = event.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        upX = event.getX();
+                        upY = event.getY();
+                        float deltaX = downX - upX;
+                        float deltaY = downY - upY;
+                        //HORIZONTAL SCROLL
+                        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                            if (Math.abs(deltaX) > min_distance) {
+                                if (deltaX < 0) {
+                                    saveSnap();
+                                    param.setResult(true);
+                                }
+                            }
+                        }
+                        break;
+                }
             }
         });
         Method a;
@@ -436,10 +451,20 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         XposedBridge.hookMethod(a, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                Logger.log("Enter Snap");
                 if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
-                //noinspection ResultOfMethodCallIgnored,ConstantConditions
+                isInSnap = true;
                 ReceivedSnap = param.args[0];
                 CLSnapChat = lpparam.classLoader;
+                if (prefs.getBoolean("autoSave", false)) saveSnap();
+            }
+        });
+
+        findAndHookMethod(SnapChatPKG + ".ui.SnapView", CLSnapChat, "a", findClass(SnapChatPKG + ".analytics.SnapViewEventAnalytics.EndReason", CLSnapChat), new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                Logger.log("Exited Snap");
+                isInSnap = false;
             }
         });
 

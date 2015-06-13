@@ -38,6 +38,17 @@ public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
     Preference saveLocation;
     String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + MainActivity.SnapChatPKG + "/files";
+    private CheckBoxPreference TextColor;
+    private CheckBoxPreference BGColor;
+    private CheckBoxPreference setFont;
+    private CheckBoxPreference autoRandomize;
+    private CheckBoxPreference shouldRainbow;
+    private CheckBoxPreference shouldSaveSnaps;
+    private CheckBoxPreference shouldSaveStories;
+    private CheckBoxPreference swipeSave;
+    private CheckBoxPreference autoSave;
+    private CheckBoxPreference shouldSaveInSub;
+    private CheckBoxPreference checkForVer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,50 +59,52 @@ public class Settings extends PreferenceFragment {
         if (BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
 
         //Find all preferences
-        final CheckBoxPreference TextColor = (CheckBoxPreference) getPreferenceManager().findPreference("TextColor");
-        final CheckBoxPreference BGColor = (CheckBoxPreference) getPreferenceManager().findPreference("BGColor");
-        final CheckBoxPreference setFont = (CheckBoxPreference) getPreferenceManager().findPreference("setFont");
-        final CheckBoxPreference autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
-        final CheckBoxPreference shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
-        final CheckBoxPreference shouldSaveSnaps = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveSnaps");
-        final CheckBoxPreference shouldSaveStories = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveStories");
-        final CheckBoxPreference shouldSaveInSub = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveInSub");
+        TextColor = (CheckBoxPreference) getPreferenceManager().findPreference("TextColor");
+        BGColor = (CheckBoxPreference) getPreferenceManager().findPreference("BGColor");
+        setFont = (CheckBoxPreference) getPreferenceManager().findPreference("setFont");
+        autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
+        shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
+        shouldSaveSnaps = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveSnaps");
+        shouldSaveStories = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveStories");
+        swipeSave = (CheckBoxPreference) getPreferenceManager().findPreference("swipeSave");
+        autoSave = (CheckBoxPreference) getPreferenceManager().findPreference("autoSave");
+        shouldSaveInSub = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveInSub");
         saveLocation = getPreferenceManager().findPreference("saveLocation");
-        final Preference importFont = getPreferenceManager().findPreference("importFont");
-        final Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
-        final CheckBoxPreference checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
-        final Preference donate = getPreferenceManager().findPreference("donate");
+        Preference importFont = getPreferenceManager().findPreference("importFont");
+        Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
+        checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
+        Preference donate = getPreferenceManager().findPreference("donate");
 
         //Startup stuff
-        saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
-        if (prefs.getBoolean("checkForVer", true)) {
-            checkForVer.setChecked(true);
-        }
-        if (prefs.getBoolean("shouldSaveSnaps", true)) {
-            shouldSaveSnaps.setChecked(true);
-        } else {
-            shouldSaveStories.setEnabled(false);
-        }
-        if (prefs.getBoolean("shouldSaveStories", true)) {
-            shouldSaveStories.setChecked(true);
-        }
-        if (prefs.getBoolean("shouldSaveInSub", true)) {
-            shouldSaveInSub.setChecked(true);
-        }
-        if (TextColor.isChecked() || BGColor.isChecked()) {
-            autoRandomize.setEnabled(false);
-        }
-        if (autoRandomize.isChecked()) {
-            TextColor.setEnabled(false);
-            BGColor.setEnabled(false);
-        }
-        if (Util.activeVersion() != BuildConfig.VERSION_CODE && !Util.isNegative(Util.activeVersion())) {
-            Toast.makeText(getActivity(), "Warning: Did you forget to reboot/soft reboot?!", Toast.LENGTH_LONG).show();
-        } else if (Util.isNegative(Util.activeVersion())) {
-            Toast.makeText(getActivity(), "Warning: Module disabled in xposed!", Toast.LENGTH_LONG).show();
-        }
+        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                update();
+            }
+        });
+        update();
 
         //Listeners
+        swipeSave.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!swipeSave.isChecked()) {
+                prefs.edit().putBoolean("swipeSave", true).apply();
+                autoSave.setEnabled(false);
+            } else {
+                prefs.edit().putBoolean("swipeSave", false).apply();
+                autoSave.setEnabled(true);
+            }
+            return true;
+        });
+        autoSave.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!autoSave.isChecked()) {
+                prefs.edit().putBoolean("autoSave", true).apply();
+                swipeSave.setEnabled(false);
+            } else {
+                prefs.edit().putBoolean("autoSave", false).apply();
+                swipeSave.setEnabled(true);
+            }
+            return true;
+        });
         shouldSaveStories.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!shouldSaveStories.isChecked()) {
                 prefs.edit().putBoolean("shouldSaveStories", true).apply();
@@ -300,6 +313,44 @@ public class Settings extends PreferenceFragment {
             prefs.edit().putString("saveLocation", path.getAbsolutePath()).apply();
             saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
             Logger.log("Set save location: " + prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
+        }
+    }
+
+    private void update() {
+        saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
+        if (prefs.getBoolean("checkForVer", true)) {
+            checkForVer.setChecked(true);
+        }
+        if (prefs.getBoolean("swipeSave", true)) {
+            swipeSave.setChecked(true);
+            autoSave.setEnabled(false);
+        }
+        if (prefs.getBoolean("autoSave", false)) {
+            autoSave.setChecked(true);
+            swipeSave.setEnabled(false);
+        }
+        if (prefs.getBoolean("shouldSaveSnaps", true)) {
+            shouldSaveSnaps.setChecked(true);
+        } else {
+            shouldSaveStories.setEnabled(false);
+        }
+        if (prefs.getBoolean("shouldSaveStories", true)) {
+            shouldSaveStories.setChecked(true);
+        }
+        if (prefs.getBoolean("shouldSaveInSub", true)) {
+            shouldSaveInSub.setChecked(true);
+        }
+        if (TextColor.isChecked() || BGColor.isChecked()) {
+            autoRandomize.setEnabled(false);
+        }
+        if (autoRandomize.isChecked()) {
+            TextColor.setEnabled(false);
+            BGColor.setEnabled(false);
+        }
+        if (Util.activeVersion() != BuildConfig.VERSION_CODE && !Util.isNegative(Util.activeVersion())) {
+            Toast.makeText(getActivity(), "Warning: Did you forget to reboot/soft reboot?!", Toast.LENGTH_LONG).show();
+        } else if (Util.isNegative(Util.activeVersion())) {
+            Toast.makeText(getActivity(), "Warning: Module disabled in xposed!", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -42,7 +42,15 @@
         <CheckBoxPreference
             android:key="shouldSaveStories"
             android:summary="Enable disable the saving of stories"
-            android:title="Enable Story Save" />
+            android:title="Save Stories" />
+        <CheckBoxPreference
+            android:key="swipeSave"
+            android:summary="When viewing a snap swipe right or left to save it"
+            android:title="Swipe Save" />
+        <CheckBoxPreference
+            android:key="autoSave"
+            android:summary="Auto save snaps without any user interaction"
+            android:title="Auto Save" />
         <CheckBoxPreference
             android:key="shouldSaveInSub"
             android:summary="Create a new folder for each user"
