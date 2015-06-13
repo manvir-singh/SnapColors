@@ -442,6 +442,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
             }
         });
+        XposedBridge.hookAllConstructors(findClass(SnapChatPKG + ".model.ReceivedSnap", CLSnapChat), new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean("minTimer", true)) return;
+                if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
+                    return;
+                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, 10.0);
+            }
+        });
         Method a;
         try {
             a = findMethodExact(SnapChatPKG + ".ui.SnapView", CLSnapChat, "a", findClass("aic", CLSnapChat), findClass("ahg", CLSnapChat), boolean.class, boolean.class);

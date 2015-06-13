@@ -49,6 +49,7 @@ public class Settings extends PreferenceFragment {
     private CheckBoxPreference autoSave;
     private CheckBoxPreference shouldSaveInSub;
     private CheckBoxPreference checkForVer;
+    private CheckBoxPreference minTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class Settings extends PreferenceFragment {
         shouldSaveStories = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveStories");
         swipeSave = (CheckBoxPreference) getPreferenceManager().findPreference("swipeSave");
         autoSave = (CheckBoxPreference) getPreferenceManager().findPreference("autoSave");
+        minTimer = (CheckBoxPreference) getPreferenceManager().findPreference("minTimer");
         shouldSaveInSub = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveInSub");
         saveLocation = getPreferenceManager().findPreference("saveLocation");
         Preference importFont = getPreferenceManager().findPreference("importFont");
@@ -102,6 +104,14 @@ public class Settings extends PreferenceFragment {
             } else {
                 prefs.edit().putBoolean("autoSave", false).apply();
                 swipeSave.setEnabled(true);
+            }
+            return true;
+        });
+        minTimer.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!minTimer.isChecked()) {
+                prefs.edit().putBoolean("minTimer", true).apply();
+            } else {
+                prefs.edit().putBoolean("minTimer", false).apply();
             }
             return true;
         });
@@ -328,6 +338,9 @@ public class Settings extends PreferenceFragment {
         if (prefs.getBoolean("autoSave", false)) {
             autoSave.setChecked(true);
             swipeSave.setEnabled(false);
+        }
+        if (prefs.getBoolean("minTimer", true)) {
+            minTimer.setChecked(true);
         }
         if (prefs.getBoolean("shouldSaveSnaps", true)) {
             shouldSaveSnaps.setChecked(true);

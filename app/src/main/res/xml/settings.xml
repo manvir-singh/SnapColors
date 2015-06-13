@@ -52,6 +52,10 @@
             android:summary="Auto save snaps without any user interaction"
             android:title="Auto Save" />
         <CheckBoxPreference
+            android:key="minTimer"
+            android:summary="Lock all snaps to be viewable for 10 seconds"
+            android:title="Minimum Timer" />
+        <CheckBoxPreference
             android:key="shouldSaveInSub"
             android:summary="Create a new folder for each user"
             android:title="Create Sub Folder" />
