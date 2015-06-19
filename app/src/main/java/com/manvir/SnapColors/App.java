@@ -14,6 +14,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -260,12 +261,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         int.class, int.class, Intent.class);
                 Uri image = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
                 intent.setData(image);
-                try {
-                    imgFromGallery = true;
-                    onActivityResult.invoke(SnapChatContext, 1001, -1, intent);
-                } catch (Exception theEnd) {
-                    theEnd.printStackTrace();
-                }
+                imgFromGallery = true;
+                new Thread(() -> {
+                    try {
+                        Looper.prepare();
+                        onActivityResult.invoke(SnapChatContext, 1001, -1, intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
         };
         findAndHookMethod(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "onCreate", Bundle.class, startUpHook);
