@@ -34,37 +34,6 @@
             android:title="Clear all imported fonts" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Save Snaps">
-        <CheckBoxPreference
-            android:key="shouldSaveSnaps"
-            android:summary="Enable disable the saving of received snaps"
-            android:title="Enable" />
-        <CheckBoxPreference
-            android:key="shouldSaveStories"
-            android:summary="Enable disable the saving of stories"
-            android:title="Save Stories" />
-        <CheckBoxPreference
-            android:key="swipeSave"
-            android:summary="When viewing a snap swipe right or left to save it"
-            android:title="Swipe Save" />
-        <CheckBoxPreference
-            android:key="autoSave"
-            android:summary="Auto save snaps without any user interaction"
-            android:title="Auto Save" />
-        <CheckBoxPreference
-            android:key="minTimer"
-            android:summary="Lock all snaps to be viewable for 10 seconds"
-            android:title="Minimum Timer" />
-        <CheckBoxPreference
-            android:key="shouldSaveInSub"
-            android:summary="Create a new folder for each user"
-            android:title="Create Sub Folder" />
-        <Preference
-            android:key="saveLocation"
-            android:summary=""
-            android:title="Save Location" />
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Updater">
         <CheckBoxPreference
             android:key="checkForVer"

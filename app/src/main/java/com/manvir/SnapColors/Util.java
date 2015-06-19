@@ -8,10 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -38,30 +36,6 @@ import java.util.Random;
 public class Util {
     public static String SDCARD_SNAPCOLORS = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SnapColors";
     private static Context mContext;
-
-    public static void runMediaScanner(Context context, File file) {
-        MediaScannerConnection.scanFile(context, new String[]{file.toString()}, null, (path, uri) -> Logger.log("Scanner added: " + path));
-    }
-
-    public static void saveBitmap(Bitmap bitmap, File out) {
-        FileOutputStream outStream = null;
-        try {
-            //noinspection ResultOfMethodCallIgnored
-            out.getParentFile().mkdirs();
-            outStream = new FileOutputStream(out);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 0, outStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (outStream != null) {
-                    outStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * Allows the {@link android.widget.EditText} to have multiple lines

@@ -1,7 +1,6 @@
 package com.manvir.SnapColors;
 
 import android.app.Activity;
-import android.app.AndroidAppHelper;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,12 +8,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.XModuleResources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,26 +21,14 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-import android.widget.VideoView;
 
-import com.manvir.logger.Logger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -66,7 +50,6 @@ import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
-import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     //Xposed
@@ -85,49 +68,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     //SnapChat
     private Activity SnapChatContext; //Snapchats main activity
     private Resources SnapChatResources;
-    private Bitmap mSnapImage;
-    private FileInputStream mSnapVideo;
-    private List<String> savedSnapsCache;
-    private Object ReceivedSnap;
     private ClassLoader CLSnapChat;
-    private boolean isInSnap;
-
-    private void saveSnap() {
-        if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
-        if (CLSnapChat == null || ReceivedSnap == null) {
-            Logger.log("Something went wrong when saving snap");
-        }
-        new File(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS)).mkdirs();
-        String mSender = (String) getObjectField(ReceivedSnap, "mSender");
-        if (mSender == null && prefs.getBoolean("shouldSaveStories", true)) { //This means its a story
-            Class<?> afx = findClass("afx", CLSnapChat);
-            if (((String) getObjectField(afx.cast(ReceivedSnap), "mId")).split("~").length == 3)
-                return; //I don't think you need to save live events
-            mSender = (String) getObjectField(afx.cast(ReceivedSnap), "mUsername");
-        }
-        Logger.log(mSender);
-        if (mSender == null) return;//Abort mission!
-        if (savedSnapsCache == null) savedSnapsCache = new ArrayList<>();
-        String mMediaKey = (String) getObjectField(ReceivedSnap, "mMediaKey");
-        if (!savedSnapsCache.contains(mMediaKey)) {
-            savedSnapsCache.add(mMediaKey);
-        } else {
-            Logger.log("Skipping saving snap already saved");
-            return;
-        }
-        if (mSnapImage != null) {
-            Logger.log("Saving image sent by: " + mSender);
-            new SaveSnapTask(SnapChatContext, mSender, mSnapImage, 0);
-        } else if (mSnapVideo != null) {
-            Logger.log("Saving video sent by: " + mSender);
-            new SaveSnapTask(SnapChatContext, mSender, mSnapVideo, 1);
-        }
-        Toast.makeText(AndroidAppHelper.currentApplication(), "Saved", Toast.LENGTH_SHORT).show();
-        mSnapImage = null;
-        mSnapVideo = null;
-        ReceivedSnap = null;
-        isInSnap = false;
-    }
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -403,108 +344,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
                 XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener", textWatcher);
                 Util.doMultiLine(SnapChatEditText);
-            }
-        });
-
-        //Everything below this point is for saving snaps
-        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "dispatchTouchEvent", MotionEvent.class, new XC_MethodHook() {
-            public float upY;
-            public float upX;
-            public float downY;
-            public float downX;
-            private int min_distance = 100;
-
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!isInSnap) return;
-                if (!prefs.getBoolean("swipeSave", true)) return;
-                MotionEvent event = (MotionEvent) param.args[0];
-                switch (event.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN:
-                        downX = event.getX();
-                        downY = event.getY();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        upX = event.getX();
-                        upY = event.getY();
-                        float deltaX = downX - upX;
-                        float deltaY = downY - upY;
-                        //HORIZONTAL SCROLL
-                        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                            if (Math.abs(deltaX) > min_distance) {
-                                if (deltaX < 0) {
-                                    saveSnap();
-                                    param.setResult(true);
-                                }
-                            }
-                        }
-                        break;
-                }
-            }
-        });
-        XposedBridge.hookAllConstructors(findClass(SnapChatPKG + ".model.ReceivedSnap", CLSnapChat), new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("minTimer", true)) return;
-                if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
-                    return;
-                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, 10.0);
-            }
-        });
-        Method a;
-        try {
-            a = findMethodExact(SnapChatPKG + ".ui.SnapView", CLSnapChat, "a", findClass("aic", CLSnapChat), findClass("ahg", CLSnapChat), boolean.class, boolean.class);
-        } catch (Throwable beta) {
-            a = findMethodExact(SnapChatPKG + ".ui.SnapView", CLSnapChat, "c", findClass(SnapChatPKG + ".model.ReceivedSnap", CLSnapChat), findClass("aew", CLSnapChat), boolean.class);
-        }
-        XposedBridge.hookMethod(a, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                Logger.log("Enter Snap");
-                if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
-                isInSnap = true;
-                ReceivedSnap = param.args[0];
-                CLSnapChat = lpparam.classLoader;
-                if (prefs.getBoolean("autoSave", false)) saveSnap();
-            }
-        });
-
-        findAndHookMethod(SnapChatPKG + ".ui.SnapView", CLSnapChat, "a", findClass(SnapChatPKG + ".analytics.SnapViewEventAnalytics.EndReason", CLSnapChat), new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                Logger.log("Exited Snap");
-                isInSnap = false;
-            }
-        });
-
-        //Get the video data from file
-        findAndHookMethod(VideoView.class, "setVideoURI", Uri.class, Map.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
-                //We have to store the file data before snapchat deletes it
-                try {
-                    mSnapVideo = new FileInputStream(param.args[0].toString());
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        //For saving a received image
-        findAndHookMethod(ImageView.class, "updateDrawable", Drawable.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("shouldSaveSnaps", true)) return;
-                try {
-                    if (!SnapChatResources.getResourceName(((View) param.thisObject).getId()).equals(SnapChatPKG + ":id/snap_image_view"))
-                        return;
-
-                    if (((BitmapDrawable) param.args[0]).getBitmap() == null) return;
-                    mSnapImage = ((BitmapDrawable) param.args[0]).getBitmap();
-                } catch (NullPointerException | Resources.NotFoundException ignore) {
-                    //Sometimes getResourceName is going to return null that's okay
-                }
             }
         });
     }
