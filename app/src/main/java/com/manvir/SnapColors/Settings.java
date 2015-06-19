@@ -36,7 +36,6 @@ import java.io.OutputStream;
 
 public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
-    Preference saveLocation;
     String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + MainActivity.SnapChatPKG + "/files";
     private CheckBoxPreference TextColor;
     private CheckBoxPreference BGColor;
@@ -69,15 +68,6 @@ public class Settings extends PreferenceFragment {
         update();
 
         //Listeners
-        saveLocation.setOnPreferenceClickListener(preference -> {
-            Intent i = new Intent(getActivity(), FilePickerActivity.class);
-            i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-            i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-            i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
-            i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
-            startActivityForResult(i, 1);
-            return true;
-        });
         donate.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent();
             intent.setComponent(new ComponentName(MainActivity.SnapColorsPKG, MainActivity.SnapColorsPKG + ".DonateActivity"));
@@ -245,17 +235,10 @@ public class Settings extends PreferenceFragment {
                 e.printStackTrace();
                 Toast.makeText(getActivity(), "Import failed!", Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            @SuppressWarnings("ConstantConditions")
-            File path = new File(Uri.decode(data.getDataString()).replace("file://", ""));
-            prefs.edit().putString("saveLocation", path.getAbsolutePath()).apply();
-            saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
-            Logger.log("Set save location: " + prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
         }
     }
 
     private void update() {
-        saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
         if (prefs.getBoolean("checkForVer", true)) {
             checkForVer.setChecked(true);
         }
