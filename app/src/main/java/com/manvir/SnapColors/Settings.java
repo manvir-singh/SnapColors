@@ -43,13 +43,7 @@ public class Settings extends PreferenceFragment {
     private CheckBoxPreference setFont;
     private CheckBoxPreference autoRandomize;
     private CheckBoxPreference shouldRainbow;
-    private CheckBoxPreference shouldSaveSnaps;
-    private CheckBoxPreference shouldSaveStories;
-    private CheckBoxPreference swipeSave;
-    private CheckBoxPreference autoSave;
-    private CheckBoxPreference shouldSaveInSub;
     private CheckBoxPreference checkForVer;
-    private CheckBoxPreference minTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,72 +59,16 @@ public class Settings extends PreferenceFragment {
         setFont = (CheckBoxPreference) getPreferenceManager().findPreference("setFont");
         autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
         shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
-        shouldSaveSnaps = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveSnaps");
-        shouldSaveStories = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveStories");
-        swipeSave = (CheckBoxPreference) getPreferenceManager().findPreference("swipeSave");
-        autoSave = (CheckBoxPreference) getPreferenceManager().findPreference("autoSave");
-        minTimer = (CheckBoxPreference) getPreferenceManager().findPreference("minTimer");
-        shouldSaveInSub = (CheckBoxPreference) getPreferenceManager().findPreference("shouldSaveInSub");
-        saveLocation = getPreferenceManager().findPreference("saveLocation");
         Preference importFont = getPreferenceManager().findPreference("importFont");
         Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
         checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
         Preference donate = getPreferenceManager().findPreference("donate");
 
         //Startup stuff
-        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                update();
-            }
-        });
+        prefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> update());
         update();
 
         //Listeners
-        swipeSave.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (!swipeSave.isChecked()) {
-                prefs.edit().putBoolean("swipeSave", true).apply();
-                autoSave.setEnabled(false);
-            } else {
-                prefs.edit().putBoolean("swipeSave", false).apply();
-                autoSave.setEnabled(true);
-            }
-            return true;
-        });
-        autoSave.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (!autoSave.isChecked()) {
-                prefs.edit().putBoolean("autoSave", true).apply();
-                swipeSave.setEnabled(false);
-            } else {
-                prefs.edit().putBoolean("autoSave", false).apply();
-                swipeSave.setEnabled(true);
-            }
-            return true;
-        });
-        minTimer.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (!minTimer.isChecked()) {
-                prefs.edit().putBoolean("minTimer", true).apply();
-            } else {
-                prefs.edit().putBoolean("minTimer", false).apply();
-            }
-            return true;
-        });
-        shouldSaveStories.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (!shouldSaveStories.isChecked()) {
-                prefs.edit().putBoolean("shouldSaveStories", true).apply();
-            } else {
-                prefs.edit().putBoolean("shouldSaveStories", false).apply();
-            }
-            return true;
-        });
-        shouldSaveInSub.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (!shouldSaveInSub.isChecked()) {
-                prefs.edit().putBoolean("shouldSaveInSub", true).apply();
-            } else {
-                prefs.edit().putBoolean("shouldSaveInSub", false).apply();
-            }
-            return true;
-        });
         saveLocation.setOnPreferenceClickListener(preference -> {
             Intent i = new Intent(getActivity(), FilePickerActivity.class);
             i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
@@ -144,16 +82,6 @@ public class Settings extends PreferenceFragment {
             Intent intent = new Intent();
             intent.setComponent(new ComponentName(MainActivity.SnapColorsPKG, MainActivity.SnapColorsPKG + ".DonateActivity"));
             getActivity().startActivity(intent);
-            return true;
-        });
-        shouldSaveSnaps.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (!shouldSaveSnaps.isChecked()) {
-                prefs.edit().putBoolean("shouldSaveSnaps", true).apply();
-                shouldSaveStories.setEnabled(true);
-            } else {
-                prefs.edit().putBoolean("shouldSaveSnaps", false).apply();
-                shouldSaveStories.setEnabled(false);
-            }
             return true;
         });
         checkForVer.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -330,28 +258,6 @@ public class Settings extends PreferenceFragment {
         saveLocation.setSummary(prefs.getString("saveLocation", Util.SDCARD_SNAPCOLORS));
         if (prefs.getBoolean("checkForVer", true)) {
             checkForVer.setChecked(true);
-        }
-        if (prefs.getBoolean("swipeSave", true)) {
-            swipeSave.setChecked(true);
-            autoSave.setEnabled(false);
-        }
-        if (prefs.getBoolean("autoSave", false)) {
-            autoSave.setChecked(true);
-            swipeSave.setEnabled(false);
-        }
-        if (prefs.getBoolean("minTimer", true)) {
-            minTimer.setChecked(true);
-        }
-        if (prefs.getBoolean("shouldSaveSnaps", true)) {
-            shouldSaveSnaps.setChecked(true);
-        } else {
-            shouldSaveStories.setEnabled(false);
-        }
-        if (prefs.getBoolean("shouldSaveStories", true)) {
-            shouldSaveStories.setChecked(true);
-        }
-        if (prefs.getBoolean("shouldSaveInSub", true)) {
-            shouldSaveInSub.setChecked(true);
         }
         if (TextColor.isChecked() || BGColor.isChecked()) {
             autoRandomize.setEnabled(false);
