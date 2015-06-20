@@ -20,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.manvir.common.PACKAGES;
+
 import java.lang.reflect.Field;
 
 public class TextureLayout extends RelativeLayout {
@@ -33,10 +35,10 @@ public class TextureLayout extends RelativeLayout {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.addView(inflater.inflate(App.modRes.getLayout(R.layout.textures_layout), null));
 
-        ScrollView scrollView = (ScrollView)findViewById(R.id.ScrollViewFontsList);
+        ScrollView scrollView = (ScrollView) findViewById(R.id.ScrollViewFontsList);
         scrollView.setLayoutParams(new LayoutParams(App.size.x, LayoutParams.WRAP_CONTENT));
 
-        Button btnCancel = (Button)findViewById(R.id.cancel);
+        Button btnCancel = (Button) findViewById(R.id.cancel);
         btnCancel.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
         btnCancel.setOnClickListener(new OnClickListener() {
             @Override
@@ -53,11 +55,11 @@ public class TextureLayout extends RelativeLayout {
             }
         });
 
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 Field[] textures = R.raw.class.getFields();
-                for(int i=0; i<textures.length; i++){
+                for (int i = 0; i < textures.length; i++) {
                     final TexturePreview v = new TexturePreview(context);
                     v.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                     v.setTextSize(40);
@@ -67,14 +69,14 @@ public class TextureLayout extends RelativeLayout {
                     options.inSampleSize = 8;
 
                     v.setTextureID(textures[i].getName());
-                    Bitmap bitmap = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(textures[i].getName(), "raw", "com.manvir.SnapColors")), null, options);
+                    Bitmap bitmap = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(textures[i].getName(), "raw", PACKAGES.SNAPCOLORS)), null, options);
                     final Shader shader = new BitmapShader(bitmap,
                             Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
                     v.getPaint().setShader(shader);
                     v.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View vv) {
-                            Bitmap bitmapp = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(((TexturePreview) vv).getTextureID(), "raw", "com.manvir.SnapColors")));
+                            Bitmap bitmapp = BitmapFactory.decodeStream(App.modRes.openRawResource(App.modRes.getIdentifier(((TexturePreview) vv).getTextureID(), "raw", PACKAGES.SNAPCOLORS)));
                             Shader shaderr = new BitmapShader(bitmapp, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
                             editText.getPaint().setShader(shaderr);
                             editText.setText(editText.getText()); //Forces the view to redraw
@@ -87,7 +89,7 @@ public class TextureLayout extends RelativeLayout {
                     context.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            ((LinearLayout)findViewById(R.id.texturesMainLayout)).addView(v);
+                            ((LinearLayout) findViewById(R.id.texturesMainLayout)).addView(v);
                         }
                     });
                 }
@@ -104,16 +106,19 @@ public class TextureLayout extends RelativeLayout {
 
     }
 
-    private class TexturePreview extends TextView{
+    private class TexturePreview extends TextView {
         String name;
+
         public TexturePreview(Context context) {
             super(context);
         }
 
-        public void setTextureID(String name){
-            this.name = name;
+        public String getTextureID() {
+            return this.name;
         }
 
-        public String getTextureID(){return this.name;}
+        public void setTextureID(String name) {
+            this.name = name;
+        }
     }
 }

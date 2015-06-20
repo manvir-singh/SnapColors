@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.manvir.common.PACKAGES;
+
 //This activity is never shown it is transparent
 public class OpenInSCActivity extends Activity {
     @Override
@@ -16,7 +18,7 @@ public class OpenInSCActivity extends Activity {
         if (intent.getType().startsWith("image/")) {
             initSC();
             intent.putExtra("com.manvir.SnapColors.isSnapColors", true);
-            intent.setComponent(new ComponentName("com.snapchat.android", "com.snapchat.android.LandingPageActivity"));
+            intent.setComponent(new ComponentName(PACKAGES.SNAPCHAT, PACKAGES.SNAPCHAT + ".LandingPageActivity"));
             startActivity(intent);
             finish();
         } else {
@@ -30,6 +32,6 @@ public class OpenInSCActivity extends Activity {
      * The only way to do this is to force close snapchat and then let it recreate it self from scratch with our data.
      */
     private void initSC() {
-        ((ActivityManager) getSystemService(ACTIVITY_SERVICE)).killBackgroundProcesses("com.snapchat.android");
+        ((ActivityManager) getSystemService(ACTIVITY_SERVICE)).killBackgroundProcesses(PACKAGES.SNAPCHAT);
     }
 }

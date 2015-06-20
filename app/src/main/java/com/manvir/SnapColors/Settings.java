@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
@@ -40,7 +41,7 @@ import java.io.OutputStream;
 
 public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
-    String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + MainActivity.SnapChatPKG + "/files";
+    String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + PACKAGES.SNAPCHAT + "/files";
     private CheckBoxPreference TextColor;
     private CheckBoxPreference BGColor;
     private CheckBoxPreference setFont;
@@ -100,7 +101,7 @@ public class Settings extends PreferenceFragment {
         });
         donate.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent();
-            intent.setComponent(new ComponentName(MainActivity.SnapColorsPKG, MainActivity.SnapColorsPKG + ".DonateActivity"));
+            intent.setComponent(new ComponentName(PACKAGES.SNAPCHAT, PACKAGES.SNAPCHAT + ".DonateActivity"));
             getActivity().startActivity(intent);
             return true;
         });
@@ -140,7 +141,7 @@ public class Settings extends PreferenceFragment {
         setFont.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!setFont.isChecked()) {
                 try {
-                    Resources res = getActivity().getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
+                    Resources res = getActivity().getPackageManager().getResourcesForApplication(PACKAGES.SNAPCOLORSFONTS);
                     prefs.edit().putBoolean(SETTINGS.KEYS.setFont, true).apply();
                     copyAssets(res);
 

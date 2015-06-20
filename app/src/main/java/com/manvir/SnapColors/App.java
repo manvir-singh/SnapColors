@@ -29,12 +29,12 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Random;
-import java.util.Set;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -66,7 +66,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public static EditText SnapChatEditText;
     static XSharedPreferences prefs;
     static String MODULE_PATH;
-    private static String SnapChatPKG = "com.snapchat.android";
     //Caption related
     private static boolean notFirstRun = false; //Used when getting the default typeface
     private static Typeface defTypeFace;
@@ -79,28 +78,28 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
-        prefs = new XSharedPreferences("com.manvir.SnapColors", "settings");
+        prefs = new XSharedPreferences(PACKAGES.SNAPCOLORS, SETTINGS.NAME);
     }
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (!resparam.packageName.equals(SnapChatPKG))
+        if (!resparam.packageName.equals(PACKAGES.SNAPCHAT))
             return;
 
         modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
-        resparam.res.hookLayout(SnapChatPKG, "layout", "snap_preview", new XC_LayoutInflated() {
+        resparam.res.hookLayout(PACKAGES.SNAPCHAT, "layout", "snap_preview", new XC_LayoutInflated() {
             RelativeLayout SnapChatLayout = null;
             RelativeLayout innerOptionsLayout; //Holds all our options the buttons etc (The outer view is a scrollview)
 
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 //Get Snapchats main layout.
-                SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", SnapChatPKG));
+                SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", PACKAGES.SNAPCHAT));
                 if (SnapChatLayout == null) //Beta support
-                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_decor_relative_layout", "id", SnapChatPKG));
+                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_decor_relative_layout", "id", PACKAGES.SNAPCHAT));
 
                 //LayoutParams for the "T" that shows the options when tapped.
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn", "id", SnapChatPKG)).getLayoutParams());
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
                 params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
                 params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, SnapChatContext.getResources().getDisplayMetrics());
@@ -213,7 +212,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     SnapChatEditText.setTypeface(defTypeFace);
                     SnapChatEditText.setTextColor(Color.WHITE);
                     SnapChatEditText.setTextSize(21f);
-                    SnapChatEditText.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", SnapChatPKG));
+                    SnapChatEditText.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", PACKAGES.SNAPCHAT));
                 });
 
                 SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
@@ -241,11 +240,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         //DownloadAI
-        if (lpparam.packageName.equals("com.manvir.SnapColors"))
-            findAndHookMethod("com.manvir.SnapColors.Util", lpparam.classLoader, "activeVersion", XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
+        if (lpparam.packageName.equals(PACKAGES.SNAPCOLORS))
+            findAndHookMethod(PACKAGES.SNAPCOLORS + ".Util", lpparam.classLoader, "activeVersion", XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
 
         //SnapChat
-        if (!lpparam.packageName.equals(SnapChatPKG))
+        if (!lpparam.packageName.equals(PACKAGES.SNAPCHAT))
             return;
 
         if (CLSnapChat == null) CLSnapChat = lpparam.classLoader;
@@ -262,7 +261,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (!param.method.getName().equals("onCreate")) return;
                 Intent intent = (Intent) callMethod(SnapChatContext, "getIntent");
                 if (!intent.getBooleanExtra("com.manvir.SnapColors.isSnapColors", false)) return;
-                Method onActivityResult = findMethodExact(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "onActivityResult",
+                Method onActivityResult = findMethodExact(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onActivityResult",
                         int.class, int.class, Intent.class);
                 Uri image = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
                 intent.setData(image);
@@ -277,15 +276,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }).start();
             }
         };
-        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "onCreate", Bundle.class, startUpHook);
-        findAndHookMethod(SnapChatPKG + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onCreate", Bundle.class, startUpHook);
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
         Constructor<?> constructor;
         try {
-            constructor = findConstructorExact("azc", CLSnapChat, findClass("aem", CLSnapChat), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+            constructor = findConstructorExact("azc", CLSnapChat, findClass("aem", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         } catch (NoSuchMethodError beta) {
-            constructor = findConstructorExact("ayt", CLSnapChat, findClass("aeu", CLSnapChat), findClass(SnapChatPKG + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+            constructor = findConstructorExact("ayt", CLSnapChat, findClass("aeu", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         }
         XposedBridge.hookMethod(constructor, new XC_MethodHook() {
             @Override
@@ -298,7 +297,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //Get some settings, also get the caption box's edit text object.
-        CaptionEditText = XposedHelpers.findClass(SnapChatPKG + ".ui.caption.CaptionEditText", CLSnapChat);
+        CaptionEditText = XposedHelpers.findClass(PACKAGES.SNAPCHAT + ".ui.caption.CaptionEditText", CLSnapChat);
         XposedBridge.hookAllConstructors(CaptionEditText, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws NameNotFoundException {
@@ -342,7 +341,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For adding multiline support
-        findAndHookConstructor(SnapChatPKG + ".ui.caption.VanillaCaptionEditText", CLSnapChat, Context.class, AttributeSet.class, new XC_MethodHook() {
+        findAndHookConstructor(PACKAGES.SNAPCHAT + ".ui.caption.VanillaCaptionEditText", CLSnapChat, Context.class, AttributeSet.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 TextWatcher textWatcher;
@@ -358,7 +357,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for
-        XposedBridge.hookAllConstructors(findClass(SnapChatPKG + ".model.ReceivedSnap", CLSnapChat), new XC_MethodHook() {
+        XposedBridge.hookAllConstructors(findClass(PACKAGES.SNAPCHAT + ".model.ReceivedSnap", CLSnapChat), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)

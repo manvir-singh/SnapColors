@@ -10,6 +10,8 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
 
+import com.manvir.common.PACKAGES;
+
 public class DonationDialog extends AlertDialog {
     public DonationDialog(final Context context) {
         super(context);
@@ -28,7 +30,7 @@ public class DonationDialog extends AlertDialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent();
-                intent.setComponent(new ComponentName("com.manvir.SnapColors", "com.manvir.SnapColors.DonateActivity"));
+                intent.setComponent(new ComponentName(PACKAGES.SNAPCOLORS, PACKAGES.SNAPCOLORS + ".DonateActivity"));
                 context.startActivity(intent);
             }
         });

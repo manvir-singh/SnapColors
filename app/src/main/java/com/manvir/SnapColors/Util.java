@@ -20,6 +20,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.manvir.common.PACKAGES;
 import com.manvir.logger.Logger;
 
 import java.io.BufferedInputStream;
@@ -51,7 +52,7 @@ public class Util {
             @Override
             public void run() {
                 try {
-                    Resources res = con.getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
+                    Resources res = con.getPackageManager().getResourcesForApplication(PACKAGES.SNAPCOLORSFONTS);
                     Util.copyAssets(res, con);
                     handler.post(() -> {
                         SnapChatLayout.addView(new FontsListView(con, defTypeFace, f, SnapColorsBtn), App.optionsViewLayoutParams);
