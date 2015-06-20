@@ -91,7 +91,7 @@ public class Settings extends PreferenceFragment {
             builder.setNegativeButton("Cancel", (dialog, which) -> {
                 dialog.dismiss();
             });
-            AlertDialog alertDialog =  builder.create();
+            AlertDialog alertDialog = builder.create();
             alertDialog.setOnShowListener(dialog -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));
             alertDialog.setOnDismissListener(dialog -> imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0));
             alertDialog.show();
