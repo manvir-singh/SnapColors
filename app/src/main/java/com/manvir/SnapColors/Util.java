@@ -34,18 +34,7 @@ import java.net.URLConnection;
 import java.util.Random;
 
 public class Util {
-    public static String SDCARD_SNAPCOLORS = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SnapColors";
     private static Context mContext;
-
-    /**
-     * Allows the {@link android.widget.EditText} to have multiple lines
-     *
-     * @param editText The EditText to enable multiline on
-     */
-    public static void doMultiLine(EditText editText) {
-        editText.setSingleLine(false);
-        editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-    }
 
     /**
      * Checks to see if the user has the fonts apk installed, if it is copy the fonts(.ttf) to snapchats data directory.

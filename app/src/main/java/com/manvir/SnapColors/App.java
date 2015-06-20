@@ -23,6 +23,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
@@ -348,7 +349,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     textWatcher = (TextWatcher) XposedHelpers.findField(CaptionEditText, "p").get(param.thisObject);
                 }
                 XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener", textWatcher);
-                Util.doMultiLine(SnapChatEditText);
+                SnapChatEditText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                SnapChatEditText.setSingleLine(false);
             }
         });
 
