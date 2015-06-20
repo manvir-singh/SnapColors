@@ -19,11 +19,14 @@ import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.manvir.logger.Logger;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.commons.io.FileUtils;
@@ -58,6 +61,7 @@ public class Settings extends PreferenceFragment {
         setFont = (CheckBoxPreference) getPreferenceManager().findPreference("setFont");
         autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
         shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
+        Preference minTimerInt = getPreferenceManager().findPreference("minTimerInt");
         Preference importFont = getPreferenceManager().findPreference("importFont");
         Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
         checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
@@ -68,6 +72,31 @@ public class Settings extends PreferenceFragment {
         update();
 
         //Listeners
+        minTimerInt.setOnPreferenceClickListener(preference -> {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Time in Seconds");
+            EditText timerMin = new EditText(getActivity());
+            timerMin.setGravity(Gravity.CENTER_HORIZONTAL);
+            timerMin.setInputType(InputType.TYPE_CLASS_NUMBER);
+            builder.setView(timerMin);
+            builder.setPositiveButton("Done", (dialog, which) -> {
+                if (timerMin.getText().toString().equals("") || timerMin.getText().toString().equals("0")) {
+                    Toast.makeText(getActivity(), "Must be greater then 0", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                prefs.edit().putInt("minTimerInt", Integer.valueOf(timerMin.getText().toString())).apply();
+                dialog.dismiss();
+            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.dismiss();
+            });
+            AlertDialog alertDialog =  builder.create();
+            alertDialog.setOnShowListener(dialog -> imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0));
+            alertDialog.setOnDismissListener(dialog -> imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0));
+            alertDialog.show();
+            return true;
+        });
         donate.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent();
             intent.setComponent(new ComponentName(MainActivity.SnapColorsPKG, MainActivity.SnapColorsPKG + ".DonateActivity"));

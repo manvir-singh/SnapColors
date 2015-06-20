@@ -23,6 +23,13 @@
             android:title="Rainbow Text" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Snaps">
+        <Preference
+            android:key="minTimerInt"
+            android:summary="Lock all snaps to be viewable for 10 seconds"
+            android:title="Minimum Timer" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Fonts">
         <Preference
             android:key="importFont"

@@ -51,6 +51,7 @@ import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
+import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     //Xposed
@@ -348,6 +349,16 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
                 XposedHelpers.callMethod(param.thisObject, "removeTextChangedListener", textWatcher);
                 Util.doMultiLine(SnapChatEditText);
+            }
+        });
+
+        //For locking snaps to show for 10 seconds regardless of what the sender set the view time for
+        XposedBridge.hookAllConstructors(findClass(SnapChatPKG + ".model.ReceivedSnap", CLSnapChat), new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
+                    return;
+                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt("minTimerInt", 10));
             }
         });
     }
