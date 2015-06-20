@@ -26,7 +26,7 @@ public class DonateActivity extends AppCompatActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_donate, container, false);
-			final String url = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=Z6KRUW9W77J2W&lc=CA&item_name=SnapColors&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted";
+			final String url = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=Z6KRUW9W77J2W&lc=CA&item_name=SnapColors&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted";
 			final Button btnViaGooglePlay = (Button)rootView.findViewById(R.id.btnViaGooglePlay);
 			final Button btnViaPayPal = (Button)rootView.findViewById(R.id.btnViaPayPal);
 			
