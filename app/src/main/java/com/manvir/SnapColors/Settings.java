@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.manvir.common.SETTINGS;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.commons.io.FileUtils;
@@ -52,20 +53,20 @@ public class Settings extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
         //noinspection Annotator,deprecation
-        prefs = getActivity().getSharedPreferences("settings", Context.MODE_WORLD_READABLE);
+        prefs = getActivity().getSharedPreferences(SETTINGS.NAME, Context.MODE_WORLD_READABLE);
         if (BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
 
         //Find all preferences
-        TextColor = (CheckBoxPreference) getPreferenceManager().findPreference("TextColor");
-        BGColor = (CheckBoxPreference) getPreferenceManager().findPreference("BGColor");
-        setFont = (CheckBoxPreference) getPreferenceManager().findPreference("setFont");
-        autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference("autoRandomize");
-        shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference("shouldRainbow");
-        Preference minTimerInt = getPreferenceManager().findPreference("minTimerInt");
-        Preference importFont = getPreferenceManager().findPreference("importFont");
-        Preference clearAllImportedFonts = getPreferenceManager().findPreference("clearAllImportedFonts");
-        checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference("checkForVer");
-        Preference donate = getPreferenceManager().findPreference("donate");
+        TextColor = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.TextColor);
+        BGColor = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.BGColor);
+        setFont = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.setFont);
+        autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.autoRandomize);
+        shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.shouldRainbow);
+        Preference minTimerInt = getPreferenceManager().findPreference(SETTINGS.KEYS.minTimerInt);
+        Preference importFont = getPreferenceManager().findPreference(SETTINGS.KEYS.importFont);
+        Preference clearAllImportedFonts = getPreferenceManager().findPreference(SETTINGS.KEYS.clearAllImportedFonts);
+        checkForVer = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.checkForVer);
+        Preference donate = getPreferenceManager().findPreference(SETTINGS.KEYS.donate);
 
         //Startup stuff
         prefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> update());
@@ -85,7 +86,7 @@ public class Settings extends PreferenceFragment {
                     Toast.makeText(getActivity(), "Must be greater then 0", Toast.LENGTH_LONG).show();
                     return;
                 }
-                prefs.edit().putInt("minTimerInt", Integer.valueOf(timerMin.getText().toString())).apply();
+                prefs.edit().putInt(SETTINGS.KEYS.minTimerInt, Integer.valueOf(timerMin.getText().toString())).apply();
                 dialog.dismiss();
             });
             builder.setNegativeButton("Cancel", (dialog, which) -> {
@@ -105,9 +106,9 @@ public class Settings extends PreferenceFragment {
         });
         checkForVer.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!checkForVer.isChecked()) {
-                prefs.edit().putBoolean("checkForVer", true).apply();
+                prefs.edit().putBoolean(SETTINGS.KEYS.checkForVer, true).apply();
             } else {
-                prefs.edit().putBoolean("checkForVer", false).apply();
+                prefs.edit().putBoolean(SETTINGS.KEYS.checkForVer, false).apply();
             }
             return true;
         });
@@ -118,9 +119,9 @@ public class Settings extends PreferenceFragment {
         });
         shouldRainbow.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!shouldRainbow.isChecked()) {
-                prefs.edit().putBoolean("shouldRainbow", true).apply();
+                prefs.edit().putBoolean(SETTINGS.KEYS.shouldRainbow, true).apply();
             } else {
-                prefs.edit().putBoolean("shouldRainbow", false).apply();
+                prefs.edit().putBoolean(SETTINGS.KEYS.shouldRainbow, false).apply();
             }
             return true;
         });
@@ -128,9 +129,9 @@ public class Settings extends PreferenceFragment {
             if (!autoRandomize.isChecked()) {
                 TextColor.setEnabled(false);
                 BGColor.setEnabled(false);
-                prefs.edit().putBoolean("autoRandomize", true).apply();
+                prefs.edit().putBoolean(SETTINGS.KEYS.autoRandomize, true).apply();
             } else {
-                prefs.edit().putBoolean("autoRandomize", false).apply();
+                prefs.edit().putBoolean(SETTINGS.KEYS.autoRandomize, false).apply();
                 TextColor.setEnabled(true);
                 BGColor.setEnabled(true);
             }
@@ -140,7 +141,7 @@ public class Settings extends PreferenceFragment {
             if (!setFont.isChecked()) {
                 try {
                     Resources res = getActivity().getPackageManager().getResourcesForApplication("com.manvir.snapcolorsfonts");
-                    prefs.edit().putBoolean("setFont", true).apply();
+                    prefs.edit().putBoolean(SETTINGS.KEYS.setFont, true).apply();
                     copyAssets(res);
 
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_singlechoice);
@@ -154,7 +155,7 @@ public class Settings extends PreferenceFragment {
                     builderSingle.setIcon(R.drawable.ic_launcher);
                     builderSingle.setTitle("Select A Font:");
                     builderSingle.setNegativeButton("Cancel", (dialog, which) -> {
-                        prefs.edit().putBoolean("setFont", false).apply();
+                        prefs.edit().putBoolean(SETTINGS.KEYS.setFont, false).apply();
                         setFont.setChecked(false);
                         System.gc(); //We need to run the GC, if we don't thetypefaces stay in memory.
                     });
@@ -163,7 +164,7 @@ public class Settings extends PreferenceFragment {
                         String strName = arrayAdapter.getItem(which).replace(".TTF", ".ttf");
                         Typeface face = Typeface.createFromFile(fontsDir + "/" + strName);
                         prefs.edit().putString("Font", strName).apply();
-                        prefs.edit().putBoolean("setFont", true).apply();
+                        prefs.edit().putBoolean(SETTINGS.KEYS.setFont, true).apply();
                         System.gc(); //We need to run the GC, if we don't thetypefaces stay in memory.
                     });
                     builderSingle.show();
@@ -176,7 +177,7 @@ public class Settings extends PreferenceFragment {
                         Util.downloadFontsApk(getActivity());
                     });
                     al.setPositiveButton("Cancel", (dialog, which) -> {
-                        prefs.edit().putBoolean("setFont", false).apply();
+                        prefs.edit().putBoolean(SETTINGS.KEYS.setFont, false).apply();
                         setFont.setChecked(false);
                         dialog.dismiss();
                     });
@@ -186,7 +187,7 @@ public class Settings extends PreferenceFragment {
                         alertDialog.setTitle("SnapColors");
                         alertDialog.setMessage(whyText);
                         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", (dialog1, which1) -> {
-                            prefs.edit().putBoolean("setFont", false).apply();
+                            prefs.edit().putBoolean(SETTINGS.KEYS.setFont, false).apply();
                             setFont.setChecked(false);
                             alertDialog.dismiss();
                         });
@@ -195,7 +196,7 @@ public class Settings extends PreferenceFragment {
                     al.show();
                 }
             } else {
-                prefs.edit().putBoolean("setFont", false).apply();
+                prefs.edit().putBoolean(SETTINGS.KEYS.setFont, false).apply();
             }
             return true;
         });
@@ -212,20 +213,20 @@ public class Settings extends PreferenceFragment {
         BGColor.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!BGColor.isChecked()) {
                 autoRandomize.setEnabled(false);
-                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, color -> prefs.edit().putInt("BGColor", color).apply());
+                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, color -> prefs.edit().putInt(SETTINGS.KEYS.BGColor, color).apply());
                 colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> {
-                    prefs.edit().putInt("BGColor", -1728053248).apply();
+                    prefs.edit().putInt(SETTINGS.KEYS.BGColor, -1728053248).apply();
                     BGColor.setChecked(false);
                 });
                 colorPickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
-                    prefs.edit().putInt("BGColor", -1728053248).apply();
+                    prefs.edit().putInt(SETTINGS.KEYS.BGColor, -1728053248).apply();
                     BGColor.setChecked(false);
                     autoRandomize.setEnabled(true);
                 });
                 colorPickerDialog.setTitle("Background Color");
                 colorPickerDialog.show();
             } else {
-                prefs.edit().putInt("BGColor", -1728053248).apply();
+                prefs.edit().putInt(SETTINGS.KEYS.BGColor, -1728053248).apply();
                 autoRandomize.setEnabled(true);
             }
             return true;
@@ -233,20 +234,20 @@ public class Settings extends PreferenceFragment {
         TextColor.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!TextColor.isChecked()) {
                 autoRandomize.setEnabled(false);
-                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, color -> prefs.edit().putInt("TextColor", color).apply());
+                ColorPickerDialog colorPickerDialog = new ColorPickerDialog(getActivity(), Color.WHITE, color -> prefs.edit().putInt(SETTINGS.KEYS.TextColor, color).apply());
                 colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> {
-                    prefs.edit().putInt("TextColor", Color.WHITE).apply();
+                    prefs.edit().putInt(SETTINGS.KEYS.TextColor, Color.WHITE).apply();
                     TextColor.setChecked(false);
                 });
                 colorPickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
-                    prefs.edit().putInt("TextColor", Color.WHITE).apply();
+                    prefs.edit().putInt(SETTINGS.KEYS.TextColor, Color.WHITE).apply();
                     TextColor.setChecked(false);
                     autoRandomize.setEnabled(true);
                 });
                 colorPickerDialog.setTitle("Text Color");
                 colorPickerDialog.show();
             } else {
-                prefs.edit().putInt("TextColor", Color.WHITE).apply();
+                prefs.edit().putInt(SETTINGS.KEYS.TextColor, Color.WHITE).apply();
                 autoRandomize.setEnabled(true);
             }
             return true;
@@ -268,7 +269,7 @@ public class Settings extends PreferenceFragment {
     }
 
     private void update() {
-        if (prefs.getBoolean("checkForVer", true)) {
+        if (prefs.getBoolean(SETTINGS.KEYS.checkForVer, SETTINGS.DEFAULTS.checkForVer)) {
             checkForVer.setChecked(true);
         }
         if (TextColor.isChecked() || BGColor.isChecked()) {

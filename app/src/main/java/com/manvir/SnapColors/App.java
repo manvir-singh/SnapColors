@@ -29,9 +29,12 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.manvir.common.SETTINGS;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Random;
+import java.util.Set;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -309,17 +312,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     notFirstRun = true;
                 }
                 // Get stuff from settings here
-                SnapChatEditText.setTextColor(prefs.getInt("TextColor", Color.WHITE));
-                SnapChatEditText.setBackgroundColor(prefs.getInt("BGColor", -1728053248));
-                if (prefs.getBoolean("autoRandomize", false)) {
+                SnapChatEditText.setTextColor(prefs.getInt(SETTINGS.KEYS.TextColor, SETTINGS.DEFAULTS.TextColor));
+                SnapChatEditText.setBackgroundColor(prefs.getInt(SETTINGS.KEYS.BGColor, SETTINGS.DEFAULTS.BGColor));
+                if (prefs.getBoolean(SETTINGS.KEYS.autoRandomize, SETTINGS.DEFAULTS.autoRandomize)) {
                     Util.random(SnapChatEditText);
                 }
-                if (prefs.getBoolean("setFont", false)) {
+                if (prefs.getBoolean(SETTINGS.KEYS.setFont, SETTINGS.DEFAULTS.setFont)) {
                     @SuppressWarnings("ConstantConditions") final String fontsDir = SnapChatContext.getExternalFilesDir(null).getAbsolutePath();
                     Typeface face = Typeface.createFromFile(fontsDir + "/" + prefs.getString("Font", "0"));
                     SnapChatEditText.setTypeface(face);
                 }
-                if (prefs.getBoolean("shouldRainbow", false)) {
+                if (prefs.getBoolean(SETTINGS.KEYS.shouldRainbow, SETTINGS.DEFAULTS.shouldRainbow)) {
                     SnapChatEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                         Random random = new Random();
 
@@ -360,7 +363,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
                     return;
-                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt("minTimerInt", 10));
+                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
             }
         });
     }
