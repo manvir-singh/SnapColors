@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_twitter:
                 Intent twitterIntent = new Intent(Intent.ACTION_VIEW);
-                twitterIntent.setData(Uri.parse("https://twitter.com/iphone4life4"));
+                twitterIntent.setData(Uri.parse("https://twitter.com/programming4l"));
                 startActivity(twitterIntent);
                 break;
             case R.id.action_donate:
