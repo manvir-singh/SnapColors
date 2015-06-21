@@ -365,5 +365,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
             }
         });
+
+        //For disabling screenshot detection
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ao", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
+                    return;
+                param.setResult(false);
+            }
+        });
     }
 }

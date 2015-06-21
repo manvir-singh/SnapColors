@@ -7,6 +7,7 @@ public final class SETTINGS {
 
     public final class KEYS {
         public static final String clearAllImportedFonts = "clearAllImportedFonts";
+        public static final String screenshotDetection = "screenshotDetection";
         public static final String autoRandomize = "autoRandomize";
         public static final String shouldRainbow = "shouldRainbow";
         public static final String checkForVer = "checkForVer";
@@ -19,6 +20,7 @@ public final class SETTINGS {
     }
 
     public final class DEFAULTS {
+        public static final boolean screenshotDetection = true;
         public static final boolean autoRandomize = false;
         public static final boolean shouldRainbow = false;
         public static final int TextColor = Color.WHITE;

@@ -24,6 +24,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Snaps">
+        <CheckBoxPreference
+            android:key="screenshotDetection"
+            android:summary="Enable/Disable screenshot detection of snaps"
+            android:title="Screenshot Detection" />
         <Preference
             android:key="minTimerInt"
             android:summary="Lock all snaps to be viewable for 10 seconds"

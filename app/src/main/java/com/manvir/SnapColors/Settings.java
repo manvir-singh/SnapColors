@@ -48,6 +48,7 @@ public class Settings extends PreferenceFragment {
     private CheckBoxPreference autoRandomize;
     private CheckBoxPreference shouldRainbow;
     private CheckBoxPreference checkForVer;
+    private CheckBoxPreference screenshotDetection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class Settings extends PreferenceFragment {
         setFont = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.setFont);
         autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.autoRandomize);
         shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.shouldRainbow);
+        screenshotDetection = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.screenshotDetection);
         Preference minTimerInt = getPreferenceManager().findPreference(SETTINGS.KEYS.minTimerInt);
         Preference importFont = getPreferenceManager().findPreference(SETTINGS.KEYS.importFont);
         Preference clearAllImportedFonts = getPreferenceManager().findPreference(SETTINGS.KEYS.clearAllImportedFonts);
@@ -74,6 +76,14 @@ public class Settings extends PreferenceFragment {
         update();
 
         //Listeners
+        screenshotDetection.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!screenshotDetection.isChecked()) {
+                prefs.edit().putBoolean(SETTINGS.KEYS.screenshotDetection, true).apply();
+            } else {
+                prefs.edit().putBoolean(SETTINGS.KEYS.screenshotDetection, false).apply();
+            }
+            return true;
+        });
         minTimerInt.setOnPreferenceClickListener(preference -> {
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -272,6 +282,9 @@ public class Settings extends PreferenceFragment {
     private void update() {
         if (prefs.getBoolean(SETTINGS.KEYS.checkForVer, SETTINGS.DEFAULTS.checkForVer)) {
             checkForVer.setChecked(true);
+        }
+        if (prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection)) {
+            screenshotDetection.setChecked(true);
         }
         if (TextColor.isChecked() || BGColor.isChecked()) {
             autoRandomize.setEnabled(false);
