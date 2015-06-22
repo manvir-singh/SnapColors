@@ -90,15 +90,15 @@ public class Settings extends PreferenceFragment {
             builder.setTitle("Block Users:");
             ArrayList<String> whiteList = new ArrayList<>(
                     prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
-            Logger.log(Arrays.toString(whiteList.toArray()));
             ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_item, whiteList);
             DialogInterface.OnClickListener listOnClick = (dialog, which) -> {
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
                 builder1.setMessage("Are you sure you want to remove \"" + whiteList.get(which) + "\"?")
                         .setPositiveButton("Yes", (dialog1, i) -> {
-                            Set<String> tempSet = prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList);
-                            tempSet.remove(whiteList.get(which));
-                            prefs.edit().putStringSet(SETTINGS.KEYS.blockStoriesFromList, tempSet).apply();
+                            prefs.edit().putStringSet(SETTINGS.KEYS.blockStoriesFromList, new HashSet<String>() {{
+                                addAll(whiteList);
+                                remove(whiteList.get(which));
+                            }}).apply();
                             dialog1.dismiss();
                         })
                         .setNegativeButton("No", (dialog1, which1) -> {
