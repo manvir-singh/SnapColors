@@ -22,13 +22,17 @@ import android.preference.PreferenceFragment;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
+import com.manvir.logger.Logger;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.commons.io.FileUtils;
@@ -38,6 +42,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
@@ -65,6 +73,7 @@ public class Settings extends PreferenceFragment {
         autoRandomize = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.autoRandomize);
         shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.shouldRainbow);
         screenshotDetection = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.screenshotDetection);
+        Preference blockStoriesFromList = getPreferenceManager().findPreference(SETTINGS.KEYS.blockStoriesFromList);
         Preference minTimerInt = getPreferenceManager().findPreference(SETTINGS.KEYS.minTimerInt);
         Preference importFont = getPreferenceManager().findPreference(SETTINGS.KEYS.importFont);
         Preference clearAllImportedFonts = getPreferenceManager().findPreference(SETTINGS.KEYS.clearAllImportedFonts);
@@ -76,6 +85,58 @@ public class Settings extends PreferenceFragment {
         update();
 
         //Listeners
+        blockStoriesFromList.setOnPreferenceClickListener(preference -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Block Users:");
+            ArrayList<String> whiteList = new ArrayList<>(
+                    prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
+            Logger.log(Arrays.toString(whiteList.toArray()));
+            ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_item, whiteList);
+            DialogInterface.OnClickListener listOnClick = (dialog, which) -> {
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                builder1.setMessage("Are you sure you want to remove \"" + whiteList.get(which) + "\"?")
+                        .setPositiveButton("Yes", (dialog1, i) -> {
+                            Set<String> tempSet = prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList);
+                            tempSet.remove(whiteList.get(which));
+                            prefs.edit().putStringSet(SETTINGS.KEYS.blockStoriesFromList, tempSet).apply();
+                            dialog1.dismiss();
+                        })
+                        .setNegativeButton("No", (dialog1, which1) -> {
+                            dialog1.dismiss();
+                        }).show();
+            };
+            builder.setAdapter(adapter, listOnClick);
+            LinearLayout layout = new LinearLayout(getActivity()) {{
+                setOrientation(VERTICAL);
+            }};
+            EditText editText = new EditText(getActivity()) {{
+                setHint("Username or display name");
+                setSingleLine(true);
+            }};
+            Button add = new Button(getActivity()) {{
+                setText("Add");
+            }};
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layout.addView(editText);
+            layout.addView(add);
+            layout.setLayoutParams(layoutParams);
+            builder.setView(layout);
+            AlertDialog alert = builder.show();
+            add.setOnClickListener(v -> {
+                String userToAdd = editText.getText().toString();
+                //noinspection ConstantConditions
+                if (whiteList.contains(userToAdd)) {
+                    Toast.makeText(getActivity(), "User already added", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                prefs.edit().putStringSet(SETTINGS.KEYS.blockStoriesFromList, new HashSet<String>() {{
+                    addAll(whiteList);
+                    add(userToAdd);
+                }}).apply();
+                alert.dismiss();
+            });
+            return true;
+        });
         screenshotDetection.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!screenshotDetection.isChecked()) {
                 prefs.edit().putBoolean(SETTINGS.KEYS.screenshotDetection, true).apply();

@@ -34,6 +34,8 @@ import com.manvir.common.SETTINGS;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -373,6 +375,27 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
                     return;
                 param.setResult(false);
+            }
+        });
+
+        //For blocking stories so they dont show up in the Stories feed
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("agb", CLSnapChat), new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                ArrayList<String> whiteList = new ArrayList<>(
+                        prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
+
+                if (whiteList.size() == 0) return;
+                List<?> friends = (List) getObjectField(param.thisObject, "d");
+                for (int i = 0; i < friends.size(); i++) {
+                    for (int i1 = 0; i1 < whiteList.size(); i1++) {
+                        if (getObjectField(friends.get(i), "mUsername").equals(whiteList.get(i1))) {
+                            friends.remove(i);
+                        } else if (getObjectField(friends.get(i), "mDisplayName").equals(whiteList.get(i1))) {
+                            friends.remove(i);
+                        }
+                    }
+                }
             }
         });
     }

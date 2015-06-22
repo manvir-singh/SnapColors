@@ -34,6 +34,13 @@
             android:title="Minimum Timer" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Stories">
+        <Preference
+            android:key="blockStoriesFromList"
+            android:summary="Block stories form given users"
+            android:title="Block Stories" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Fonts">
         <Preference
             android:key="importFont"
