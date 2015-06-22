@@ -14,7 +14,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -269,12 +268,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 intent.setData(image);
                 imgFromGallery = true;
                 new Thread(() -> {
-                    try {
-                        Looper.prepare();
-                        onActivityResult.invoke(SnapChatContext, 1001, -1, intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    SnapChatContext.runOnUiThread(() -> {
+                        try {
+                            onActivityResult.invoke(SnapChatContext, 1001, -1, intent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }).start();
             }
         };
