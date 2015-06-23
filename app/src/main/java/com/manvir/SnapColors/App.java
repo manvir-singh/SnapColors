@@ -30,6 +30,7 @@ import android.widget.RelativeLayout;
 
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
+import com.manvir.logger.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -75,6 +76,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private Activity SnapChatContext; //Snapchats main activity
     private Resources SnapChatResources;
     private ClassLoader CLSnapChat;
+    private Object friendObj;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -394,6 +396,34 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         } else if (getObjectField(friends.get(i), "mDisplayName").equals(whiteList.get(i1))) {
                             friends.remove(i);
                         }
+                    }
+                }
+            }
+        });
+        findAndHookMethod("agb", CLSnapChat, "a", String.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                friendObj = param.getResult();
+            }
+        });
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.StoryCollection", CLSnapChat, "A", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                String mUsername = (String) getObjectField(param.thisObject, "mUsername");
+                String mDisplayName;
+                try {
+                    mDisplayName = (String) getObjectField(friendObj, "mDisplayName");
+                } catch (NullPointerException ignore) {
+                    return;
+                }
+                ArrayList<String> whiteList = new ArrayList<>(
+                        prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
+                List snaps = (List<?>) getObjectField(param.thisObject, "mUnviewedStorySnaps");
+                for (String user : whiteList) {
+                    if (mUsername.equals(user)) {
+                        snaps.clear();
+                    } else if (mDisplayName.equals(user)) {
+                        snaps.clear();
                     }
                 }
             }
