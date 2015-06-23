@@ -30,7 +30,6 @@ import android.widget.RelativeLayout;
 
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
-import com.manvir.logger.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
