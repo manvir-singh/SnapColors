@@ -412,9 +412,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 String mDisplayName;
                 try {
                     mDisplayName = (String) getObjectField(friendObj, "mDisplayName");
-                } catch (NullPointerException ignore) {
-                    return;
-                }
+                } catch (NullPointerException ignore) {return;}
                 ArrayList<String> whiteList = new ArrayList<>(
                         prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
                 List snaps = (List<?>) getObjectField(param.thisObject, "mUnviewedStorySnaps");
