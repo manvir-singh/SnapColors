@@ -32,7 +32,6 @@ import android.widget.Toast;
 
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
-import com.manvir.logger.Logger;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.commons.io.FileUtils;
@@ -43,20 +42,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
     String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + PACKAGES.SNAPCHAT + "/files";
-    private CheckBoxPreference TextColor;
-    private CheckBoxPreference BGColor;
-    private CheckBoxPreference setFont;
+    private CheckBoxPreference screenshotDetection;
     private CheckBoxPreference autoRandomize;
     private CheckBoxPreference shouldRainbow;
     private CheckBoxPreference checkForVer;
-    private CheckBoxPreference screenshotDetection;
+    private CheckBoxPreference TextColor;
+    private CheckBoxPreference BGColor;
+    private CheckBoxPreference setFont;
+    private CheckBoxPreference hideT;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +65,7 @@ public class Settings extends PreferenceFragment {
         if (BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
 
         //Find all preferences
+        hideT = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.hideT);
         TextColor = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.TextColor);
         BGColor = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.BGColor);
         setFont = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.setFont);
@@ -85,6 +84,14 @@ public class Settings extends PreferenceFragment {
         update();
 
         //Listeners
+        hideT.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!hideT.isChecked()) {
+                prefs.edit().putBoolean(SETTINGS.KEYS.hideT, true).apply();
+            } else {
+                prefs.edit().putBoolean(SETTINGS.KEYS.hideT, false).apply();
+            }
+            return true;
+        });
         blockStoriesFromList.setOnPreferenceClickListener(preference -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Block Users:");
@@ -342,6 +349,9 @@ public class Settings extends PreferenceFragment {
 
     private void update() {
         if (prefs.getBoolean(SETTINGS.KEYS.checkForVer, SETTINGS.DEFAULTS.checkForVer)) {
+            checkForVer.setChecked(true);
+        }
+        if (prefs.getBoolean(SETTINGS.KEYS.hideT, SETTINGS.DEFAULTS.hideT)) {
             checkForVer.setChecked(true);
         }
         if (prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection)) {

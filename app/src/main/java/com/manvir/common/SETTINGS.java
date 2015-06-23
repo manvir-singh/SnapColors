@@ -17,6 +17,7 @@ public final class SETTINGS {
         public static final boolean checkForVer = true;
         public static final int BGColor = -1728053248;
         public static final boolean setFont = false;
+        public static final boolean hideT = false;
         public static final int minTimerInt = 10;
     }
 
@@ -33,5 +34,6 @@ public final class SETTINGS {
         public static final String BGColor = "BGColor";
         public static final String setFont = "setFont";
         public static final String donate = "donate";
+        public static final String hideT = "hideT";
     }
 }

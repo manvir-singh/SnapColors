@@ -2,6 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="Caption">
         <CheckBoxPreference
+            android:key="hideT"
+            android:summary="Hide the colored &quot;T&quot; in the top right of the snap editor"
+            android:title="Hide Colored &quot;T&quot;" />
+        <CheckBoxPreference
             android:key="TextColor"
             android:summary="Change the color of the text"
             android:title="Text Color" />

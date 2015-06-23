@@ -95,6 +95,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
+                if (prefs.getBoolean(SETTINGS.KEYS.hideT, SETTINGS.DEFAULTS.hideT)) return;
                 //Get Snapchats main layout.
                 SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", PACKAGES.SNAPCHAT));
                 if (SnapChatLayout == null) //Beta support
@@ -412,7 +413,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 String mDisplayName;
                 try {
                     mDisplayName = (String) getObjectField(friendObj, "mDisplayName");
-                } catch (NullPointerException ignore) {return;}
+                } catch (NullPointerException ignore) {
+                    return;
+                }
                 ArrayList<String> whiteList = new ArrayList<>(
                         prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
                 List snaps = (List<?>) getObjectField(param.thisObject, "mUnviewedStorySnaps");
