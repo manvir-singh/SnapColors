@@ -96,146 +96,150 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
                 if (prefs.getBoolean(SETTINGS.KEYS.hideT, SETTINGS.DEFAULTS.hideT)) return;
-                //Get Snapchats main layout.
-                SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", PACKAGES.SNAPCHAT));
-                if (SnapChatLayout == null) //Beta support
-                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_decor_relative_layout", "id", PACKAGES.SNAPCHAT));
+                new Thread(() -> {
+                    //Get Snapchats main layout.
+                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", PACKAGES.SNAPCHAT));
+                    if (SnapChatLayout == null) //Beta support
+                        SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_decor_relative_layout", "id", PACKAGES.SNAPCHAT));
 
-                //LayoutParams for the "T" that shows the options when tapped.
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, SnapChatContext.getResources().getDisplayMetrics());
-                params.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110, SnapChatContext.getResources().getDisplayMetrics());
+                    //LayoutParams for the "T" that shows the options when tapped.
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
+                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, SnapChatContext.getResources().getDisplayMetrics());
+                    params.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110, SnapChatContext.getResources().getDisplayMetrics());
 
-                //The "T" ImageButton object that shows the options when tapped.
-                final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
-                SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
-                //noinspection deprecation
-                SnapColorsBtn.setImageDrawable(modRes.getDrawable(R.drawable.snapcolorsbtn));
+                    //The "T" ImageButton object that shows the options when tapped.
+                    final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
+                    SnapColorsBtn.setBackgroundColor(Color.TRANSPARENT);
+                    //noinspection deprecation
+                    SnapColorsBtn.setImageDrawable(modRes.getDrawable(R.drawable.snapcolorsbtn));
 
-                //Get the display params for our layout.
-                Display display = SnapChatContext.getWindowManager().getDefaultDisplay();
-                size = new Point();
-                display.getSize(size);
-                optionsViewLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                optionsViewLayoutParams.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, SnapChatContext.getResources().getDisplayMetrics());
+                    //Get the display params for our layout.
+                    Display display = SnapChatContext.getWindowManager().getDefaultDisplay();
+                    size = new Point();
+                    display.getSize(size);
+                    optionsViewLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    optionsViewLayoutParams.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, SnapChatContext.getResources().getDisplayMetrics());
 
-                //Setup our layout here and add the views, buttons etc.
-                //optionsView is the scroll view that's going to hold our inner RelativeLayout called "innerOptionsLayout"
-                final HorizontalScrollView optionsView = new HorizontalScrollView(SnapChatContext);
-                innerOptionsLayout = new RelativeLayout(SnapChatContext);
-                innerOptionsLayout.setOnClickListener(null);//To prevent touches going though to the layout behind the options layout.
-                int LeftRightMarginPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, SnapChatContext.getResources().getDisplayMetrics());
-                int TopBottomMarginPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 13, SnapChatContext.getResources().getDisplayMetrics());
-                innerOptionsLayout.setPadding(LeftRightMarginPx, TopBottomMarginPx, LeftRightMarginPx, TopBottomMarginPx);
-                optionsView.setVisibility(View.GONE);
-                //noinspection deprecation
-                optionsView.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
-                optionsView.setScrollbarFadingEnabled(false);
-                optionsView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-                optionsView.addView(innerOptionsLayout, new RelativeLayout.LayoutParams(size.x, RelativeLayout.LayoutParams.MATCH_PARENT));
+                    //Setup our layout here and add the views, buttons etc.
+                    //optionsView is the scroll view that's going to hold our inner RelativeLayout called "innerOptionsLayout"
+                    final HorizontalScrollView optionsView = new HorizontalScrollView(SnapChatContext);
+                    innerOptionsLayout = new RelativeLayout(SnapChatContext);
+                    innerOptionsLayout.setOnClickListener(null);//To prevent touches going though to the layout behind the options layout.
+                    int LeftRightMarginPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, SnapChatContext.getResources().getDisplayMetrics());
+                    int TopBottomMarginPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 13, SnapChatContext.getResources().getDisplayMetrics());
+                    innerOptionsLayout.setPadding(LeftRightMarginPx, TopBottomMarginPx, LeftRightMarginPx, TopBottomMarginPx);
+                    optionsView.setVisibility(View.GONE);
+                    //noinspection deprecation
+                    optionsView.setBackgroundDrawable(modRes.getDrawable(R.drawable.bgviewdraw));
+                    optionsView.setScrollbarFadingEnabled(false);
+                    optionsView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+                    optionsView.addView(innerOptionsLayout, new RelativeLayout.LayoutParams(size.x, RelativeLayout.LayoutParams.MATCH_PARENT));
 
-                SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, innerOptionsLayout, 0);//Add 130 to every button
-                btnRandomize.setOnLongClickListener(v -> {
-                    SnapChatEditText.setTextColor(Color.WHITE);
-                    SnapChatEditText.setBackgroundColor(-1728053248);
-                    return true;
-                });
-                btnRandomize.setOnClickListener(view -> {
-                    Random random = new Random();
-                    int colorBG = Color.argb(random.nextInt(256), random.nextInt(256), random.nextInt(256), random.nextInt(256));
-                    int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-                    SnapChatEditText.setBackgroundColor(colorBG);
-                    SnapChatEditText.setTextColor(colorText);
-                });
+                    SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, innerOptionsLayout, 0);//Add 130 to every button
+                    btnRandomize.setOnLongClickListener(v -> {
+                        SnapChatEditText.setTextColor(Color.WHITE);
+                        SnapChatEditText.setBackgroundColor(-1728053248);
+                        return true;
+                    });
+                    btnRandomize.setOnClickListener(view -> {
+                        Random random = new Random();
+                        int colorBG = Color.argb(random.nextInt(256), random.nextInt(256), random.nextInt(256), random.nextInt(256));
+                        int colorText = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+                        SnapChatEditText.setBackgroundColor(colorBG);
+                        SnapChatEditText.setTextColor(colorText);
+                    });
 
-                SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, innerOptionsLayout, 130);
-                btnTextColor.setOnClickListener(view -> {
-                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, SnapChatEditText::setTextColor);
-                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> SnapChatEditText.setTextColor(Color.WHITE));
-                    colorPickerDialog.setTitle("Text Color");
-                    colorPickerDialog.show();
-                });
+                    SButton btnTextColor = new SButton(SnapChatContext, R.drawable.textcolor_btn, innerOptionsLayout, 130);
+                    btnTextColor.setOnClickListener(view -> {
+                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, SnapChatEditText::setTextColor);
+                        colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> SnapChatEditText.setTextColor(Color.WHITE));
+                        colorPickerDialog.setTitle("Text Color");
+                        colorPickerDialog.show();
+                    });
 
-                SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, innerOptionsLayout, 260);
-                btnBgColor.setOnClickListener(view -> {
-                    ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, SnapChatEditText::setBackgroundColor);
-                    colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> SnapChatEditText.setBackgroundColor(-1728053248));
-                    colorPickerDialog.setTitle("Background Color");
-                    colorPickerDialog.show();
-                });
+                    SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, innerOptionsLayout, 260);
+                    btnBgColor.setOnClickListener(view -> {
+                        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, SnapChatEditText::setBackgroundColor);
+                        colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> SnapChatEditText.setBackgroundColor(-1728053248));
+                        colorPickerDialog.setTitle("Background Color");
+                        colorPickerDialog.show();
+                    });
 
-                SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, innerOptionsLayout, 390);
-                btnSize.setOnClickListener(v -> {
-                    Sizelayout sizelayout = new Sizelayout(SnapChatContext, SnapChatEditText, (int) SnapChatEditText.getTextSize(), optionsView, SnapColorsBtn);
-                    SnapChatLayout.addView(sizelayout, optionsViewLayoutParams);
-                });
+                    SButton btnSize = new SButton(SnapChatContext, R.drawable.size_btn, innerOptionsLayout, 390);
+                    btnSize.setOnClickListener(v -> {
+                        Sizelayout sizelayout = new Sizelayout(SnapChatContext, SnapChatEditText, (int) SnapChatEditText.getTextSize(), optionsView, SnapColorsBtn);
+                        SnapChatLayout.addView(sizelayout, optionsViewLayoutParams);
+                    });
 
-                SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, innerOptionsLayout, 520);
-                btnAlpha.setOnClickListener(v -> {
-                    AlphaLayout alphalayout = new AlphaLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn);
-                    SnapChatLayout.addView(alphalayout, optionsViewLayoutParams);
-                });
+                    SButton btnAlpha = new SButton(SnapChatContext, R.drawable.alpha_btn, innerOptionsLayout, 520);
+                    btnAlpha.setOnClickListener(v -> {
+                        AlphaLayout alphalayout = new AlphaLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn);
+                        SnapChatLayout.addView(alphalayout, optionsViewLayoutParams);
+                    });
 
-                SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, innerOptionsLayout, 650);
-                btnFonts.setOnClickListener(v ->
-                        Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), defTypeFace, SnapChatLayout, optionsView, SnapColorsBtn));
+                    SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, innerOptionsLayout, 650);
+                    btnFonts.setOnClickListener(v ->
+                            Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), defTypeFace, SnapChatLayout, optionsView, SnapColorsBtn));
 
-                SButton btnMultiColor = new SButton(SnapChatContext, R.drawable.multicolor_btn, innerOptionsLayout, 780);
-                btnMultiColor.setOnClickListener(new View.OnClickListener() {
-                    Random random = new Random();
+                    SButton btnMultiColor = new SButton(SnapChatContext, R.drawable.multicolor_btn, innerOptionsLayout, 780);
+                    btnMultiColor.setOnClickListener(new View.OnClickListener() {
+                        Random random = new Random();
 
-                    @Override
-                    public void onClick(View v) {
-                        for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
-                            SnapChatEditText.getText().removeSpan(SnapChatEditText.getText().getSpans(i, i + 1, ForegroundColorSpan.class));
+                        @Override
+                        public void onClick(View v) {
+                            for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
+                                SnapChatEditText.getText().removeSpan(SnapChatEditText.getText().getSpans(i, i + 1, ForegroundColorSpan.class));
+                            }
+                            for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
+                                SpannableString ss = new SpannableString(SnapChatEditText.getText());
+                                ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                SnapChatEditText.setText(ss);
+                            }
                         }
-                        for (int i = 0; i < SnapChatEditText.getText().length(); i++) {
-                            SpannableString ss = new SpannableString(SnapChatEditText.getText());
-                            ss.setSpan(new ForegroundColorSpan(Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            SnapChatEditText.setText(ss);
+                    });
+
+                    SButton btnTexture = new SButton(SnapChatContext, R.drawable.texture_btn, innerOptionsLayout, 910);
+                    btnTexture.setOnClickListener(v -> new TextureLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn, SnapChatLayout));
+
+                    SButton btnGradient = new SButton(SnapChatContext, R.drawable.grad_btn, innerOptionsLayout, 1040);
+                    btnGradient.setOnClickListener(v -> {
+                        GradientLayout gradientLayout = new GradientLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn);
+                        SnapChatLayout.addView(gradientLayout, optionsViewLayoutParams);
+                    });
+
+                    SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, innerOptionsLayout, 1170);
+                    btnReset.setOnClickListener(v -> {
+                        SnapChatEditText.getPaint().reset(); //Notice: resets EVERYTHING!
+                        SnapChatEditText.setText(SnapChatEditText.getText().toString()); //Resets the rainbow color.
+                        SnapChatEditText.setTypeface(defTypeFace);
+                        SnapChatEditText.setTextColor(Color.WHITE);
+                        SnapChatEditText.setTextSize(21f);
+                        SnapChatEditText.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", PACKAGES.SNAPCHAT));
+                    });
+
+                    SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
+                        boolean SnapColorsBtnBool = true;
+
+                        @Override
+                        public void onClick(View v) {
+                            if (SnapColorsBtnBool) {
+                                optionsView.setVisibility(View.VISIBLE);
+                                SnapColorsBtnBool = false;
+                            } else {
+                                optionsView.setVisibility(View.GONE);
+                                SnapColorsBtnBool = true;
+                            }
                         }
-                    }
-                });
+                    });
 
-                SButton btnTexture = new SButton(SnapChatContext, R.drawable.texture_btn, innerOptionsLayout, 910);
-                btnTexture.setOnClickListener(v -> new TextureLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn, SnapChatLayout));
-
-                SButton btnGradient = new SButton(SnapChatContext, R.drawable.grad_btn, innerOptionsLayout, 1040);
-                btnGradient.setOnClickListener(v -> {
-                    GradientLayout gradientLayout = new GradientLayout(SnapChatContext, SnapChatEditText, optionsView, SnapColorsBtn);
-                    SnapChatLayout.addView(gradientLayout, optionsViewLayoutParams);
-                });
-
-                SButton btnReset = new SButton(SnapChatContext, R.drawable.reset_btn, innerOptionsLayout, 1170);
-                btnReset.setOnClickListener(v -> {
-                    SnapChatEditText.getPaint().reset(); //Notice: resets EVERYTHING!
-                    SnapChatEditText.setText(SnapChatEditText.getText().toString()); //Resets the rainbow color.
-                    SnapChatEditText.setTypeface(defTypeFace);
-                    SnapChatEditText.setTextColor(Color.WHITE);
-                    SnapChatEditText.setTextSize(21f);
-                    SnapChatEditText.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", PACKAGES.SNAPCHAT));
-                });
-
-                SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
-                    boolean SnapColorsBtnBool = true;
-
-                    @Override
-                    public void onClick(View v) {
-                        if (SnapColorsBtnBool) {
-                            optionsView.setVisibility(View.VISIBLE);
-                            SnapColorsBtnBool = false;
-                        } else {
-                            optionsView.setVisibility(View.GONE);
-                            SnapColorsBtnBool = true;
-                        }
-                    }
-                });
-
-                //Add our layout to SnapChat's main layout.
-                SnapChatLayout.addView(optionsView, optionsViewLayoutParams);
-                SnapChatLayout.addView(SnapColorsBtn, params);
+                    //Add our layout to SnapChat's main layout.
+                    SnapChatContext.runOnUiThread(() -> {
+                        SnapChatLayout.addView(optionsView, optionsViewLayoutParams);
+                        SnapChatLayout.addView(SnapColorsBtn, params);
+                    });
+                }).start();
             }
         });
     }
