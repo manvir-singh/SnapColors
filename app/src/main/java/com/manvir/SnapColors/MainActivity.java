@@ -58,17 +58,19 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_version:
-                try {
-                    Toast.makeText(getApplicationContext(), "Checking for update.", Toast.LENGTH_SHORT).show();
-                    if (new SnapColorsUpdater.updateAv().execute(getPackageManager()).get()) {
-                        Toast.makeText(getApplicationContext(), "New update available open Xposed and update.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Already have the latest version.", Toast.LENGTH_LONG).show();
+                new Thread(() -> {
+                    try {
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Checking for update.", Toast.LENGTH_SHORT).show());
+                        if (new SnapColorsUpdater.updateAv().execute(getPackageManager()).get()) {
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "New update available open Xposed and update.", Toast.LENGTH_LONG).show());
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Already have the latest version.", Toast.LENGTH_LONG).show());
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Update check failed!", Toast.LENGTH_LONG).show());
                     }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Update check failed!", Toast.LENGTH_LONG).show();
-                }
+                }).start();
                 break;
             case R.id.action_twitter:
                 Intent twitterIntent = new Intent(Intent.ACTION_VIEW);
