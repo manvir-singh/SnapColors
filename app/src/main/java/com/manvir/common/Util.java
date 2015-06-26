@@ -1,4 +1,4 @@
-package com.manvir.SnapColors;
+package com.manvir.common;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -20,7 +20,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
-import com.manvir.common.PACKAGES;
+import com.manvir.SnapColors.App;
+import com.manvir.SnapColors.FontsListView;
 import com.manvir.logger.Logger;
 
 import java.io.BufferedInputStream;

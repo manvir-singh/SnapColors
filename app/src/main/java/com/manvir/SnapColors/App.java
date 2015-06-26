@@ -30,6 +30,7 @@ import android.widget.RelativeLayout;
 
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
+import com.manvir.common.Util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -248,7 +249,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         //DownloadAI
         if (lpparam.packageName.equals(PACKAGES.SNAPCOLORS))
-            findAndHookMethod(PACKAGES.SNAPCOLORS + ".Util", lpparam.classLoader, "activeVersion", XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
+            findAndHookMethod("com.manvir.common.Util", lpparam.classLoader, "activeVersion", XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
 
         //SnapChat
         if (!lpparam.packageName.equals(PACKAGES.SNAPCHAT))
