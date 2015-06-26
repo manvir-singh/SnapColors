@@ -385,7 +385,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For blocking stories so they dont show up in the Stories feed
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("agb", CLSnapChat), new XC_MethodHook() {
+        Method mdBlockStory;
+        try {
+            mdBlockStory = findMethodExact(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("afx", CLSnapChat));
+        } catch (NoSuchMethodError beta) {
+            mdBlockStory = findMethodExact(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("agb", CLSnapChat));
+        }
+        XposedBridge.hookMethod(mdBlockStory, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 ArrayList<String> whiteList = new ArrayList<>(
@@ -404,7 +410,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
             }
         });
-        findAndHookMethod("agb", CLSnapChat, "a", String.class, new XC_MethodHook() {
+        Method mdFriendObj;
+        try {
+            mdFriendObj = findMethodExact("afx", CLSnapChat, "a", String.class);
+        } catch (NoSuchMethodError beta) {
+            mdFriendObj = findMethodExact("agb", CLSnapChat, "a", String.class);
+        }
+        XposedBridge.hookMethod(mdFriendObj, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 friendObj = param.getResult();
