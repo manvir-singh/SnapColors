@@ -321,7 +321,9 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
                 // Get stuff from settings here
                 SnapChatEditText.setTextColor(prefs.getInt(SETTINGS.KEYS.TextColor, SETTINGS.DEFAULTS.TextColor));
-                SnapChatEditText.setBackgroundColor(prefs.getInt(SETTINGS.KEYS.BGColor, SETTINGS.DEFAULTS.BGColor));
+                if (prefs.getInt(SETTINGS.KEYS.BGColor, SETTINGS.DEFAULTS.BGColor) != SETTINGS.DEFAULTS.BGColor) {
+                    SnapChatEditText.setBackgroundColor(prefs.getInt(SETTINGS.KEYS.BGColor, SETTINGS.DEFAULTS.BGColor));
+                }
                 if (prefs.getBoolean(SETTINGS.KEYS.autoRandomize, SETTINGS.DEFAULTS.autoRandomize)) {
                     Util.random(SnapChatEditText);
                 }
