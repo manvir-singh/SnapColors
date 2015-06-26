@@ -180,7 +180,7 @@ public class Settings extends PreferenceFragment {
         });
         donate.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent();
-            intent.setComponent(new ComponentName(PACKAGES.SNAPCHAT, PACKAGES.SNAPCHAT + ".DonateActivity"));
+            intent.setComponent(new ComponentName(PACKAGES.SNAPCOLORS, PACKAGES.SNAPCOLORS + ".DonateActivity"));
             getActivity().startActivity(intent);
             return true;
         });
