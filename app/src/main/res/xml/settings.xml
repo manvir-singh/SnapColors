@@ -30,7 +30,7 @@
     <PreferenceCategory android:title="Snaps">
         <CheckBoxPreference
             android:key="screenshotDetection"
-            android:summary="Enable/Disable screenshot detection of snaps"
+            android:summary="Disable screenshot detection of snaps"
             android:title="Screenshot Detection" />
         <Preference
             android:key="minTimerInt"
@@ -41,7 +41,7 @@
     <PreferenceCategory android:title="Stories">
         <Preference
             android:key="blockStoriesFromList"
-            android:summary="Block stories form given users"
+            android:summary="Block stories from given users"
             android:title="Block Stories" />
     </PreferenceCategory>
 
