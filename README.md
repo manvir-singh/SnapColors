@@ -6,3 +6,4 @@ Ya I know the code is not clean; this was my first android app/module. You are m
 License
 - You may NOT redistribute the final apk in any way shape or form. (Unless you have my permission)
 - Just give credit where credit is due, and you're good to go.
+- For personal use only
