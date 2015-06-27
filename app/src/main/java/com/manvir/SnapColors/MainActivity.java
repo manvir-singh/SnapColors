@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         if (new SnapColorsUpdater.updateAv().execute(getPackageManager()).get()) {
                             runOnUiThread(() -> Toast.makeText(getApplicationContext(), "New update available open Xposed and update.", Toast.LENGTH_LONG).show());
                         } else {
-                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Already have the latest version.", Toast.LENGTH_LONG).show());
+                            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "No new updates found", Toast.LENGTH_LONG).show());
                         }
                     } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
