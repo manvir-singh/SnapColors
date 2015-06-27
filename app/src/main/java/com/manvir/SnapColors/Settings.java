@@ -64,6 +64,7 @@ public class Settings extends PreferenceFragment {
         //noinspection Annotator,deprecation
         prefs = getActivity().getSharedPreferences(SETTINGS.NAME, Context.MODE_WORLD_READABLE);
         if (BuildConfig.DEBUG) getActivity().setTitle("SnapColors: Dev");
+        Util.setContext(getActivity());
 
         //Find all preferences
         hideT = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.hideT);
@@ -254,7 +255,7 @@ public class Settings extends PreferenceFragment {
                     al.setTitle("SnapColors");
                     al.setMessage("You need to download fonts, they are not included. (Note no icon will be added)");
                     al.setNegativeButton("Download & Install", (dialog, which) -> {
-                        Util.downloadFontsApk(getActivity());
+                        Util.downloadFontsApk();
                     });
                     al.setPositiveButton("Cancel", (dialog, which) -> {
                         prefs.edit().putBoolean(SETTINGS.KEYS.setFont, false).apply();

@@ -182,7 +182,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
                     SButton btnFonts = new SButton(SnapChatContext, R.drawable.font_btn, innerOptionsLayout, 650);
                     btnFonts.setOnClickListener(v ->
-                            Util.doFonts(SnapChatContext, ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), defTypeFace, SnapChatLayout, optionsView, SnapColorsBtn));
+                            Util.doFonts(ProgressDialog.show(SnapChatContext, "", "Loading Fonts"), new Handler(SnapChatContext.getMainLooper()), defTypeFace, SnapChatLayout, optionsView, SnapColorsBtn));
 
                     SButton btnMultiColor = new SButton(SnapChatContext, R.drawable.multicolor_btn, innerOptionsLayout, 780);
                     btnMultiColor.setOnClickListener(new View.OnClickListener() {
@@ -263,6 +263,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (SnapChatContext == null) SnapChatContext = (Activity) param.thisObject;
                 if (SnapChatResources == null) SnapChatResources = SnapChatContext.getResources();
+                Util.setContext(SnapChatContext);
                 prefs.reload();
 
                 //For opening image from gallery

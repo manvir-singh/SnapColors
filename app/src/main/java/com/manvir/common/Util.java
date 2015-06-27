@@ -35,12 +35,11 @@ import java.net.URLConnection;
 import java.util.Random;
 
 public class Util {
-    private static Context mContext;
+    private static Context mContext = null;
 
     /**
      * Checks to see if the user has the fonts apk installed, if it is copy the fonts(.ttf) to snapchats data directory.
      *
-     * @param con            Snapchats {@link android.content.Context}.
      * @param pro            The {@link android.app.ProgressDialog} to show while copying the .ttf's or when the view is done loading.
      * @param handler        Used to run stuff on the uithread.
      * @param defTypeFace    The captions default {@link com.manvir.SnapColors.Typefaces}.
@@ -48,28 +47,28 @@ public class Util {
      * @param f              SnapColors outer view.
      * @param SnapColorsBtn  SnapColors main options panel button(The colored "T").
      */
-    public static void doFonts(final Context con, final ProgressDialog pro, final Handler handler, final Typeface defTypeFace, final RelativeLayout SnapChatLayout, final HorizontalScrollView f, final ImageButton SnapColorsBtn) {
+    public static void doFonts(final ProgressDialog pro, final Handler handler, final Typeface defTypeFace, final RelativeLayout SnapChatLayout, final HorizontalScrollView f, final ImageButton SnapColorsBtn) {
         new Thread() {
             @Override
             public void run() {
                 try {
-                    Resources res = con.getPackageManager().getResourcesForApplication(PACKAGES.SNAPCOLORSFONTS);
-                    Util.copyAssets(res, con);
+                    Resources res = getContext().getPackageManager().getResourcesForApplication(PACKAGES.SNAPCOLORSFONTS);
+                    Util.copyAssets(res);
                     handler.post(() -> {
-                        SnapChatLayout.addView(new FontsListView(con, defTypeFace, f, SnapColorsBtn), App.optionsViewLayoutParams);
+                        SnapChatLayout.addView(new FontsListView(getContext(), defTypeFace, f, SnapColorsBtn), App.optionsViewLayoutParams);
                         pro.dismiss();
                     });
                 } catch (PackageManager.NameNotFoundException e) {
                     handler.post(() -> {
-                        final AlertDialog.Builder al = new AlertDialog.Builder(con);
+                        final AlertDialog.Builder al = new AlertDialog.Builder(getContext());
                         al.setTitle("SnapColors");
                         al.setMessage("You need to download fonts, they are not included. To download just tap \"Download & Install\". (Note no icon will be added)");
                         al.setNegativeButton("Download & Install", (dialog, which) -> {
-                            Util.downloadFontsApk(con);
+                            Util.downloadFontsApk();
                         });
                         al.setNeutralButton("Why", (dialog, which) -> {
                             String whyText = "The reason why fonts are not included with the tweak are:\n1. People may not have the space for fonts on there phone.\n2. Its easier for me to manage.\n3. You can move the apk to your SDCARD with out moving the tweak to the SDCARD.\n4. This way I can have different font packs with different sizes.";
-                            final AlertDialog alertDialog = new AlertDialog.Builder(con).create();
+                            final AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
                             alertDialog.setTitle("SnapColors");
                             alertDialog.setMessage(whyText);
                             alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", (dialog1, which1) -> alertDialog.dismiss());
@@ -81,6 +80,17 @@ public class Util {
                 }
             }
         }.start();
+    }
+
+    private static Context getContext() {
+        if (mContext == null) {
+            throw new RuntimeException("Context was not set! Call Util.setContext(Context.class);");
+        }
+        return mContext;
+    }
+
+    public static void setContext(Context context) {
+        mContext = context;
     }
 
     /**
@@ -125,13 +135,13 @@ public class Util {
     }
 
     /**
-     * Used by {@link #doFonts(android.content.Context, android.app.ProgressDialog, android.os.Handler, android.graphics.Typeface, android.widget.RelativeLayout, android.widget.HorizontalScrollView, android.widget.ImageButton) doFonts}
+     * Used by {@link #doFonts(android.app.ProgressDialog, android.os.Handler, android.graphics.Typeface, android.widget.RelativeLayout, android.widget.HorizontalScrollView, android.widget.ImageButton) doFonts}
      * to copy the all assets(fonts) to sdcard/Android/data/com.snapchat.android/files
      *
      * @param res The {@link android.content.res.Resources} object of the application to extract assets from.
      */
     @SuppressWarnings("UnusedAssignment")
-    public static void copyAssets(Resources res, Context con) {
+    public static void copyAssets(Resources res) {
         AssetManager assetManager = res.getAssets();
         String[] files = null;
         try {
@@ -148,7 +158,7 @@ public class Util {
             OutputStream out;
             try {
                 in = assetManager.open(filename);
-                File outFile = new File(con.getExternalFilesDir(null), filename);
+                File outFile = new File(getContext().getExternalFilesDir(null), filename);
                 out = new FileOutputStream(outFile);
                 byte[] buffer = new byte[1024];
                 int read;
@@ -169,8 +179,7 @@ public class Util {
     /**
      * Downloads the fonts apk
      */
-    public static void downloadFontsApk(Context con) {
-        mContext = con;
+    public static void downloadFontsApk() {
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "SnapColorsFonts.apk";
         String url = "http://forum.xda-developers.com/devdb/project/dl/?id=5916&task=get";
         new DownloadFileAsync().execute(url, path);
@@ -185,7 +194,7 @@ public class Util {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pro = ProgressDialog.show(mContext, "", "Downloading");
+            pro = ProgressDialog.show(getContext(), "", "Downloading");
         }
 
         @Override
@@ -224,7 +233,7 @@ public class Util {
                 install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 install.setDataAndType(Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "SnapColorsFonts.apk")),
                         "application/vnd.android.package-archive");
-                mContext.startActivity(install);
+                getContext().startActivity(install);
 
             } catch (Exception e) {
                 e.printStackTrace();
