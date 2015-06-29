@@ -99,16 +99,16 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (prefs.getBoolean(SETTINGS.KEYS.hideT, SETTINGS.DEFAULTS.hideT)) return;
                 new Thread(() -> {
                     //Get Snapchats main layout.
-                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_relative_layout", "id", PACKAGES.SNAPCHAT));
+                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(SnapChatResources.getIdentifier("snap_preview_relative_layout", "id", PACKAGES.SNAPCHAT));
                     if (SnapChatLayout == null) //Beta support
-                        SnapChatLayout = (RelativeLayout) liparam.view.findViewById(liparam.res.getIdentifier("snap_preview_decor_relative_layout", "id", PACKAGES.SNAPCHAT));
+                        SnapChatLayout = (RelativeLayout) liparam.view.findViewById(SnapChatResources.getIdentifier("snap_preview_decor_relative_layout", "id", PACKAGES.SNAPCHAT));
 
                     //LayoutParams for the "T" that shows the options when tapped.
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(liparam.res.getIdentifier("drawing_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(SnapChatResources.getIdentifier("drawing_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
                     params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, SnapChatContext.getResources().getDisplayMetrics());
-                    params.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110, SnapChatContext.getResources().getDisplayMetrics());
+                    params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, SnapChatResources.getDisplayMetrics());
+                    params.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110, SnapChatResources.getDisplayMetrics());
 
                     //The "T" ImageButton object that shows the options when tapped.
                     final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
@@ -217,7 +217,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         SnapChatEditText.setTypeface(defTypeFace);
                         SnapChatEditText.setTextColor(Color.WHITE);
                         SnapChatEditText.setTextSize(21f);
-                        SnapChatEditText.setBackgroundResource(SnapChatContext.getResources().getIdentifier("camera_activity_picture_text_message_background", "color", PACKAGES.SNAPCHAT));
+                        SnapChatEditText.setBackgroundResource(SnapChatResources.getIdentifier("camera_activity_picture_text_message_background", "color", PACKAGES.SNAPCHAT));
                     });
 
                     SnapColorsBtn.setOnClickListener(new View.OnClickListener() {
