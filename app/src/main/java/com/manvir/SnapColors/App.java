@@ -8,12 +8,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.XModuleResources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -270,20 +274,36 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (!param.method.getName().equals("onCreate")) return;
                 Intent intent = (Intent) callMethod(SnapChatContext, "getIntent");
                 if (!intent.getBooleanExtra("com.manvir.SnapColors.isSnapColors", false)) return;
-                Method onActivityResult = findMethodExact(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onActivityResult",
-                        int.class, int.class, Intent.class);
-                Uri image = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
-                intent.setData(image);
-                imgFromGallery = true;
-                new Thread(() -> {
-                    SnapChatContext.runOnUiThread(() -> {
-                        try {
-                            onActivityResult.invoke(SnapChatContext, 1001, -1, intent);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }).start();
+                if (intent.getBooleanExtra("com.manvir.SnapColors.isImage", true)) {
+                    Method onActivityResult = findMethodExact(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onActivityResult",
+                            int.class, int.class, Intent.class);
+                    Uri image = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+                    intent.setData(image);
+                    imgFromGallery = true;
+                    new Thread(() -> {
+                        SnapChatContext.runOnUiThread(() -> {
+                            try {
+                                onActivityResult.invoke(SnapChatContext, 1001, -1, intent);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }).start();
+                } else {
+                    Uri video = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    retriever.setDataSource(Util.getRealPathFromURI(video));
+                    Bitmap bmp = retriever.getFrameAtTime();
+                    Object afs_a = findConstructorExact("afs.a", CLSnapChat).newInstance(); //extends Mediabryo
+                    findField(afs_a.getClass(), "mFirstFrameBitmap").set(afs_a, ThumbnailUtils.createVideoThumbnail(video.getPath(), MediaStore.Images.Thumbnails.FULL_SCREEN_KIND));
+                    findField(afs_a.getClass(), "mSnapType").set(afs_a, findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
+                    findField(afs_a.getClass(), "mHeight").set(afs_a, bmp.getHeight());
+                    findField(afs_a.getClass(), "mWidth").set(afs_a, bmp.getWidth());
+                    findField(afs_a.getClass(), "mVideoUri").set(afs_a, video);
+                    Class SnapCaptureContext = findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat);
+                    Object ayt = findConstructorExact("ayt", CLSnapChat, findClass("aeu", CLSnapChat), SnapCaptureContext).newInstance(callMethod(afs_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+                    callMethod(SnapChatContext, "onSnapCapturedEvent", ayt);
+                }
             }
         };
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onCreate", Bundle.class, startUpHook);

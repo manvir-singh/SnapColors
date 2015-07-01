@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.manvir.common.PACKAGES;
+
+import java.io.File;
 
 //This activity is never shown it is transparent
 public class OpenInSCActivity extends Activity {
@@ -15,16 +18,21 @@ public class OpenInSCActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        if (intent.getType().startsWith("image/")) {
-            initSC();
-            intent.putExtra("com.manvir.SnapColors.isSnapColors", true);
-            intent.setComponent(new ComponentName(PACKAGES.SNAPCHAT, PACKAGES.SNAPCHAT + ".LandingPageActivity"));
-            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, "Images only!", Toast.LENGTH_LONG).show();
-            finish();
+        boolean isImage = true;
+        if (intent.getType().startsWith("video/")) isImage = false;
+        if (!isImage) {
+            File video = new File(((Uri) intent.getExtras().get(Intent.EXTRA_STREAM)).getPath());
+            if (video.length() > 2500000) { //2.50MB
+                Toast.makeText(this, "Video file size is to large", Toast.LENGTH_LONG).show();
+                return;
+            }
         }
+        initSC();
+        intent.putExtra("com.manvir.SnapColors.isSnapColors", true);
+        intent.putExtra("com.manvir.SnapColors.isImage", isImage);
+        intent.setComponent(new ComponentName(PACKAGES.SNAPCHAT, PACKAGES.SNAPCHAT + ".LandingPageActivity"));
+        startActivity(intent);
+        finish();
     }
 
     /**
