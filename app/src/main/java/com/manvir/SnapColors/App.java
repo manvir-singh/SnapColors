@@ -289,13 +289,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
-        Constructor<?> constructor;
-        try {
-            constructor = findConstructorExact("azc", CLSnapChat, findClass("aem", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
-        } catch (NoSuchMethodError beta) {
-            constructor = findConstructorExact("ayt", CLSnapChat, findClass("aeu", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
-        }
-        XposedBridge.hookMethod(constructor, new XC_MethodHook() {
+        findAndHookConstructor("bdj", CLSnapChat, findClass("aim", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!imgFromGallery) return;
@@ -368,7 +362,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for
-        XposedBridge.hookAllConstructors(findClass(PACKAGES.SNAPCHAT + ".model.ReceivedSnap", CLSnapChat), new XC_MethodHook() {
+        XposedBridge.hookAllConstructors(findClass("aje", CLSnapChat), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
@@ -388,13 +382,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For blocking stories so they dont show up in the Stories feed
-        Method mdBlockStory;
-        try {
-            mdBlockStory = findMethodExact(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("afx", CLSnapChat));
-        } catch (NoSuchMethodError beta) {
-            mdBlockStory = findMethodExact(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("agb", CLSnapChat));
-        }
-        XposedBridge.hookMethod(mdBlockStory, new XC_MethodHook() {
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("ajv", CLSnapChat), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 ArrayList<String> whiteList = new ArrayList<>(
@@ -413,13 +401,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
             }
         });
-        Method mdFriendObj;
-        try {
-            mdFriendObj = findMethodExact("afx", CLSnapChat, "a", String.class);
-        } catch (NoSuchMethodError beta) {
-            mdFriendObj = findMethodExact("agb", CLSnapChat, "a", String.class);
-        }
-        XposedBridge.hookMethod(mdFriendObj, new XC_MethodHook() {
+        findAndHookMethod("ajv", CLSnapChat, "a", String.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 friendObj = param.getResult();
