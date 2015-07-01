@@ -36,7 +36,6 @@ import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
 import com.manvir.common.Util;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -294,14 +293,14 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                     retriever.setDataSource(Util.getRealPathFromURI(video));
                     Bitmap bmp = retriever.getFrameAtTime();
-                    Object afs_a = findConstructorExact("afs.a", CLSnapChat).newInstance(); //extends Mediabryo
-                    findField(afs_a.getClass(), "mFirstFrameBitmap").set(afs_a, ThumbnailUtils.createVideoThumbnail(video.getPath(), MediaStore.Images.Thumbnails.FULL_SCREEN_KIND));
-                    findField(afs_a.getClass(), "mSnapType").set(afs_a, findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
-                    findField(afs_a.getClass(), "mHeight").set(afs_a, bmp.getHeight());
-                    findField(afs_a.getClass(), "mWidth").set(afs_a, bmp.getWidth());
-                    findField(afs_a.getClass(), "mVideoUri").set(afs_a, video);
+                    Object ajm_a = findConstructorExact("ajm.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
+                    findField(ajm_a.getClass(), "mFirstFrameBitmap").set(ajm_a, ThumbnailUtils.createVideoThumbnail(video.getPath(), MediaStore.Images.Thumbnails.FULL_SCREEN_KIND));
+                    findField(ajm_a.getClass(), "mSnapType").set(ajm_a, findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
+                    findField(ajm_a.getClass(), "mHeight").set(ajm_a, bmp.getHeight());
+                    findField(ajm_a.getClass(), "mWidth").set(ajm_a, bmp.getWidth());
+                    findField(ajm_a.getClass(), "mVideoUri").set(ajm_a, video);
                     Class SnapCaptureContext = findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat);
-                    Object ayt = findConstructorExact("ayt", CLSnapChat, findClass("aeu", CLSnapChat), SnapCaptureContext).newInstance(callMethod(afs_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+                    Object ayt = findConstructorExact("bdj", CLSnapChat, findClass("aim", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
                     callMethod(SnapChatContext, "onSnapCapturedEvent", ayt);
                 }
             }
