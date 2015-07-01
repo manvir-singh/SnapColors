@@ -8,4 +8,4 @@ License
 - Just give credit where credit is due, and you're good to go.
 - For personal use only
 
-Copyright © 2014 by Manvir Singh
+*Copyright (C) 2014 Manvir Singh*
