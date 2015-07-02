@@ -372,7 +372,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For disabling screenshot detection
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ao", new XC_MethodHook() {
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "aq", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
