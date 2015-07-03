@@ -26,11 +26,13 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
@@ -38,7 +40,8 @@ import com.manvir.common.Util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -57,7 +60,6 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
-import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
@@ -79,7 +81,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
     private Activity SnapChatContext; //Snapchats main activity
     private Resources SnapChatResources;
     private ClassLoader CLSnapChat;
-    private Object friendObj;
+    private Map<String, String> friendsList;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -392,7 +394,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For disabling screenshot detection
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ao", new XC_MethodHook() {
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "aq", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
@@ -402,49 +404,50 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For blocking stories so they dont show up in the Stories feed
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "a", findClass("ajv", CLSnapChat), new XC_MethodHook() {
+        findAndHookConstructor(PACKAGES.SNAPCHAT + ".model.Friend", CLSnapChat, String.class, String.class, String.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (friendsList == null) friendsList = new HashMap<>();
+                String mUsername = (String) getObjectField(param.thisObject, "mUsername");
+                String mDisplayName = (String) getObjectField(param.thisObject, "mDisplayName");
+                friendsList.put(mUsername, mDisplayName);
+            }
+        });
+        XposedBridge.hookAllConstructors(findClass("ajr", CLSnapChat), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 ArrayList<String> whiteList = new ArrayList<>(
                         prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
-
-                if (whiteList.size() == 0) return;
-                List<?> friends = (List) getObjectField(param.thisObject, "d");
-                for (int i = 0; i < friends.size(); i++) {
-                    for (int i1 = 0; i1 < whiteList.size(); i1++) {
-                        if (getObjectField(friends.get(i), "mUsername").equals(whiteList.get(i1))) {
-                            friends.remove(i);
-                        } else if (getObjectField(friends.get(i), "mDisplayName").equals(whiteList.get(i1))) {
-                            friends.remove(i);
-                        }
+                String mUsername = (String) getObjectField(param.thisObject, "mUsername");
+                String mDisplayName = friendsList.get(mUsername);
+                if (mDisplayName == null || mUsername == null) return;
+                for (String user : whiteList) {
+                    if (mUsername.equals(user)) {
+                        findField(param.thisObject.getClass(), "mHasBeenViewed").set(param.thisObject, true);
+                    } else if (mDisplayName.equals(user)) {
+                        findField(param.thisObject.getClass(), "mHasBeenViewed").set(param.thisObject, true);
                     }
                 }
             }
         });
-        findAndHookMethod("ajv", CLSnapChat, "a", String.class, new XC_MethodHook() {
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesAdapter", CLSnapChat, "getView", int.class, View.class, ViewGroup.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                friendObj = param.getResult();
-            }
-        });
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.StoryCollection", CLSnapChat, "A", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                String mUsername = (String) getObjectField(param.thisObject, "mUsername");
-                String mDisplayName;
-                try {
-                    mDisplayName = (String) getObjectField(friendObj, "mDisplayName");
-                } catch (NullPointerException ignore) {
-                    return;
+                ViewGroup listItemView = (ViewGroup) param.getResult();
+                String mDisplayName = ((TextView) listItemView.findViewById(SnapChatResources.getIdentifier("name", "id", PACKAGES.SNAPCHAT))).getText().toString();
+                String mUsername = "";
+                for (Map.Entry<String, String> friend : friendsList.entrySet()) {
+                    if (friend.getValue().equals(mDisplayName)) {
+                        mUsername = friend.getKey();
+                    }
                 }
                 ArrayList<String> whiteList = new ArrayList<>(
                         prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
-                List snaps = (List<?>) getObjectField(param.thisObject, "mUnviewedStorySnaps");
                 for (String user : whiteList) {
-                    if (mUsername.equals(user)) {
-                        snaps.clear();
-                    } else if (mDisplayName.equals(user)) {
-                        snaps.clear();
+                    if (mDisplayName.contains(user)) {
+                        param.setResult(new View(SnapChatContext));
+                    } else if (mUsername.equals(user)) {
+                        param.setResult(new View(SnapChatContext));
                     }
                 }
             }
