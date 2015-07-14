@@ -377,7 +377,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         } catch (XposedHelpers.ClassNotFoundError beta) {
             akaClass = findClass("aka", CLSnapChat);
         }
-        XposedBridge.hookAllConstructors(findClass("aka", CLSnapChat), new XC_MethodHook() {
+        XposedBridge.hookAllConstructors(akaClass, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
