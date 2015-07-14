@@ -34,6 +34,7 @@ import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
 import com.manvir.common.Util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
+import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
@@ -290,7 +292,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
-        findAndHookConstructor("bdj", CLSnapChat, findClass("aim", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
+        Constructor<?> bejConstructor;
+        try {
+            bejConstructor = findConstructorExact("bdj", CLSnapChat, findClass("aim", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+        } catch (Exception beta) {
+            bejConstructor = findConstructorExact("bej", CLSnapChat, findClass("aji", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+        }
+        XposedBridge.hookMethod(bejConstructor, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!imgFromGallery) return;
@@ -363,7 +371,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for
-        XposedBridge.hookAllConstructors(findClass("aje", CLSnapChat), new XC_MethodHook() {
+        Class<?> akaClass;
+        try {
+            akaClass = findClass("aje", CLSnapChat);
+        } catch (XposedHelpers.ClassNotFoundError beta) {
+            akaClass = findClass("aka", CLSnapChat);
+        }
+        XposedBridge.hookAllConstructors(findClass("aka", CLSnapChat), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
@@ -373,7 +387,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For disabling screenshot detection
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "aq", new XC_MethodHook() {
+        Method snapMethod;
+        try {
+            snapMethod = findMethodExact(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "aq");
+        } catch (NoSuchMethodError beta) {
+            snapMethod = findMethodExact(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ao");
+        }
+        XposedBridge.hookMethod(snapMethod, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
@@ -413,7 +433,12 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 ViewGroup listItemView = (ViewGroup) param.getResult();
-                String mDisplayName = ((TextView) listItemView.findViewById(SnapChatResources.getIdentifier("name", "id", PACKAGES.SNAPCHAT))).getText().toString();
+                String mDisplayName;
+                try {
+                    mDisplayName = ((TextView) listItemView.findViewById(SnapChatResources.getIdentifier("name", "id", PACKAGES.SNAPCHAT))).getText().toString();
+                } catch (NullPointerException ignore) {
+                    return;
+                }
                 String mUsername = "";
                 for (Map.Entry<String, String> friend : friendsList.entrySet()) {
                     if (friend.getValue().equals(mDisplayName)) {
