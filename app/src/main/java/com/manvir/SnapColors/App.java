@@ -295,7 +295,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         Constructor<?> bejConstructor;
         try {
             bejConstructor = findConstructorExact("bdj", CLSnapChat, findClass("aim", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
-        } catch (Exception beta) {
+        } catch (Error beta) {
             bejConstructor = findConstructorExact("bej", CLSnapChat, findClass("aji", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         }
         XposedBridge.hookMethod(bejConstructor, new XC_MethodHook() {
@@ -371,20 +371,25 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for
-        Class<?> akaClass;
         try {
-            akaClass = findClass("aje", CLSnapChat);
-        } catch (XposedHelpers.ClassNotFoundError beta) {
-            akaClass = findClass("aka", CLSnapChat);
+            findAndHookConstructor("aje", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
+                        return;
+                    findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
+                }
+            });
+        } catch (NoSuchMethodError beta) {
+            findAndHookConstructor("aka", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
+                        return;
+                    findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
+                }
+            });
         }
-        XposedBridge.hookAllConstructors(akaClass, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
-                    return;
-                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
-            }
-        });
 
         //For disabling screenshot detection
         Method snapMethod;
