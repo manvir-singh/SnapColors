@@ -297,14 +297,23 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                     retriever.setDataSource(Util.getRealPathFromURI(video));
                     Bitmap bmp = retriever.getFrameAtTime();
-                    Object ajm_a = findConstructorExact("ajm.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
-                    findField(ajm_a.getClass(), "mFirstFrameBitmap").set(ajm_a, ThumbnailUtils.createVideoThumbnail(video.getPath(), MediaStore.Images.Thumbnails.FULL_SCREEN_KIND));
+                    Object ajm_a;
+                    try {
+                        ajm_a = findConstructorExact("ajm.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
+                    } catch (XposedHelpers.ClassNotFoundError beta) {
+                        ajm_a = findConstructorExact("akh.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
+                    }
                     findField(ajm_a.getClass(), "mSnapType").set(ajm_a, findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
                     findField(ajm_a.getClass(), "mHeight").set(ajm_a, bmp.getHeight());
                     findField(ajm_a.getClass(), "mWidth").set(ajm_a, bmp.getWidth());
                     findField(ajm_a.getClass(), "mVideoUri").set(ajm_a, video);
                     Class SnapCaptureContext = findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat);
-                    Object ayt = findConstructorExact("bdj", CLSnapChat, findClass("aim", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+                    Object ayt;
+                    try {
+                        ayt = findConstructorExact("bdj", CLSnapChat, findClass("aim", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+                    } catch (NoSuchMethodError beta) {
+                        ayt = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+                    }
                     callMethod(SnapChatContext, "onSnapCapturedEvent", ayt);
                 }
             }
