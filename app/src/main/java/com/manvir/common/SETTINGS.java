@@ -11,6 +11,7 @@ public final class SETTINGS {
     public static final class DEFAULTS {
         public static final Set<String> blockStoriesFromList = new HashSet<>();
         public static final boolean screenshotDetection = true;
+        public static final boolean resizeVideoAlert = true;
         public static final boolean autoRandomize = false;
         public static final boolean shouldRainbow = false;
         public static final int TextColor = Color.WHITE;
@@ -25,6 +26,7 @@ public final class SETTINGS {
         public static final String clearAllImportedFonts = "clearAllImportedFonts";
         public static final String blockStoriesFromList = "blockStoriesFromList";
         public static final String screenshotDetection = "screenshotDetection";
+        public static final String resizeVideoAlert = "resizeVideoAlert";
         public static final String autoRandomize = "autoRandomize";
         public static final String shouldRainbow = "shouldRainbow";
         public static final String checkForVer = "checkForVer";
