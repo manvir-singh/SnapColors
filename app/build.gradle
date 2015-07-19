@@ -14,8 +14,8 @@ android {
         applicationId "com.manvir.SnapColors"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 34
-        versionName '3.4.0'
+        versionCode 35
+        versionName '3.4.1'
     }
     buildTypes {
         release {
