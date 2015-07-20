@@ -297,7 +297,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     Bitmap bmp = retriever.getFrameAtTime();
                     Object ajm_a;
                     try {
-                        ajm_a = findConstructorExact("ajm.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
+                        ajm_a = findConstructorExact("akh.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
                     } catch (Error beta) {
                         ajm_a = findConstructorExact("akg.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
                     }
@@ -308,7 +308,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     Class SnapCaptureContext = findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat);
                     Object ayt;
                     try {
-                        ayt = findConstructorExact("bdj", CLSnapChat, findClass("aim", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+                        ayt = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
                     } catch (NoSuchMethodError beta) {
                         ayt = findConstructorExact("bel", CLSnapChat, findClass("ajj", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
                     }
@@ -322,7 +322,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         //For opening image from gallery
         Constructor<?> bejConstructor;
         try {
-            bejConstructor = findConstructorExact("bdj", CLSnapChat, findClass("aim", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+            bejConstructor = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         } catch (Error beta) {
             bejConstructor = findConstructorExact("bel", CLSnapChat, findClass("ajj", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         }
@@ -400,7 +400,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for (extends Snap)
         try {
-            findAndHookConstructor("aje", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, long.class, double.class, String.class, new XC_MethodHook() {
+            findAndHookConstructor("akc", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
@@ -420,13 +420,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         }
 
         //For disabling screenshot detection
-        Method snapMethod;
-        try {
-            snapMethod = findMethodExact(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "aq");
-        } catch (NoSuchMethodError beta) {
-            snapMethod = findMethodExact(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ao");
-        }
-        XposedBridge.hookMethod(snapMethod, new XC_MethodHook() {
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ao", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
