@@ -149,6 +149,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         SnapChatEditText.setBackgroundColor(-1728053248);
                         return true;
                     });
+
                     btnRandomize.setOnClickListener(view -> {
                         Random random = new Random();
                         int colorBG = Color.argb(random.nextInt(256), random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -437,23 +438,6 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 String mUsername = (String) getObjectField(param.thisObject, "mUsername");
                 String mDisplayName = (String) getObjectField(param.thisObject, "mDisplayName");
                 friendsList.put(mUsername, mDisplayName);
-            }
-        });
-        XposedBridge.hookAllConstructors(findClass("ajr", CLSnapChat), new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                ArrayList<String> whiteList = new ArrayList<>(
-                        prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
-                String mUsername = (String) getObjectField(param.thisObject, "mUsername");
-                String mDisplayName = friendsList.get(mUsername);
-                if (mDisplayName == null || mUsername == null) return;
-                for (String user : whiteList) {
-                    if (mUsername.equals(user)) {
-                        findField(param.thisObject.getClass(), "mHasBeenViewed").set(param.thisObject, true);
-                    } else if (mDisplayName.equals(user)) {
-                        findField(param.thisObject.getClass(), "mHasBeenViewed").set(param.thisObject, true);
-                    }
-                }
             }
         });
         findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesAdapter", CLSnapChat, "getView", int.class, View.class, ViewGroup.class, new XC_MethodHook() {
