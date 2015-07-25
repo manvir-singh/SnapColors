@@ -300,7 +300,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     try {
                         ajm_a = findConstructorExact("akh.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
                     } catch (Error beta) {
-                        ajm_a = findConstructorExact("akg.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
+                        ajm_a = findConstructorExact("alr.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
                     }
                     findField(ajm_a.getClass(), "mSnapType").set(ajm_a, findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
                     findField(ajm_a.getClass(), "mHeight").set(ajm_a, bmp.getHeight());
@@ -311,7 +311,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     try {
                         ayt = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
                     } catch (NoSuchMethodError beta) {
-                        ayt = findConstructorExact("bel", CLSnapChat, findClass("ajj", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+                        ayt = findConstructorExact("bfy", CLSnapChat, findClass("ake", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
                     }
                     callMethod(SnapChatContext, "onSnapCapturedEvent", ayt);
                 }
@@ -325,15 +325,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         try {
             bejConstructor = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         } catch (Error beta) {
-            bejConstructor = findConstructorExact("bel", CLSnapChat, findClass("ajj", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+            bejConstructor = findConstructorExact("bfy", CLSnapChat, findClass("ake", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
         }
         XposedBridge.hookMethod(bejConstructor, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!imgFromGallery) return;
                 imgFromGallery = false;
-                param.args[1] = param.args[1].getClass().getEnumConstants()[2];//bdl.PHONE_GALLERY
-                findField(param.args[0].getClass(), "mIsChatMedia").set(param.args[0], false);
+                Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
+                findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
             }
         });
 
@@ -410,7 +410,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
             });
         } catch (NoSuchMethodError beta) {
-            findAndHookConstructor("akb", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
+            findAndHookConstructor("akv", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
