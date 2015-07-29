@@ -321,21 +321,27 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
-        Constructor<?> bejConstructor;
         try {
-            bejConstructor = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+            findAndHookConstructor("bel", CLSnapChat, findClass("ajj", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!imgFromGallery) return;
+                    imgFromGallery = false;
+                    param.args[1] = param.args[1].getClass().getEnumConstants()[2];//bdl.PHONE_GALLERY
+                    findField(param.args[0].getClass(), "mIsChatMedia").set(param.args[0], false);
+                }
+            });
         } catch (Error beta) {
-            bejConstructor = findConstructorExact("bfy", CLSnapChat, findClass("ake", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat));
+            findAndHookConstructor("bfy", CLSnapChat, findClass("ake", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!imgFromGallery) return;
+                    imgFromGallery = false;
+                    Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
+                    findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
+                }
+            });
         }
-        XposedBridge.hookMethod(bejConstructor, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!imgFromGallery) return;
-                imgFromGallery = false;
-                Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
-                findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
-            }
-        });
 
         //Get some settings, also get the caption box's edit text object.
         CaptionEditText = XposedHelpers.findClass(PACKAGES.SNAPCHAT + ".ui.caption.CaptionEditText", CLSnapChat);
