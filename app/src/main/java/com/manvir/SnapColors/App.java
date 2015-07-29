@@ -292,28 +292,28 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         });
                     }).start();
                 } else {
-                    Uri video = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
-                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                    retriever.setDataSource(Util.getRealPathFromURI(video));
-                    Bitmap bmp = retriever.getFrameAtTime();
-                    Object ajm_a;
-                    try {
-                        ajm_a = findConstructorExact("akh.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
-                    } catch (Error beta) {
-                        ajm_a = findConstructorExact("alr.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
-                    }
-                    findField(ajm_a.getClass(), "mSnapType").set(ajm_a, findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
-                    findField(ajm_a.getClass(), "mHeight").set(ajm_a, bmp.getHeight());
-                    findField(ajm_a.getClass(), "mWidth").set(ajm_a, bmp.getWidth());
-                    findField(ajm_a.getClass(), "mVideoUri").set(ajm_a, video);
-                    Class SnapCaptureContext = findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat);
-                    Object ayt;
-                    try {
-                        ayt = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
-                    } catch (NoSuchMethodError beta) {
-                        ayt = findConstructorExact("bfy", CLSnapChat, findClass("ake", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
-                    }
-                    callMethod(SnapChatContext, "onSnapCapturedEvent", ayt);
+//                    Uri video = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+//                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//                    retriever.setDataSource(Util.getRealPathFromURI(video));
+//                    Bitmap bmp = retriever.getFrameAtTime();
+//                    Object ajm_a;
+//                    try {
+//                        ajm_a = findConstructorExact("akh.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
+//                    } catch (Error beta) {
+//                        ajm_a = findConstructorExact("alr.a", CLSnapChat).newInstance(); //Search String TAG = "SnapVideobryo";
+//                    }
+//                    findField(ajm_a.getClass(), "mSnapType").set(ajm_a, findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
+//                    findField(ajm_a.getClass(), "mHeight").set(ajm_a, bmp.getHeight());
+//                    findField(ajm_a.getClass(), "mWidth").set(ajm_a, bmp.getWidth());
+//                    findField(ajm_a.getClass(), "mVideoUri").set(ajm_a, video);
+//                    Class SnapCaptureContext = findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat);
+//                    Object ayt;
+//                    try {
+//                        ayt = findConstructorExact("bem", CLSnapChat, findClass("ajk", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+//                    } catch (NoSuchMethodError beta) {
+//                        ayt = findConstructorExact("bfy", CLSnapChat, findClass("ake", CLSnapChat), SnapCaptureContext).newInstance(callMethod(ajm_a, "c"), SnapCaptureContext.getEnumConstants()[2]);
+//                    }
+//                    callMethod(SnapChatContext, "onSnapCapturedEvent", ayt);
                 }
             }
         };
