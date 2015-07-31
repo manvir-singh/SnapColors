@@ -8,11 +8,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.XModuleResources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,7 +34,6 @@ import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
 import com.manvir.common.Util;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +56,6 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
-import static de.robv.android.xposed.XposedHelpers.findConstructorExact;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
@@ -146,6 +142,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     SButton btnRandomize = new SButton(SnapChatContext, R.drawable.randomize_btn, innerOptionsLayout, 0);//Add 130 to every button
                     btnRandomize.setOnLongClickListener(v -> {
                         SnapChatEditText.setTextColor(Color.WHITE);
+                        //noinspection ResourceType
                         SnapChatEditText.setBackgroundColor(-1728053248);
                         return true;
                     });
@@ -169,6 +166,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     SButton btnBgColor = new SButton(SnapChatContext, R.drawable.bgcolor_btn, innerOptionsLayout, 260);
                     btnBgColor.setOnClickListener(view -> {
                         ColorPickerDialog colorPickerDialog = new ColorPickerDialog(SnapChatContext, Color.WHITE, SnapChatEditText::setBackgroundColor);
+                        //noinspection ResourceType
                         colorPickerDialog.setButton(Dialog.BUTTON_NEUTRAL, "Default", (dialog, which) -> SnapChatEditText.setBackgroundColor(-1728053248));
                         colorPickerDialog.setTitle("Background Color");
                         colorPickerDialog.show();
