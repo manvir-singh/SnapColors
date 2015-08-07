@@ -320,17 +320,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
         //For opening image from gallery
         try {
-            findAndHookConstructor("bel", CLSnapChat, findClass("ajj", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
+            findAndHookConstructor("bfy", CLSnapChat, findClass("ake", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (!imgFromGallery) return;
                     imgFromGallery = false;
-                    param.args[1] = param.args[1].getClass().getEnumConstants()[2];//bdl.PHONE_GALLERY
-                    findField(param.args[0].getClass(), "mIsChatMedia").set(param.args[0], false);
+                    Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
+                    findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
                 }
             });
         } catch (Error beta) {
-            findAndHookConstructor("bfy", CLSnapChat, findClass("ake", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
+            findAndHookConstructor("bga", CLSnapChat, findClass("akg", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     if (!imgFromGallery) return;
@@ -405,7 +405,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for (extends Snap)
         try {
-            findAndHookConstructor("akc", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
+            findAndHookConstructor("akv", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
@@ -414,7 +414,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 }
             });
         } catch (NoSuchMethodError beta) {
-            findAndHookConstructor("akv", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
+            findAndHookConstructor("akx", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
