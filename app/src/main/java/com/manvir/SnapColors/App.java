@@ -105,11 +105,11 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         SnapChatLayout = (RelativeLayout) liparam.view.findViewById(SnapChatResources.getIdentifier("snap_preview_decor_relative_layout", "id", PACKAGES.SNAPCHAT));
 
                     //LayoutParams for the "T" that shows the options when tapped.
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(SnapChatResources.getIdentifier("drawing_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(SnapChatResources.getIdentifier("toggle_emoji_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
                     params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, SnapChatResources.getDisplayMetrics());
-                    params.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110, SnapChatResources.getDisplayMetrics());
+                    params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, SnapChatResources.getDisplayMetrics());
+                    params.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190, SnapChatResources.getDisplayMetrics());
 
                     //The "T" ImageButton object that shows the options when tapped.
                     final ImageButton SnapColorsBtn = new ImageButton(SnapChatContext);
@@ -290,6 +290,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         });
                     }).start();
                 } else {
+                    throw new Exception("Video sharing not supported yet");
 //                    Uri video = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
 //                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 //                    retriever.setDataSource(Util.getRealPathFromURI(video));
@@ -319,27 +320,15 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
-        try {
-            findAndHookConstructor("bfy", CLSnapChat, findClass("ake", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (!imgFromGallery) return;
-                    imgFromGallery = false;
-                    Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
-                    findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
-                }
-            });
-        } catch (Error beta) {
-            findAndHookConstructor("bga", CLSnapChat, findClass("akg", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (!imgFromGallery) return;
-                    imgFromGallery = false;
-                    Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
-                    findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
-                }
-            });
-        }
+        findAndHookConstructor("bhv", CLSnapChat, findClass("alp", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!imgFromGallery) return;
+                imgFromGallery = false;
+                Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
+                findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
+            }
+        });
 
         //Get some settings, also get the caption box's edit text object.
         CaptionEditText = XposedHelpers.findClass(PACKAGES.SNAPCHAT + ".ui.caption.CaptionEditText", CLSnapChat);
@@ -404,28 +393,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for (extends Snap)
-        try {
-            findAndHookConstructor("akv", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
-                        return;
-                    findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
-                }
-            });
-        } catch (NoSuchMethodError beta) {
-            findAndHookConstructor("akx", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
-                        return;
-                    findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
-                }
-            });
-        }
+        findAndHookConstructor("amj", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
+                    return;
+                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
+            }
+        });
 
         //For disabling screenshot detection
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ao", new XC_MethodHook() {
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ap", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
