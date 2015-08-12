@@ -17,7 +17,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 40
-        versionName '3.4.6'
+        versionName '3.4.7'
     }
 
     buildTypes {
