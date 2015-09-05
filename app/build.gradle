@@ -49,4 +49,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.nononsenseapps:filepicker:2.1'
     compile 'commons-io:commons-io:2.4'
+    compile files('libs/httpclient-4.5.jar')
+    compile files('libs/httpcore-4.4.1.jar')
+    compile files('libs/httpmime-4.5.jar')
 }
