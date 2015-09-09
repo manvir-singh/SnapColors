@@ -251,7 +251,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
 
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        //DownloadAI
+        //Self hook
         if (lpparam.packageName.equals(PACKAGES.SNAPCOLORS))
             findAndHookMethod("com.manvir.common.Util", lpparam.classLoader, "activeVersion", XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
 
