@@ -22,13 +22,11 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
@@ -100,15 +98,13 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 if (prefs.getBoolean(SETTINGS.KEYS.hideT, SETTINGS.DEFAULTS.hideT)) return;
                 new Thread(() -> {
                     //Get Snapchats main layout.
-                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(SnapChatResources.getIdentifier("snap_preview_relative_layout", "id", PACKAGES.SNAPCHAT));
-                    if (SnapChatLayout == null) //Beta support
-                        SnapChatLayout = (RelativeLayout) liparam.view.findViewById(SnapChatResources.getIdentifier("snap_preview_decor_relative_layout", "id", PACKAGES.SNAPCHAT));
+                    SnapChatLayout = (RelativeLayout) liparam.view.findViewById(SnapChatResources.getIdentifier("snap_preview_header", "id", PACKAGES.SNAPCHAT)).getParent();
 
                     //LayoutParams for the "T" that shows the options when tapped.
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(SnapChatResources.getIdentifier("toggle_emoji_btn", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(liparam.view.findViewById(SnapChatResources.getIdentifier("toggle_emoji_btn_container", "id", PACKAGES.SNAPCHAT)).getLayoutParams());
                     params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, SnapChatResources.getDisplayMetrics());
+                    params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, SnapChatResources.getDisplayMetrics());
                     params.rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190, SnapChatResources.getDisplayMetrics());
 
                     //The "T" ImageButton object that shows the options when tapped.
@@ -242,7 +238,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                     //Add our layout to SnapChat's main layout.
                     SnapChatContext.runOnUiThread(() -> {
                         SnapChatLayout.addView(optionsView, optionsViewLayoutParams);
-                        SnapChatLayout.addView(SnapColorsBtn, params);
+                        ((RelativeLayout) liparam.view.findViewById(SnapChatResources.getIdentifier("snap_preview_header", "id", PACKAGES.SNAPCHAT)))
+                                .addView(SnapColorsBtn, params); //Get the layout that holds snapchats buttons ex. brush, close snap buttons
                     });
                 }).start();
             }
@@ -320,7 +317,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
-        findAndHookConstructor("bhv", CLSnapChat, findClass("alp", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
+        findAndHookConstructor("bqw", CLSnapChat, findClass("ash", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!imgFromGallery) return;
@@ -393,7 +390,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For locking snaps to show for 10 seconds regardless of what the sender set the view time for (extends Snap)
-        findAndHookConstructor("amj", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, new XC_MethodHook() {
+        findAndHookConstructor("ate", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, String.class, boolean.class, boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
@@ -403,7 +400,7 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         });
 
         //For disabling screenshot detection
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ap", new XC_MethodHook() {
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ar", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
@@ -422,29 +419,26 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                 friendsList.put(mUsername, mDisplayName);
             }
         });
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesAdapter", CLSnapChat, "getView", int.class, View.class, ViewGroup.class, new XC_MethodHook() {
+
+        findAndHookMethod("att", CLSnapChat, "b", String.class, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                ViewGroup listItemView = (ViewGroup) param.getResult();
-                String mDisplayName;
-                try {
-                    mDisplayName = ((TextView) listItemView.findViewById(SnapChatResources.getIdentifier("name", "id", PACKAGES.SNAPCHAT))).getText().toString();
-                } catch (NullPointerException ignore) {
-                    return;
-                }
-                String mUsername = "";
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                String mUserName = (String) param.args[0];
+                String mDisplayName = "";
                 for (Map.Entry<String, String> friend : friendsList.entrySet()) {
-                    if (friend.getValue().equals(mDisplayName)) {
-                        mUsername = friend.getKey();
+                    if (friend.getKey().equals(mDisplayName)) {
+                        mDisplayName = friend.getValue();
                     }
                 }
                 ArrayList<String> whiteList = new ArrayList<>(
                         prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
                 for (String user : whiteList) {
-                    if (mDisplayName.contains(user)) {
-                        param.setResult(new View(SnapChatContext));
-                    } else if (mUsername.equals(user)) {
-                        param.setResult(new View(SnapChatContext));
+                    if (user.equals(""))
+                        return;
+                    if (mUserName.contains(user)) {
+                        param.setResult(null);
+                    } else if (mDisplayName.equals(user)) {
+                        param.setResult(null);
                     }
                 }
             }

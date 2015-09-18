@@ -34,7 +34,7 @@
             android:title="Screenshot Detection" />
         <Preference
             android:key="minTimerInt"
-            android:summary="Lock all snaps to be viewable for 10 seconds"
+            android:summary="Lock all snaps to be viewable for whatever amount of seconds"
             android:title="Minimum Timer" />
     </PreferenceCategory>
 

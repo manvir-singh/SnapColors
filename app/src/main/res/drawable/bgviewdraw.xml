@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Options view background -->
     <item>
-        <shape android:shape="rectangle" android:innerRadius="2px">
-            <stroke android:color="#FFFF00" android:width="5dp"/>
+        <shape
+            android:innerRadius="2px"
+            android:shape="rectangle">
+            <stroke
+                android:width="5dp"
+                android:color="#FFFF00" />
             <solid android:color="@android:color/white" />
             <corners
-                android:bottomRightRadius="7dp"
                 android:bottomLeftRadius="7dp"
+                android:bottomRightRadius="7dp"
                 android:topLeftRadius="7dp"
-                android:topRightRadius="7dp"/>
+                android:topRightRadius="7dp" />
         </shape>
     </item>
-    <item android:top="-9dp" android:right="114dp">
-        <bitmap android:src="@drawable/arrow" android:gravity="right|top"/>
+    <!-- Arrow pointing to the "T"-->
+    <item
+        android:left="125dp"
+        android:top="-9dp">
+        <bitmap
+            android:gravity="left|top"
+            android:src="@drawable/arrow" />
     </item>
 </layer-list>
