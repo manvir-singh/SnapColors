@@ -39,6 +39,14 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Stories">
+        <CheckBoxPreference
+            android:key="disableLive"
+            android:summary=""
+            android:title="Disable Live" />
+        <CheckBoxPreference
+            android:key="disableDiscover"
+            android:summary=""
+            android:title="Disable Discover" />
         <Preference
             android:key="blockStoriesFromList"
             android:summary="Block stories from given users"

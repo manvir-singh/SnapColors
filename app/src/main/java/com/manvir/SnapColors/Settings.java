@@ -49,13 +49,16 @@ public class Settings extends PreferenceFragment {
     public SharedPreferences prefs;
     String fontsDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + PACKAGES.SNAPCHAT + "/files";
     private CheckBoxPreference screenshotDetection;
+    private CheckBoxPreference disableDiscover;
     private CheckBoxPreference autoRandomize;
     private CheckBoxPreference shouldRainbow;
     private CheckBoxPreference checkForVer;
+    private CheckBoxPreference disableLive;
     private CheckBoxPreference TextColor;
     private CheckBoxPreference BGColor;
     private CheckBoxPreference setFont;
     private CheckBoxPreference hideT;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,8 @@ public class Settings extends PreferenceFragment {
         shouldRainbow = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.shouldRainbow);
         screenshotDetection = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.screenshotDetection);
         Preference blockStoriesFromList = getPreferenceManager().findPreference(SETTINGS.KEYS.blockStoriesFromList);
+        disableLive = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.disableLive);
+        disableDiscover = (CheckBoxPreference) getPreferenceManager().findPreference(SETTINGS.KEYS.disableDiscover);
         Preference minTimerInt = getPreferenceManager().findPreference(SETTINGS.KEYS.minTimerInt);
         Preference importFont = getPreferenceManager().findPreference(SETTINGS.KEYS.importFont);
         Preference clearAllImportedFonts = getPreferenceManager().findPreference(SETTINGS.KEYS.clearAllImportedFonts);
@@ -86,6 +91,22 @@ public class Settings extends PreferenceFragment {
         update();
 
         //Listeners
+        disableLive.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!disableLive.isChecked()) {
+                prefs.edit().putBoolean(SETTINGS.KEYS.disableLive, true).apply();
+            } else {
+                prefs.edit().putBoolean(SETTINGS.KEYS.disableLive, false).apply();
+            }
+            return true;
+        });
+        disableDiscover.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (!disableDiscover.isChecked()) {
+                prefs.edit().putBoolean(SETTINGS.KEYS.disableDiscover, true).apply();
+            } else {
+                prefs.edit().putBoolean(SETTINGS.KEYS.disableDiscover, false).apply();
+            }
+            return true;
+        });
         hideT.setOnPreferenceChangeListener((preference, newValue) -> {
             if (!hideT.isChecked()) {
                 prefs.edit().putBoolean(SETTINGS.KEYS.hideT, true).apply();

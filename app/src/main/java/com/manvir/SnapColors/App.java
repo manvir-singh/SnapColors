@@ -35,6 +35,7 @@ import com.manvir.common.Util;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -441,6 +442,26 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
                         param.setResult(null);
                     }
                 }
+            }
+        });
+
+        //Disable live stories
+        findAndHookMethod("azr", CLSnapChat, "j", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean(SETTINGS.KEYS.disableLive, SETTINGS.DEFAULTS.disableLive))
+                    return;
+                param.setResult(null);
+            }
+        });
+
+        //Disable discover stories
+        findAndHookMethod("akv", CLSnapChat, "a", List.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean(SETTINGS.KEYS.disableDiscover, SETTINGS.DEFAULTS.disableDiscover))
+                    return;
+                param.setResult(null);
             }
         });
     }
