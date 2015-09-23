@@ -52,12 +52,14 @@ import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
+import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     //Xposed
@@ -323,8 +325,8 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!imgFromGallery) return;
                 imgFromGallery = false;
-                Object SnapType = findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0];
-                findField(param.args[0].getClass(), "mSnapType").set(param.args[0], SnapType);
+                setObjectField(param.args[0], "mSnapType", findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
+                setObjectField(param.args[0], "mClientId", callStaticMethod(findClass("aua", CLSnapChat), "o").toString().toUpperCase() + "~" + getObjectField(param.args[0], "mClientId"));
             }
         });
 
