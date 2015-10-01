@@ -320,15 +320,27 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
-        findAndHookConstructor("bqw", CLSnapChat, findClass("ash", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!imgFromGallery) return;
-                imgFromGallery = false;
-                setObjectField(param.args[0], "mSnapType", findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
-                setObjectField(param.args[0], "mClientId", callStaticMethod(findClass("aua", CLSnapChat), "o").toString().toUpperCase() + "~" + getObjectField(param.args[0], "mClientId"));
-            }
-        });
+        try {
+            findAndHookConstructor("bqw", CLSnapChat, findClass("ash", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!imgFromGallery) return;
+                    imgFromGallery = false;
+                    setObjectField(param.args[0], "mSnapType", findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
+                    setObjectField(param.args[0], "mClientId", callStaticMethod(findClass("aua", CLSnapChat), "o").toString().toUpperCase() + "~" + getObjectField(param.args[0], "mClientId"));
+                }
+            });
+        } catch (NoSuchMethodError beta) {
+            findAndHookConstructor("bse", CLSnapChat, findClass("atm", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!imgFromGallery) return;
+                    imgFromGallery = false;
+                    setObjectField(param.args[0], "mSnapType", findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
+                    setObjectField(param.args[0], "mClientId", callStaticMethod(findClass("aua", CLSnapChat), "o").toString().toUpperCase() + "~" + getObjectField(param.args[0], "mClientId"));
+                }
+            });
+        }
 
         //Get some settings, also get the caption box's edit text object.
         CaptionEditText = XposedHelpers.findClass(PACKAGES.SNAPCHAT + ".ui.caption.CaptionEditText", CLSnapChat);
@@ -392,25 +404,48 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        //For locking snaps to show for 10 seconds regardless of what the sender set the view time for (extends Snap)
-        findAndHookConstructor("ate", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, String.class, boolean.class, boolean.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
-                    return;
-                findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
-            }
-        });
+        //For locking snaps to show for 10 seconds regardless of what the sender set the view time for
+        //Search for "String TAG = "ReceivedSnap";"
+        try {
+            findAndHookConstructor("ate", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, String.class, boolean.class, boolean.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
+                        return;
+                    findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
+                }
+            });
+        } catch (NoSuchMethodError beta) {
+            findAndHookConstructor("aue", CLSnapChat, String.class, long.class, long.class, long.class, int.class, boolean.class, findClass(PACKAGES.SNAPCHAT + ".model.Snap.ClientSnapStatus", CLSnapChat), String.class, double.class, String.class, boolean.class, String.class, String.class, boolean.class, boolean.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if ((double) getObjectField(param.thisObject, "mCanonicalDisplayTime") == 0.0)
+                        return;
+                    findField(param.thisObject.getClass(), "mCanonicalDisplayTime").set(param.thisObject, (double) prefs.getInt(SETTINGS.KEYS.minTimerInt, SETTINGS.DEFAULTS.minTimerInt));
+                }
+            });
+        }
 
         //For disabling screenshot detection
-        findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ar", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
-                    return;
-                param.setResult(false);
-            }
-        });
+        try {
+            findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "ar", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
+                        return;
+                    param.setResult(false);
+                }
+            });
+        } catch (NoSuchMethodError beta) {
+            findAndHookMethod(PACKAGES.SNAPCHAT + ".model.Snap", CLSnapChat, "aq", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!prefs.getBoolean(SETTINGS.KEYS.screenshotDetection, SETTINGS.DEFAULTS.screenshotDetection))
+                        return;
+                    param.setResult(false);
+                }
+            });
+        }
 
         //For blocking stories so they dont show up in the Stories feed
         findAndHookConstructor(PACKAGES.SNAPCHAT + ".model.Friend", CLSnapChat, String.class, String.class, String.class, new XC_MethodHook() {
@@ -423,48 +458,98 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             }
         });
 
-        findAndHookMethod("att", CLSnapChat, "b", String.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                String mUserName = (String) param.args[0];
-                String mDisplayName = "";
-                for (Map.Entry<String, String> friend : friendsList.entrySet()) {
-                    if (friend.getKey().equals(mDisplayName)) {
-                        mDisplayName = friend.getValue();
+        //Search for "String TAG = "StoryLibrary";"
+        try {
+            findAndHookMethod("att", CLSnapChat, "b", String.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    String mUserName = (String) param.args[0];
+                    String mDisplayName = "";
+                    for (Map.Entry<String, String> friend : friendsList.entrySet()) {
+                        if (friend.getKey().equals(mDisplayName)) {
+                            mDisplayName = friend.getValue();
+                        }
+                    }
+                    ArrayList<String> whiteList = new ArrayList<>(
+                            prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
+                    for (String user : whiteList) {
+                        if (user.equals(""))
+                            return;
+                        if (mUserName.contains(user)) {
+                            param.setResult(null);
+                        } else if (mDisplayName.equals(user)) {
+                            param.setResult(null);
+                        }
                     }
                 }
-                ArrayList<String> whiteList = new ArrayList<>(
-                        prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
-                for (String user : whiteList) {
-                    if (user.equals(""))
-                        return;
-                    if (mUserName.contains(user)) {
-                        param.setResult(null);
-                    } else if (mDisplayName.equals(user)) {
-                        param.setResult(null);
+            });
+        } catch (NoSuchMethodError beta) {
+            findAndHookMethod("aut", CLSnapChat, "b", String.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    String mUserName = (String) param.args[0];
+                    String mDisplayName = "";
+                    for (Map.Entry<String, String> friend : friendsList.entrySet()) {
+                        if (friend.getKey().equals(mDisplayName)) {
+                            mDisplayName = friend.getValue();
+                        }
+                    }
+                    ArrayList<String> whiteList = new ArrayList<>(
+                            prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
+                    for (String user : whiteList) {
+                        if (user.equals(""))
+                            return;
+                        if (mUserName.contains(user)) {
+                            param.setResult(null);
+                        } else if (mDisplayName.equals(user)) {
+                            param.setResult(null);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         //Disable live stories
-        findAndHookMethod("azr", CLSnapChat, "j", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean(SETTINGS.KEYS.disableLive, SETTINGS.DEFAULTS.disableLive))
-                    return;
-                param.setResult(null);
-            }
-        });
+        //Search for "livestories&"
+        try {
+            findAndHookMethod("azr", CLSnapChat, "j", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!prefs.getBoolean(SETTINGS.KEYS.disableLive, SETTINGS.DEFAULTS.disableLive))
+                        return;
+                    param.setResult(null);
+                }
+            });
+        } catch (NoSuchMethodError beta) {
+            findAndHookMethod("baz", CLSnapChat, "k", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!prefs.getBoolean(SETTINGS.KEYS.disableLive, SETTINGS.DEFAULTS.disableLive))
+                        return;
+                    param.setResult(null);
+                }
+            });
+        }
 
         //Disable discover stories
-        findAndHookMethod("akv", CLSnapChat, "a", List.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean(SETTINGS.KEYS.disableDiscover, SETTINGS.DEFAULTS.disableDiscover))
-                    return;
-                param.setResult(null);
-            }
-        });
+        try {
+            findAndHookMethod("akv", CLSnapChat, "a", List.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!prefs.getBoolean(SETTINGS.KEYS.disableDiscover, SETTINGS.DEFAULTS.disableDiscover))
+                        return;
+                    param.setResult(null);
+                }
+            });
+        } catch (NoSuchMethodError beta) {
+            findAndHookMethod("alq", CLSnapChat, "a", List.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!prefs.getBoolean(SETTINGS.KEYS.disableDiscover, SETTINGS.DEFAULTS.disableDiscover))
+                        return;
+                    param.setResult(null);
+                }
+            });
+        }
     }
 }
