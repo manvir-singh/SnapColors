@@ -2,33 +2,37 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="10dp"
-    android:paddingTop="10dp"
-    android:paddingLeft="10dp"
+    android:clickable="true"
     android:paddingBottom="10dp"
-    android:clickable="true" >
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp">
+
     <SeekBar
+        android:id="@+id/seekBarSize"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBarSize"/>
+        android:layout_height="wrap_content" />
 
     <Button
-        android:layout_marginTop="40dp"
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/done"
-        android:layout_height="33dp"
-        android:layout_width="wrap_content"
-        android:background="@drawable/roundcorner" android:text="Done"/>
+        android:layout_marginTop="40dp"
+        android:background="@android:color/transparent"
+        android:text="Cancel"
+        android:textColor="@android:color/white" />
 
     <Button
-        android:layout_marginTop="40dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignRight="@id/done"
-        android:layout_alignEnd="@id/done"
-        android:id="@+id/cancel"
-        android:layout_height="33dp"
+        android:id="@+id/done"
         android:layout_width="wrap_content"
-        android:background="@drawable/roundcorner" android:text="Cancel"/>
+        android:layout_height="33dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="40dp"
+        android:background="@android:color/transparent"
+        android:text="Done"
+        android:textColor="@android:color/white" />
+
 </RelativeLayout>

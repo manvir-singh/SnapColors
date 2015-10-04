@@ -6,9 +6,9 @@
             android:innerRadius="2px"
             android:shape="rectangle">
             <stroke
-                android:width="5dp"
-                android:color="#FFFF00" />
-            <solid android:color="@android:color/white" />
+                android:width="2.5dp"
+                android:color="#FFFFFF" />
+            <solid android:color="#80000000" />
             <corners
                 android:bottomLeftRadius="7dp"
                 android:bottomRightRadius="7dp"

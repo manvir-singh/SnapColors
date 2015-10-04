@@ -39,7 +39,6 @@ public class TextureLayout extends RelativeLayout {
         scrollView.setLayoutParams(new LayoutParams(App.size.x, LayoutParams.WRAP_CONTENT));
 
         Button btnCancel = (Button) findViewById(R.id.cancel);
-        btnCancel.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
         btnCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

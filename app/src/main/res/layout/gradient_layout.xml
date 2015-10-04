@@ -2,50 +2,60 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="10dp"
-    android:paddingTop="10dp"
-    android:paddingLeft="10dp"
+    android:clickable="true"
     android:paddingBottom="10dp"
-    android:clickable="true">
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp">
 
     <TextView
+        android:id="@+id/topGrad"
         android:layout_width="fill_parent"
         android:layout_height="30dp"
-        android:id="@+id/topGrad"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:text="Top Gradient (Tap to change)"
+        android:textColor="@android:color/white" />
 
     <View
         android:id="@+id/gradDivider"
-        android:layout_below="@id/topGrad"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#FFFF00"/>
+        android:layout_below="@id/topGrad"
+        android:background="#FFFFFF" />
 
     <TextView
-        android:layout_below="@id/gradDivider"
+        android:id="@+id/bottomGrad"
         android:layout_width="fill_parent"
         android:layout_height="30dp"
-        android:id="@+id/bottomGrad"
-        android:gravity="center_horizontal"/>
-
+        android:layout_below="@id/gradDivider"
+        android:gravity="center_horizontal"
+        android:text="Bottom Gradient (Tap to change)"
+        android:textColor="@android:color/white" />
 
     <Button
-        android:layout_below="@id/bottomGrad"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/done"
-        android:layout_height="33dp"
+        android:id="@+id/cancel"
         android:layout_width="wrap_content"
-        android:background="@drawable/roundcorner"
-        android:text="Apply"/>
+        android:layout_height="33dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/bottomGrad"
+        android:background="@android:color/transparent"
+        android:text="Cancel"
+        android:textColor="@android:color/white" />
+
 
     <Button
-        android:layout_below="@id/bottomGrad"
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignEnd="@id/done"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignRight="@id/done"
-        android:id="@+id/cancel"
-        android:layout_height="33dp"
-        android:layout_width="wrap_content"
-        android:background="@drawable/roundcorner"
-        android:text="Cancel"/>
+        android:layout_below="@id/bottomGrad"
+        android:background="@android:color/transparent"
+        android:text="Apply"
+        android:textColor="@android:color/white" />
+
 
 </RelativeLayout>

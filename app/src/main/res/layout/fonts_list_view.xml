@@ -1,29 +1,33 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/ScrollViewFontsList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="false"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
+        android:paddingBottom="33dp"
         android:paddingLeft="10dp"
-        android:paddingBottom="33dp">
+        android:paddingRight="10dp"
+        android:paddingTop="10dp">
 
         <LinearLayout
             android:id="@+id/fontsmainLayout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
-            </LinearLayout>
+            android:orientation="vertical" />
     </ScrollView>
+
     <Button
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
-        android:id="@+id/cancel"
-        android:layout_height="33dp"
-        android:layout_width="match_parent"
-        android:text="Cancel"/>
+        android:background="@android:color/transparent"
+        android:text="Cancel"
+        android:textColor="@android:color/white" />
 </RelativeLayout>

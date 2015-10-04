@@ -31,6 +31,7 @@ import android.widget.RelativeLayout;
 import com.manvir.common.PACKAGES;
 import com.manvir.common.SETTINGS;
 import com.manvir.common.Util;
+import com.manvir.logger.Logger;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -320,27 +321,17 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
         findAndHookMethod(PACKAGES.SNAPCHAT + ".LandingPageActivity", CLSnapChat, "onResume", startUpHook);
 
         //For opening image from gallery
-        try {
-            findAndHookConstructor("bqw", CLSnapChat, findClass("ash", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (!imgFromGallery) return;
-                    imgFromGallery = false;
-                    setObjectField(param.args[0], "mSnapType", findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
-                    setObjectField(param.args[0], "mClientId", callStaticMethod(findClass("aua", CLSnapChat), "o").toString().toUpperCase() + "~" + getObjectField(param.args[0], "mClientId"));
-                }
-            });
-        } catch (NoSuchMethodError beta) {
-            findAndHookConstructor("bse", CLSnapChat, findClass("atm", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (!imgFromGallery) return;
-                    imgFromGallery = false;
-                    setObjectField(param.args[0], "mSnapType", findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
-                    setObjectField(param.args[0], "mClientId", callStaticMethod(findClass("aua", CLSnapChat), "o").toString().toUpperCase() + "~" + getObjectField(param.args[0], "mClientId"));
-                }
-            });
-        }
+        //Search for "onSnapCapturedEvent" in "LandingPageActivity.class"
+        //avb.class Search for "String TAG = "UserPrefs";"
+        findAndHookConstructor("bse", CLSnapChat, findClass("atm", CLSnapChat), findClass(PACKAGES.SNAPCHAT + ".util.eventbus.SnapCaptureContext", CLSnapChat), View.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!imgFromGallery) return;
+                imgFromGallery = false;
+                setObjectField(param.args[0], "mSnapType", findClass(PACKAGES.SNAPCHAT + ".model.Mediabryo.SnapType", CLSnapChat).getEnumConstants()[0]);
+                setObjectField(param.args[0], "mClientId", callStaticMethod(findClass("avb", CLSnapChat), "o").toString().toUpperCase() + "~" + getObjectField(param.args[0], "mClientId"));
+            }
+        });
 
         //Get some settings, also get the caption box's edit text object.
         CaptionEditText = XposedHelpers.findClass(PACKAGES.SNAPCHAT + ".ui.caption.CaptionEditText", CLSnapChat);
@@ -447,67 +438,41 @@ public class App implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXpos
             });
         }
 
-        //For blocking stories so they dont show up in the Stories feed
-        findAndHookConstructor(PACKAGES.SNAPCHAT + ".model.Friend", CLSnapChat, String.class, String.class, String.class, new XC_MethodHook() {
+        //Get users friends
+        findAndHookConstructor(PACKAGES.SNAPCHAT + ".model.Friend", CLSnapChat, String.class, String.class, String.class, findClass("javax.inject.Provider", CLSnapChat), findClass("ats", CLSnapChat), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (friendsList == null) friendsList = new HashMap<>();
                 String mUsername = (String) getObjectField(param.thisObject, "mUsername");
                 String mDisplayName = (String) getObjectField(param.thisObject, "mDisplayName");
+                if (mUsername.isEmpty()) return;
+                if (friendsList.containsKey(mUsername)) return;
                 friendsList.put(mUsername, mDisplayName);
             }
         });
 
-        //Search for "String TAG = "StoryLibrary";"
-        try {
-            findAndHookMethod("att", CLSnapChat, "b", String.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    String mUserName = (String) param.args[0];
-                    String mDisplayName = "";
-                    for (Map.Entry<String, String> friend : friendsList.entrySet()) {
-                        if (friend.getKey().equals(mDisplayName)) {
-                            mDisplayName = friend.getValue();
-                        }
-                    }
-                    ArrayList<String> whiteList = new ArrayList<>(
-                            prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
+        //For blocking stories of a given friend
+        findAndHookMethod(PACKAGES.SNAPCHAT + ".fragments.stories.StoriesFragment", CLSnapChat, "b", boolean.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                List<Object> stories = (List<Object>) getObjectField(param.thisObject, "e");
+
+                for (Object story : stories) {
+                    Object mFriend = getObjectField(story, "a");
+                    String mUsername = (String) getObjectField(mFriend, "mUsername");
+                    String mDisplayName = (String) getObjectField(mFriend, "mDisplayName");
+
+                    ArrayList<String> whiteList = new ArrayList<>(prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
                     for (String user : whiteList) {
-                        if (user.equals(""))
-                            return;
-                        if (mUserName.contains(user)) {
-                            param.setResult(null);
-                        } else if (mDisplayName.equals(user)) {
-                            param.setResult(null);
+                        if (mDisplayName.contains(user)) {
+                            stories.remove(story);
+                        } else if (mUsername.equals(user)) {
+                            stories.remove(story);
                         }
                     }
                 }
-            });
-        } catch (NoSuchMethodError beta) {
-            findAndHookMethod("aut", CLSnapChat, "b", String.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    String mUserName = (String) param.args[0];
-                    String mDisplayName = "";
-                    for (Map.Entry<String, String> friend : friendsList.entrySet()) {
-                        if (friend.getKey().equals(mDisplayName)) {
-                            mDisplayName = friend.getValue();
-                        }
-                    }
-                    ArrayList<String> whiteList = new ArrayList<>(
-                            prefs.getStringSet(SETTINGS.KEYS.blockStoriesFromList, SETTINGS.DEFAULTS.blockStoriesFromList));
-                    for (String user : whiteList) {
-                        if (user.equals(""))
-                            return;
-                        if (mUserName.contains(user)) {
-                            param.setResult(null);
-                        } else if (mDisplayName.equals(user)) {
-                            param.setResult(null);
-                        }
-                    }
-                }
-            });
-        }
+            }
+        });
 
         //Disable live stories
         //Search for "livestories&"

@@ -1,6 +1,7 @@
 package com.manvir.SnapColors;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.TypedValue;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -15,7 +16,7 @@ public class SButton extends ImageButton{
         btnParmas.leftMargin = leftMargin;
         btnParmas.width = widthPx;
         btnParmas.height = heightPx;
-        setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));//Set the background drawable.
+        setBackgroundColor(Color.TRANSPARENT);
         setImageDrawable(App.modRes.getDrawable(btnImageId));// Set ImageButton drawable.
         setScaleType(ScaleType.CENTER_CROP); //Fit image into view regardless of image size. CENTER_CROP CENTER
         ly.addView(this, btnParmas);

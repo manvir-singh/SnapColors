@@ -14,9 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class GradientLayout extends LinearLayout{
+public class GradientLayout extends LinearLayout {
     int topGradColor;
     int bottomGradColor;
+
     public GradientLayout(final Context context, final EditText editText, final HorizontalScrollView f, final ImageButton SnapColorsBtn) {
         super(context);
         f.setVisibility(View.GONE);
@@ -30,7 +31,6 @@ public class GradientLayout extends LinearLayout{
         btnDone.setEnabled(false);
 
         final TextView topGrad = (TextView) findViewById(R.id.topGrad);
-        topGrad.setText("Top Gradient (Tap to change)");
         topGrad.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +49,6 @@ public class GradientLayout extends LinearLayout{
 
 
         final TextView bottomGrad = (TextView) findViewById(R.id.bottomGrad);
-        bottomGrad.setText("Bottom Gradient (Tap to change)");
         bottomGrad.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,8 +65,7 @@ public class GradientLayout extends LinearLayout{
             }
         });
 
-        btnDone.getLayoutParams().width = (App.size.x/2)-40;
-        btnDone.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
+        btnDone.getLayoutParams().width = (App.size.x / 2) - 40;
         btnDone.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,9 +76,8 @@ public class GradientLayout extends LinearLayout{
             }
         });
 
-        Button btnCancel = (Button)findViewById(R.id.cancel);
-        btnCancel.getLayoutParams().width = (App.size.x/2)-40;
-        btnCancel.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
+        Button btnCancel = (Button) findViewById(R.id.cancel);
+        btnCancel.getLayoutParams().width = (App.size.x / 2) - 40;
         btnCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +88,7 @@ public class GradientLayout extends LinearLayout{
         });
     }
 
-    public void applyGrad(EditText editText, int topColor, int bottomColor){
+    public void applyGrad(EditText editText, int topColor, int bottomColor) {
         Shader textShader = new LinearGradient(0, 0, 0, 100, new int[]{topColor, bottomColor}, new float[]{0, 1}, Shader.TileMode.CLAMP);
         editText.getPaint().setShader(textShader);
         editText.setText(editText.getText());

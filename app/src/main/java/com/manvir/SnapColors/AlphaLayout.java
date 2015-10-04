@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-public class AlphaLayout extends LinearLayout implements SeekBar.OnSeekBarChangeListener{
+public class AlphaLayout extends LinearLayout implements SeekBar.OnSeekBarChangeListener {
     private final EditText editText;
 
     public AlphaLayout(Context context, final EditText editText, final HorizontalScrollView f, final ImageButton SnapColorsBtn) {
@@ -23,14 +23,13 @@ public class AlphaLayout extends LinearLayout implements SeekBar.OnSeekBarChange
         setBackgroundDrawable(App.modRes.getDrawable(R.drawable.bgviewdraw));
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.addView(inflater.inflate(App.modRes.getLayout(R.layout.size_layout), null));
-        SeekBar seekBarSize = (SeekBar)findViewById(R.id.seekBarSize);
+        SeekBar seekBarSize = (SeekBar) findViewById(R.id.seekBarSize);
         seekBarSize.setOnSeekBarChangeListener(this);
         seekBarSize.setMax(255);// So people don't go crazy with the Alpha.
         seekBarSize.setProgress(255);
 
-        Button btnDone = (Button)findViewById(R.id.done);
-        btnDone.getLayoutParams().width = (App.size.x/2)-40;
-        btnDone.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
+        Button btnDone = (Button) findViewById(R.id.done);
+        btnDone.getLayoutParams().width = (App.size.x / 2) - 40;
         btnDone.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,9 +39,8 @@ public class AlphaLayout extends LinearLayout implements SeekBar.OnSeekBarChange
             }
         });
 
-        Button btnCancel = (Button)findViewById(R.id.cancel);
-        btnCancel.getLayoutParams().width = (App.size.x/2)-40;
-        btnCancel.setBackgroundDrawable(App.modRes.getDrawable(R.drawable.roundcorner));
+        Button btnCancel = (Button) findViewById(R.id.cancel);
+        btnCancel.getLayoutParams().width = (App.size.x / 2) - 40;
         btnCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
