@@ -1,4 +1,5 @@
-# SnapColors
+
+# SnapColors (This module is deprecated and no longer works!!!!!!!)
 [![Build Status](https://programming4life.com/builds/job/SnapColors/badge/icon)](https://programming4life.com/builds/job/SnapColors/)
 
 Ya I know the code is not clean; this was my first android app/module. You are more than welcome to make a pull request and clean it.
